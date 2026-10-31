@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="cherbot.png" alt="CherBot logo" width="160" height="160">
+
 # CherBot
 
 ### Stream automation. Native Linux. No Wine required.

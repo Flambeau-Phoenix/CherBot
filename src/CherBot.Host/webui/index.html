@@ -3,13 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080c0d">
   <title>CherBot</title>
+  <link rel="icon" type="image/svg+xml" href="assets/cherbot.svg">
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar" aria-label="Main navigation">
-      <div class="brand">CherBot <span id="version" class="muted small"></span></div>
+      <div class="brand">
+        <img class="brand-logo" src="assets/cherbot.svg" width="52" height="52" alt="">
+        <div class="brand-text"><span class="brand-name">CherBot</span><span id="version" class="muted small"></span></div>
+      </div>
       <nav id="nav" class="nav"></nav>
       <div class="sidebar-foot">
         <div id="engine-status" class="engine-status" role="status">Connecting…</div>
