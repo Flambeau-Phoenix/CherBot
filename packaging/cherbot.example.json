@@ -1,0 +1,50 @@
+{
+  "CherBot": {
+    "InstanceName": "CherBot",
+
+    "Api": {
+      "Address": "127.0.0.1",
+      "Port": 8091
+    },
+
+    "WebSocketServer": {
+      "Enabled": true,
+      "Address": "127.0.0.1",
+      "Port": 8080,
+      "Password": "",
+      "EnforceAuth": false
+    },
+    "HttpServer": { "Enabled": false, "Address": "127.0.0.1", "Port": 7474 },
+    "UdpServer": { "Enabled": false, "Address": "127.0.0.1", "Port": 4242 },
+
+    "Engine": {
+      "SoundMode": "auto",
+      "MediaRoots": [],
+      "PathMappings": {},
+      "RunHistoryDays": 14,
+      "EventLogDays": 3
+    },
+
+    "Twitch": {
+      "ClientId": "",
+      "AutoConnect": true
+    },
+
+    "Community": {
+      "Enabled": true,
+      "FirstWordPoints": 10,
+      "ChatPoints": 1,
+      "DefaultDiscordUrl": "https://discord.gg/cherbot"
+    },
+
+    "Obs": {
+      "Connections": []
+    },
+
+    "SpeakerBot": {
+      "Enabled": false,
+      "Host": "127.0.0.1",
+      "Port": 7580
+    }
+  }
+}

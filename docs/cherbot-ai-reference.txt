@@ -1,0 +1,2546 @@
+CHERBOT AI REFERENCE — VERSION 0.3.0
+Generated from this checkout and its engine catalogs: 160 supported steps; 50 emitted events.
+Regenerate with tools/export-ai-reference.mjs; do not edit the generated sections by hand.
+Companion files: cherbot-ai-prompt.txt and ai-guide.md. No private engine data is included.
+
+CHERBOT: CONTEXT FOR AN AI ASSISTANT
+==================================
+
+PURPOSE AND BOUNDARIES
+CherBot brings Streamer.bot-style automation to native Linux without Wine.
+It runs headless as a console/service, with a CLI, authenticated management
+API, browser UI, and Windows desktop shell (Local engine or Remote client).
+Twitch and OBS are implemented integrations. Speaker.bot is a separate
+service CherBot can call. This is an independent engine, NOT the entire
+Streamer.bot product or API. Use only the supported catalogs/signatures below.
+Windows desktop actions require Windows and suitable desktop services; Windows
+assemblies, COM, registry, key presses, and GDI APIs are not portable to Linux.
+Enum names such as YouTube/Kick/Trovo do not mean those services are supported.
+
+HOW TO ANSWER A USER
+- Prefer the simplest usable output: UI instructions, C#, readable import
+  JSON, or shell + HTTP. Give complete code, installation steps, and a test.
+- Ask for missing essential details: trigger, allowed role, cooldown, exact
+  OBS scene/source/filter names, engine OS, paths on the ENGINE, and output.
+- Never invent CPH methods, IDs, fields, enum values, endpoints, or variables.
+  If the reference lacks a capability, explain the limit and an alternative.
+- Never invent an encoded/compressed export. Readable JSON imports work.
+- Use placeholders for unknown instance IDs and credentials. Ask users to
+  resolve tokens locally; this reference contains no real credentials.
+- Match the installed version to this reference. Do not claim testing you
+  did not perform. Review outputs before running on a live stream.
+
+ENGINE MODEL
+An action has triggers and ordered subActions. A command is a separate record
+whose ID is referenced by a Command Triggered trigger (401) on an action.
+Timers likewise have their own records and Timed Actions triggers (701).
+Actions can also be started through API, another action, or the dashboard.
+Groups organize records. Queues control execution. Use a blocking queue for
+ordered runs; a read/increment/write counter is not atomic across concurrent
+runs. RunNow / CPH.RunAction(..., true) bypasses the queue. Prevent recursion.
+
+VARIABLES: THREE DIFFERENT SYNTAXES
+1. Action arguments: %user%, %rawInput%, %input0%, %rewardName%, %bits%.
+   Use only variables supplied by the trigger or set by earlier steps.
+   Unknown arguments remain as literal placeholders. Arguments are matched
+   case-insensitively. Templates do NOT execute arbitrary C# expressions.
+   Formatting: %counter:N0%, %price:0.00%, %actionQueuedAt:HH:mm%.
+   Dots/brackets can be part of literal keys (e.g. match[0]); they are not a
+   general JSON traversal language. Plain API runs supply only their args and
+   run metadata, not a fabricated Twitch user or a real trigger's fields.
+2. Persisted globals: ~deaths~. These survive restart. ~name~ reads persisted
+   globals only. For temporary globals and user globals use the relevant
+   get/set step or CPH API; they are not automatically ~name~ substitutions.
+   C# strings do not automatically expand %name% or ~name~: read with CPH.
+3. Custom-command response tokens: {user}, {touser}, {args}, {1}, {2},
+   {count}, {random:1-100}, {pick:a|b|c}, {uptime}, {game}, {title},
+   {followage}, {points}, {currency}, {channel}. These belong to the custom
+   command response renderer, not every arbitrary Send Message field.
+   Custom responses also accept %arguments% and ~persistedGlobals~.
+   Other modules have their own token sets; do not assume they share these.
+   Command argument words are zero-based (%input0% is first); friendly tokens
+   are one-based ({1} is first). Command rawInput is text after the command.
+   Optional user/subscription/reward fields depend on the actual event.
+
+CSHARP SCRIPTS
+Add an Execute C# Code step (99999) to an action; do not put a console Main
+method or a project file into that step. Use:
+
+public class CPHInline
+{
+    public bool Execute()
+    {
+        if (!CPH.TryGetArg<string>("user", out var user)) user = "friend";
+        CPH.SetArgument("greeting", $"Hello {user}!");
+        CPH.SendMessage($"Hello {user}!");
+        return true;
+    }
+}
+
+CPH and args are injected through CPHInlineBase. args is a COPY of arguments;
+use CPH.SetArgument to update the running action. Check missing arguments with
+TryGetArg<T> rather than indexing args blindly. Return true to continue, false
+to stop the action. CPH calls are synchronous; the entry point is bool Execute,
+not async Task<bool>. CherBot adds the base class if you omit one. Init() and
+Dispose() hooks are available on that base. .NET 8 libraries and Newtonsoft.Json
+are referenced. Extra compatible DLLs go in <data folder>/references/ and must
+be configured on the code step's references field (see its field catalog).
+Scripts run with the engine account's full permissions. CPH.Wait takes ms.
+In JSON, Execute C# Code accepts a plain "code" string (CherBot extension),
+or base64-encoded UTF-8 source in "byteCode" for compatibility. It is source,
+not compiled assembly bytes. Prefer "code" when generating readable CherBot JSON.
+CPH.SendAction sends normal chat text (Helix has no equivalent /me message).
+CPH.Between uses inclusive min/max; OBS filter state 0=visible, 1=hidden,
+2=toggle. Script OBS connection indices are zero-based; prefer explicit names
+and check connectivity. CPH.ObsSendRaw accepts an OBS v5 request name and a JSON
+object string; verify OBS-specific payloads separately if not described here.
+
+Example persisted counter, placed behind an appropriate command/queue:
+
+public class CPHInline
+{
+    public bool Execute()
+    {
+        var count = CPH.GetGlobalVar<long>("deaths", true) + 1;
+        CPH.SetGlobalVar("deaths", count, true);
+        CPH.SetArgument("deathCount", count);
+        CPH.SendMessage($"Deaths: {count}");
+        return true;
+    }
+}
+
+JSON RECORDS AND IMPORTS
+Import a top-level {"actions":[],"commands":[],"timers":[],"queues":[]}.
+Arrays can be omitted. Use valid unique UUIDs; keep linked IDs consistent.
+API POST /v1/actions takes ONE action, not the full import wrapper.
+Action fields: id, name, group, enabled, queue (UUID or null), alwaysRun,
+randomAction, concurrent, excludeFromHistory, excludeFromPending,
+triggers[], subActions[]. Triggers: id, type (integer), enabled, plus filters
+listed for that trigger. Steps: id, type (integer), index (zero-based), enabled,
+weight (random selection), plus type-specific fields at the SAME object level.
+Fields do not live inside a generic "parameters" or "settings" object.
+Nested steps use subActions[] (and parentId when needed); normalize indices in
+each list. If(120) has Then(99901)/Else(99902) lanes; Switch(127) has
+Case(99903)/Default(99904) lanes. These lane IDs are container structures.
+Use the step catalog for the condition, loop, list and foreach field shapes.
+
+Command fields: id, name, command (aliases separated by newline), enabled,
+include, mode (0 basic, 1 regex), location (0 start, 1 exact, 2 anywhere),
+sources (1=Twitch chat), ignoreBotAccount, ignoreInternal, caseSensitive,
+globalCooldown, userCooldown (seconds), persistCounter, persistUserCounter,
+group, grantType (0 allow, 1 deny), permittedGroups[] (named user groups).
+With grantType=0 an empty permittedGroups list allows everyone. For built-in
+role gates use the custom-command minRole model or an action permission step;
+do not assume a plain command's arbitrary minRole property enforces a role.
+Timer fields: id, name, enabled, repeat, interval (seconds), randomInterval,
+upperInterval (seconds), lines (minimum chat lines, 0 disables), counter.
+Queue fields: id, name, blocking (true serializes runs).
+The default queue is 00000000-0000-0000-0000-000000000000; the action queue
+field can be null to use it. A matching command alone sends no response.
+Import updates identical IDs and can replace identical names. Preview first.
+--no-overwrite prevents replacement by name; identical IDs can still update.
+
+CUSTOM TEXT COMMAND API (easier for simple replies)
+POST /v1/custom-commands takes an object such as:
+{"name":"!hello","aliases":["!hi"],"enabled":true,
+ "responses":["Hello {user}!"],"minRole":"everyone",
+ "globalCooldown":5,"userCooldown":10}
+It creates its command and action; response is {command: <definition>, ...}.
+Other fields: lineDelayMs (default 1000), replyMode (chat/reply/announcement),
+color (primary/blue/green/orange/purple), permittedGroups[], cost (points),
+onlyWhileLive. minRole: everyone/subscriber/vip/moderator/broadcaster.
+responses are random variants; newlines within a variant send separate lines.
+Use PUT /v1/custom-commands/{id} with the complete definition to update.
+Preview without sending: POST /v1/custom-commands/preview with
+{"definition":{"name":"!hello","responses":["Hello {user}!"]},
+ "user":"Viewer","input":"@Friend"}. Returns {lines:[...]}.
+These records are not imported via the ordinary commands[] array. For a
+portable action import, use normal command + trigger + action records instead.
+
+CLI: HEADLESS OPERATION
+cherbot [--data-dir <dir>]                       run the engine
+cherbot token [--data-dir <dir>]                 print the management token
+cherbot import <file|-> [--dry-run] [--no-overwrite] [--rewrite-paths]
+cherbot export [--name <name>]                   print an encoded export
+cherbot twitch-login <broadcaster|bot>           device-code account linking
+cherbot migrate-python <old.db>                 migrate prototype data
+All commands accept --data-dir and --CherBot:Section:Key value overrides.
+On Windows use cherbot.exe / .\cherbot.exe. In a Linux build directory use
+./cherbot when it is not on PATH. No CLI "create-action" or "run-action"
+subcommands exist; use the management API for live engine changes.
+Do not run multiple engines against the same data folder. Stop the engine
+before offline imports. Use API requests to mutate a running engine.
+Defaults: user Linux ~/.local/share/cherbot (or XDG_DATA_HOME/cherbot),
+root/system service /var/lib/cherbot, Windows %ProgramData%\CherBot.
+Config is <data>/cherbot.json; engine settings need restart. API changes to
+actions, commands, timers, globals, and OBS connections apply immediately.
+Back up the entire data folder, including keys/, with the engine stopped.
+
+MANAGEMENT API
+Web UI / API base: http://127.0.0.1:8091 . Bind to a trusted LAN/VPN address
+for remote clients; do not propose opening all interfaces as a default.
+/health and /version are public. /v1 requests require Authorization: Bearer
+<local API token>, or X-CherBot-Token. ?token= is accepted for EventSource.
+Do not confuse this management API with the Streamer.bot-compatible WebSocket
+port 8080, optional unauthenticated HTTP port 7474, or UDP port 4242.
+
+Important routes and body shapes:
+GET /v1/actions -> {actions:[...]}; GET /v1/actions/{id} -> one action.
+POST /v1/actions -> action; PUT /v1/actions/{id} -> complete action.
+POST /v1/actions/{id}/enabled {"enabled":true}.
+POST /v1/actions/{id}/run {"args":{"user":"Viewer"},"wait":true}
+  waits and bypasses the queue; result has status, trace and args.
+  With wait:false it queues the action and returns status/runId.
+POST /v1/actions/{id}/test {"sampleArgs":{"user":"Viewer"}}
+  uses a real event sample when available and isTest=true; returns {result,...}.
+GET /v1/runs?limit=10 -> {runs:[...]}.
+GET /v1/commands -> {commands:[...]}; POST /v1/commands -> one command.
+GET /v1/timers -> {timers:[{timer:{...},nextFire:...}]}; POST -> one timer.
+GET /v1/queues -> {queues:[live states],definitions:[queue records]}.
+POST /v1/queues/{key}/pause or /resume or /clear (key=all/default/UUID/name).
+GET /v1/globals?persisted=true -> {globals:[...]};
+PUT /v1/globals/{name} {"value":12,"persisted":true}.
+POST /v1/import?dryRun=true&overwrite=false with raw text/plain JSON/export;
+  report has actions/commands/timers/queues, unsupported[], paths[], warnings[].
+POST /v1/export {"actions":["UUID"],"commands":["UUID"],"timers":[],
+  "name":"My workflow"} -> {export:"..."}; actions must be explicitly listed.
+GET /v1/catalog/subactions -> {subActions:[...]} (supported flag).
+GET /v1/catalog/events -> {events:[...]} (emitted flag).
+GET /v1/events/recent?limit=25 -> {events:[...]}.
+GET /v1/events (SSE); ?since=<sequence> or Last-Event-ID resumes events.
+POST /v1/chat/simulate {"message":"!hello","user":"tester","role":"viewer"}
+  feeds normal command pipeline; replies and other effects can be real.
+GET /v1/twitch/status; GET /v1/integrations; GET /v1/obs/connections.
+POST /v1/obs/connections {"name":"Main","host":"192.0.2.20",
+  "port":4455,"password":"<set locally>"}.
+GET /v1/obs/scenes; GET /v1/obs/scene-items?scene=<URL-encoded name>.
+POST /v1/obs/scene {"sceneName":"Be Right Back"}.
+POST /v1/obs/request {"requestType":"GetSceneList"} for raw OBS requests.
+Additional route names are listed below for discovery. That inventory is not
+a complete request-body schema; do not guess bodies for undocumented routes.
+
+Bash example (read the token locally; never send it to the AI):
+CHERBOT_URL=http://127.0.0.1:8091
+CHERBOT_TOKEN="$(./cherbot token --data-dir /path/to/data)"
+curl --fail-with-body -H "Authorization: Bearer $CHERBOT_TOKEN" \
+  "$CHERBOT_URL/v1/queues"
+curl --fail-with-body -H "Authorization: Bearer $CHERBOT_TOKEN" \
+  -H 'Content-Type: application/json' --data-binary @action.json \
+  "$CHERBOT_URL/v1/actions"
+For a full import wrapper use /v1/import and Content-Type:text/plain instead.
+PowerShell: $cherbotToken = (& .\cherbot.exe token --data-dir 'C:\CherBotData').Trim();
+$cherbotHeaders = @{ Authorization = "Bearer $cherbotToken" };
+Invoke-RestMethod 'http://127.0.0.1:8091/v1/queues' -Headers $cherbotHeaders
+
+TESTING AND DIAGNOSIS
+Preview JSON imports first; verify unsupported is empty and linked IDs exist.
+Save & Test, /actions/{id}/test, /run, C# scripts, and the chat simulator can
+send REAL chat, modify OBS, run files, mutate globals or spend points.
+isTest does not suppress these effects automatically. For text-only preview
+use the custom-command preview endpoint. To isolate an action, disable its
+triggers and use a disposable instance without live integrations.
+Use Monitor recent runs and traces, or GET /v1/runs and the engine logs.
+Unknown %variables% that remain literal usually mean wrong trigger or a missing
+earlier step. C# compile errors often mean an unsupported method/signature.
+Unknown OBS scene/source names must be corrected against the actual engine.
+Only use the emitted/supported catalog entries below; imported placeholders
+for other types do not run. Fields listed as builder defaults are starter
+values, not a guarantee that omitting required fields will execute correctly.
+
+
+RUN ARGUMENTS AND FORMATTING
+============================
+
+Metadata below is available as applicable. triggerId/category require an actual trigger;
+isTest is supplied for test runs, not guaranteed for every run. Treat optional fields defensively.
+  actionName: This action's name | example "My action"
+  actionId: This action's id
+  runningActionId: Id of this run
+  actionQueuedAt: When the run was queued
+  triggerName: What started the run | example "Command Triggered"
+  triggerCategory: Trigger category | example "Core / Commands"
+  triggerId: Trigger id
+  eventSource: twitch, obs, command, core… | example "twitch"
+  __source: Internal event name | example "CommandTriggered"
+  isTest: Set when run from the builder's Test | example "True"
+
+Template format examples:
+  %count:N0%: Number with thousands separators | example "1,234"
+  %price:0.00%: Two decimals | example "3.50"
+  %actionQueuedAt:HH:mm%: Time of day | example "21:07"
+  %actionQueuedAt:yyyy-MM-dd%: Date | example "2026-10-31"
+  ~myGlobal~: A persisted global variable
+
+EMITTED TRIGGERS: IDS, FILTERS AND ARGUMENTS
+============================================
+
+
+[1] Custom — General.Custom — Custom
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  eventName: Custom event name | example "myEvent"
+
+[101] TwitchFollow — Twitch.Follow — Follow
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  followDate: When they followed | example "2026-01-01T00:00:00Z"
+
+[102] TwitchCheer — Twitch.Cheer — Cheer
+Someone cheers bits.
+Filters:
+  min: int; 0 = no limit
+  max: int; 0 = no limit
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  bits: Bits cheered | example "500"
+  message: Cheer message | example "Cheer500 gg"
+  messageStripped: Message without cheermotes | example "gg"
+  anonymous: Anonymous cheer? | example "False"
+
+[103] TwitchSub — Twitch.Sub — Subscription
+A new subscription.
+Filters:
+  tiers: _zG9fSfowhgyhnk6rDxfeliZqBps; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  tier: tier 1, tier 2, tier 3 or prime | example "tier 1"
+  subTier: 1000, 2000 or 3000 | example "1000"
+  isPrime: Prime sub? | example "False"
+  isMultiMonth: Multi-month? | example "False"
+  multiMonthDuration: Months bought | example "1"
+  message: Message
+  systemMessage: Twitch system text
+
+[104] TwitchReSub — Twitch.ReSub — Resubscription
+A resubscription (with message).
+Filters:
+  tiers: _zG9fSfowhgyhnk6rDxfeliZqBps; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+  min: int; 0 = no limit
+  max: int; 0 = no limit
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  tier: tier 1, tier 2, tier 3 or prime | example "tier 1"
+  subTier: 1000, 2000 or 3000 | example "1000"
+  cumulativeMonths: Total months | example "12"
+  monthStreak: Streak months (if shared) | example "6"
+  streakShared: Streak shared? | example "True"
+  isPrime: Prime? | example "False"
+  rawInput: Resub message | example "still here!"
+  message: Resub message | example "still here!"
+
+[105] TwitchGiftSub — Twitch.GiftSub — Gift Subscription
+A single gifted sub (gift-bomb parts carry fromGiftBomb).
+Filters:
+  tiers: _zG9fSfowhgyhnk6rDxfeliZqBps; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+  min: int; 0 = no limit
+  max: int; 0 = no limit
+  subType: TriggerTwitchGiftSubType; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+  monthsGifted: _YeoMwPBfaIYTMKdT9lZoKfpbkWM; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  tier: tier 1, tier 2, tier 3 or prime | example "tier 1"
+  subTier: 1000, 2000 or 3000 | example "1000"
+  recipientUser: Recipient display name | example "LuckyViewer"
+  recipientUserName: Recipient login | example "luckyviewer"
+  recipientId: Recipient id
+  monthsGifted: Months gifted | example "1"
+  totalSubsGifted: Gifter's total | example "25"
+  fromGiftBomb: Part of a gift bomb? | example "False"
+  anonymous: Anonymous gifter? | example "False"
+
+[106] TwitchGiftBomb — Twitch.GiftBomb — Gift Bomb
+A gift bomb (community gift).
+Filters:
+  tiers: _zG9fSfowhgyhnk6rDxfeliZqBps; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+  min: int; 0 = no limit
+  max: int; 0 = no limit
+  subType: TriggerTwitchGiftSubType; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  tier: tier 1, tier 2, tier 3 or prime | example "tier 1"
+  subTier: 1000, 2000 or 3000 | example "1000"
+  gifts: Subs in this bomb | example "10"
+  totalGifts: Gifter's total | example "50"
+  anonymous: Anonymous gifter? | example "False"
+
+[107] TwitchRaid — Twitch.Raid — Raid
+An incoming raid.
+Filters:
+  min: int; 0 = no limit
+  max: int; 0 = no limit
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  viewers: Raiding viewers | example "42"
+
+[112] TwitchRewardRedemption — Twitch.RewardRedemption — Reward Redemption
+A channel point reward is redeemed.
+Filters:
+  rewardId: string; selects reward
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  rewardId: Reward id
+  rewardName: Reward title | example "Hydrate"
+  rewardCost: Cost | example "500"
+  rewardPrompt: Reward prompt
+  redemptionId: Redemption id
+  rawInput: Text the viewer entered
+  counter: Times redeemed | example "7"
+  userCounter: Times this user redeemed | example "1"
+
+[118] TwitchStreamUpdate — Twitch.StreamUpdate — Stream Update
+The stream title or category changed.
+Filters:
+  gameOnly: bool; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+  gameId: string; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+  gameName: string; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+Arguments (in addition to applicable run metadata):
+  title: Stream title | example "Chill stream"
+  status: Stream title | example "Chill stream"
+  gameId: Category id | example "509658"
+  gameName: Category | example "Just Chatting"
+  language: Language | example "en"
+
+[120] TwitchFirstWord — Twitch.FirstWord — First Words
+A viewer's first message this stream.
+Filters:
+  username: string; Optional: only this user
+  isUserId: bool
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  message: The full message | example "hello chat!"
+  messageStripped: The message without emotes | example "hello chat!"
+  rawInput: The full message (or text after the command) | example "hello chat!"
+  msgId: Message id (for replies and deletes) | example "abc-123"
+  emotes: Emote names used | example "[Kappa]"
+  emoteCount: How many emotes | example "1"
+  isSubscribed: Subscriber? | example "True"
+  isModerator: Moderator? | example "False"
+  isVip: VIP? | example "False"
+  isBroadcaster: The broadcaster? | example "False"
+  role: 1 viewer, 2 VIP, 3 mod, 4 broadcaster | example "1"
+  color: Chat colour | example "#FF0000"
+  badges: Badge set ids | example "[subscriber]"
+  firstWordOfStream: Their first message this stream? | example "False"
+  isReply: A reply to another message? | example "False"
+  bits: Bits cheered in the message | example "0"
+
+[124] TwitchPresentViewers — Twitch.PresentViewers — Present Viewers
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  users: Viewers (id, login, display, role, subscribed) | example "[…]"
+  count: How many | example "12"
+
+[133] TwitchChatMessage — Twitch.ChatMessage — Chat Message
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  message: The full message | example "hello chat!"
+  messageStripped: The message without emotes | example "hello chat!"
+  rawInput: The full message (or text after the command) | example "hello chat!"
+  msgId: Message id (for replies and deletes) | example "abc-123"
+  emotes: Emote names used | example "[Kappa]"
+  emoteCount: How many emotes | example "1"
+  isSubscribed: Subscriber? | example "True"
+  isModerator: Moderator? | example "False"
+  isVip: VIP? | example "False"
+  isBroadcaster: The broadcaster? | example "False"
+  role: 1 viewer, 2 VIP, 3 mod, 4 broadcaster | example "1"
+  color: Chat colour | example "#FF0000"
+  badges: Badge set ids | example "[subscriber]"
+  firstWordOfStream: Their first message this stream? | example "False"
+  isReply: A reply to another message? | example "False"
+  bits: Bits cheered in the message | example "0"
+
+[135] TwitchChatMessageDeleted — Twitch.ChatMessageDeleted — Chat Message Deleted
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  targetMessageId: Deleted message id
+  msgId: Deleted message id
+  targetUser: Author display name
+  targetUserName: Author login
+  targetUserId: Author id
+
+[138] TwitchAnnouncement — Twitch.Announcement — Announcement
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  message: The full message | example "hello chat!"
+  messageStripped: The message without emotes | example "hello chat!"
+  rawInput: The full message (or text after the command) | example "hello chat!"
+  msgId: Message id (for replies and deletes) | example "abc-123"
+  emotes: Emote names used | example "[Kappa]"
+  emoteCount: How many emotes | example "1"
+  isSubscribed: Subscriber? | example "True"
+  isModerator: Moderator? | example "False"
+  isVip: VIP? | example "False"
+  isBroadcaster: The broadcaster? | example "False"
+  role: 1 viewer, 2 VIP, 3 mod, 4 broadcaster | example "1"
+  color: Chat colour | example "#FF0000"
+  badges: Badge set ids | example "[subscriber]"
+  firstWordOfStream: Their first message this stream? | example "False"
+  isReply: A reply to another message? | example "False"
+  bits: Bits cheered in the message | example "0"
+  announcementColor: Announcement colour | example "PRIMARY"
+
+[139] TwitchAdRun — Twitch.AdRun — Ad Run
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  adLength: Ad length (seconds) | example "90"
+  isAutomatic: Scheduled ad? | example "True"
+  startedAt: Start time
+
+[144] TwitchShoutoutCreated — Twitch.ShoutoutCreated — Shoutout Created
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  viewerCount: Viewers shown the shoutout | example "100"
+
+[154] TwitchStreamOnline — Twitch.StreamOnline — Stream Online
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  broadcastUser: Your display name | example "Streamer"
+  broadcastUserName: Your login | example "streamer"
+  broadcastUserId: Your id
+  startedAt: Went live at
+  type: live | example "live"
+
+[155] TwitchStreamOffline — Twitch.StreamOffline — Stream Offline
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  broadcastUserName: Your login | example "streamer"
+  broadcastUserId: Your id
+
+[156] TwitchShoutoutReceived — Twitch.ShoutoutReceived — Shoutout Received
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  viewers: Their viewer count | example "1200"
+  viewerCount: Their viewer count | example "1200"
+
+[173] TwitchBroadcasterAuthenticated — Twitch.BroadcasterAuthenticated — Broadcaster Authenticated
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  broadcastUser: Linked broadcaster | example "Streamer"
+
+[174] TwitchBroadcasterChatConnected — Twitch.BroadcasterChatConnected — Broadcaster Chat Connected
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  No additional variables documented.
+
+[175] TwitchBroadcasterChatDisconnected — Twitch.BroadcasterChatDisconnected — Broadcaster Chat Disconnected
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  No additional variables documented.
+
+[401] CommandTriggered — Command.Triggered — Command Triggered
+A chat command matched.
+Filters:
+  commandId: Guid; selects command
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  message: The full message | example "hello chat!"
+  messageStripped: The message without emotes | example "hello chat!"
+  rawInput: Text after the command | example "@friend thanks"
+  msgId: Message id (for replies and deletes) | example "abc-123"
+  emotes: Emote names used | example "[Kappa]"
+  emoteCount: How many emotes | example "1"
+  isSubscribed: Subscriber? | example "True"
+  isModerator: Moderator? | example "False"
+  isVip: VIP? | example "False"
+  isBroadcaster: The broadcaster? | example "False"
+  role: 1 viewer, 2 VIP, 3 mod, 4 broadcaster | example "1"
+  color: Chat colour | example "#FF0000"
+  badges: Badge set ids | example "[subscriber]"
+  firstWordOfStream: Their first message this stream? | example "False"
+  isReply: A reply to another message? | example "False"
+  bits: Bits cheered in the message | example "0"
+  command: The command word that matched | example "!so"
+  commandId: Command id
+  commandName: Command name | example "!so"
+  input0: First word after the command | example "@friend"
+  input1: Second word after the command | example "thanks"
+  inputEscaped0: input0, HTML-escaped | example "@friend"
+  inputUrlEncoded0: input0, URL-encoded | example "%40friend"
+  counter: Times the command has run | example "42"
+  userCounter: Times this user has run it | example "3"
+
+[402] CommandCooldown — Command.Cooldown — Command Cooldown
+A command was used during its cooldown.
+Filters:
+  commandId: Guid; selects command
+Arguments (in addition to applicable run metadata):
+  user: Display name | example "CoolViewer"
+  userName: Login name (lower case) | example "coolviewer"
+  userId: Twitch user id | example "123456789"
+  userType: Platform | example "twitch"
+  message: The full message | example "hello chat!"
+  messageStripped: The message without emotes | example "hello chat!"
+  rawInput: Text after the command | example "@friend thanks"
+  msgId: Message id (for replies and deletes) | example "abc-123"
+  emotes: Emote names used | example "[Kappa]"
+  emoteCount: How many emotes | example "1"
+  isSubscribed: Subscriber? | example "True"
+  isModerator: Moderator? | example "False"
+  isVip: VIP? | example "False"
+  isBroadcaster: The broadcaster? | example "False"
+  role: 1 viewer, 2 VIP, 3 mod, 4 broadcaster | example "1"
+  color: Chat colour | example "#FF0000"
+  badges: Badge set ids | example "[subscriber]"
+  firstWordOfStream: Their first message this stream? | example "False"
+  isReply: A reply to another message? | example "False"
+  bits: Bits cheered in the message | example "0"
+  command: The command word that matched | example "!so"
+  commandId: Command id
+  commandName: Command name | example "!so"
+  input0: First word after the command | example "@friend"
+  input1: Second word after the command | example "thanks"
+  inputEscaped0: input0, HTML-escaped | example "@friend"
+  inputUrlEncoded0: input0, URL-encoded | example "%40friend"
+  counter: Times the command has run | example "42"
+  userCounter: Times this user has run it | example "3"
+  cooldownLeft: Seconds left (largest) | example "12"
+  globalCooldownLeft: Global seconds left | example "0"
+  userCooldownLeft: User seconds left | example "12"
+
+[601] QuoteAdded — Quote.Added — Quote Added
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  quoteId: Quote id | example "12"
+  quote: Quote text | example "a classic"
+  quoteUser: Added by
+
+[602] QuoteShow — Quote.Show — Show Quote
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  quoteId: Quote id | example "12"
+  quote: Quote text | example "a classic"
+
+[701] TimedAction — Misc.TimedAction — Timed Actions
+A timer fired.
+Filters:
+  timerId: Guid; selects timer
+Arguments (in addition to applicable run metadata):
+  timerName: Timer name | example "Promo"
+  timerId: Timer id
+  timerInterval: Interval (seconds) | example "900"
+
+[702] Test — Misc.Test — Test
+The Test trigger (run from the builder).
+Filters:
+  variables: Dictionary<string, string>
+Arguments (in addition to applicable run metadata):
+  isTest: Always true | example "True"
+
+[706] StreamerbotStarted — Misc.StreamerbotStarted — Streamer.bot Started
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  No additional variables documented.
+
+[707] StreamerbotExiting — Misc.StreamerbotExiting — Streamer.bot Exiting
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  No additional variables documented.
+
+[709] GlobalVariableUpdated — Misc.GlobalVariableUpdated — Global Variable Updated
+A global variable changed.
+Filters:
+  variableName: string; selects global; Optional: only this variable
+  persisted: int; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+Arguments (in addition to applicable run metadata):
+  variableName: Variable name | example "deaths"
+  name: Variable name | example "deaths"
+  newValue: New value | example "5"
+  oldValue: Previous value | example "4"
+  persisted: Persisted? | example "True"
+
+[710] UserGlobalVariableUpdated — Misc.UserGlobalVariableUpdated — User Global Variable Updated
+A user global changed.
+Filters:
+  userLogon: string; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+  platform: string; options [["","Any"],["twitch","Twitch"]]
+  variableName: string; Optional: only this variable
+  persisted: int; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+Arguments (in addition to applicable run metadata):
+  variableName: Variable name | example "deaths"
+  name: Variable name | example "deaths"
+  newValue: New value | example "5"
+  oldValue: Previous value | example "4"
+  persisted: Persisted? | example "True"
+  userId: User id
+  userName: User login
+  user: User display name
+  platform: Platform | example "twitch"
+
+[711] GlobalVariableCreated — Misc.GlobalVariableCreated — Global Variable Created
+A global variable was created.
+Filters:
+  variableName: string; selects global; Optional
+  persisted: int; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+Arguments (in addition to applicable run metadata):
+  variableName: Variable name | example "deaths"
+  name: Variable name | example "deaths"
+  newValue: New value | example "5"
+  oldValue: Previous value | example "4"
+  persisted: Persisted? | example "True"
+
+[712] GlobalVariableDeleted — Misc.GlobalVariableDeleted — Global Variable Deleted
+A global variable was deleted.
+Filters:
+  variableName: string; selects global; Optional
+  persisted: int; Kept for Streamer.bot compatibility; CherBot doesn't filter on it
+Arguments (in addition to applicable run metadata):
+  variableName: Variable name | example "deaths"
+  name: Variable name | example "deaths"
+  newValue: New value | example "5"
+  oldValue: Previous value | example "4"
+  persisted: Persisted? | example "True"
+
+[801] RawAction — Raw.Action — Action
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  actionName: Action that started
+  actionId: Its id
+
+[806] RawActionCompleted — Raw.ActionCompleted — Action Completed
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  actionName: Action that finished
+  actionId: Its id
+  status: ok, error or break | example "ok"
+
+[14001] ObsConnected — Obs.Connected — Connected
+Filters:
+  obsId: Guid?; selects obsConnection
+Arguments (in addition to applicable run metadata):
+  obsId: OBS connection id
+  connectionId: OBS connection id
+  obsConnectionName: OBS connection name | example "OBS"
+
+[14002] ObsDisconnected — Obs.Disconnected — Disconnected
+Filters:
+  obsId: Guid?; selects obsConnection
+Arguments (in addition to applicable run metadata):
+  obsId: OBS connection id
+  connectionId: OBS connection id
+  obsConnectionName: OBS connection name | example "OBS"
+
+[14003] ObsEvent — Obs.Event — Event
+Any obs-websocket event.
+Filters:
+  eventName: string; Optional, e.g. InputMuteStateChanged
+  obsId: Guid?; selects obsConnection
+Arguments (in addition to applicable run metadata):
+  obsId: OBS connection id
+  connectionId: OBS connection id
+  obsConnectionName: OBS connection name | example "OBS"
+  eventName: obs-websocket event type | example "InputMuteStateChanged"
+  eventType: Same as eventName
+  eventData: Event data (JSON) | example "{}"
+
+[14004] ObsSceneChanged — Obs.SceneChanged — Scene Changed
+OBS switched scene.
+Filters:
+  sceneName: string; selects scene; Optional: only this scene
+  obsId: Guid?; selects obsConnection
+Arguments (in addition to applicable run metadata):
+  obsId: OBS connection id
+  connectionId: OBS connection id
+  obsConnectionName: OBS connection name | example "OBS"
+  sceneName: New scene | example "Gameplay"
+  oldSceneName: Previous scene | example "Starting"
+
+[14005] ObsStreamingStarted — Obs.StreamingStarted — Streaming Started
+Filters:
+  obsId: Guid?; selects obsConnection
+Arguments (in addition to applicable run metadata):
+  obsId: OBS connection id
+  connectionId: OBS connection id
+  obsConnectionName: OBS connection name | example "OBS"
+
+[14006] ObsStreamingStopped — Obs.StreamingStopped — Streaming Stopped
+Filters:
+  obsId: Guid?; selects obsConnection
+Arguments (in addition to applicable run metadata):
+  obsId: OBS connection id
+  connectionId: OBS connection id
+  obsConnectionName: OBS connection name | example "OBS"
+
+[14007] ObsRecordingStarted — Obs.RecordingStarted — Recording Started
+Filters:
+  obsId: Guid?; selects obsConnection
+Arguments (in addition to applicable run metadata):
+  obsId: OBS connection id
+  connectionId: OBS connection id
+  obsConnectionName: OBS connection name | example "OBS"
+
+[14008] ObsRecordingStopped — Obs.RecordingStopped — Recording Stopped
+Filters:
+  obsId: Guid?; selects obsConnection
+Arguments (in addition to applicable run metadata):
+  obsId: OBS connection id
+  connectionId: OBS connection id
+  obsConnectionName: OBS connection name | example "OBS"
+
+[14009] ObsVendorEvent — Obs.VendorEvent — Vendor Event
+An event from an OBS plugin (vendor).
+Filters:
+  vendorName: string; Optional
+  eventName: string; Optional
+  obsId: Guid?; selects obsConnection
+Arguments (in addition to applicable run metadata):
+  obsId: OBS connection id
+  connectionId: OBS connection id
+  obsConnectionName: OBS connection name | example "OBS"
+  vendorName: Plugin (vendor) name | example "move"
+  eventName: Vendor event type | example "MoveEnded"
+  eventData: Event data (JSON) | example "{}"
+
+[18001] CustomEvent — Custom.Event — Custom
+A Custom Event raised by an action, a module or a client.
+Filters:
+  eventName: string; e.g. giveaway.winner, pyramid.completed, chat.filtered
+Arguments (in addition to applicable run metadata):
+  eventName: Custom event name | example "giveaway.winner"
+  args: Arguments sent with it | example "{…}"
+  giveawayName: Giveaway events: giveaway name | example "Steam key"
+  prize: Giveaway events: prize
+  entrants: Giveaway events: entrants | example "12"
+  emote: Pyramid events: the emote | example "Kappa"
+  width: Pyramid events: width | example "3"
+  breaker: pyramid.broken: who broke it
+  filterName: chat.filtered: which filter | example "links"
+  filterReason: chat.filtered: the reason
+
+[18002] CustomCodeEvent — Custom.CodeEvent — Custom Code Event
+A custom event raised from C#.
+Filters:
+  name: string; Code trigger name
+  eventName: string
+Arguments (in addition to applicable run metadata):
+  name: Code trigger name
+  eventName: Event name
+
+[23001] SpeakerBotConnected — SpeakerBot.Connected — Connected
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  No additional variables documented.
+
+[23002] SpeakerBotDisconnected — SpeakerBot.Disconnected — Disconnected
+Filters:
+  Fields: none beyond the common record fields.
+Arguments (in addition to applicable run metadata):
+  No additional variables documented.
+
+SUPPORTED SUB-ACTIONS: IDS, FIELDS, OPTIONS AND OUTPUTS
+=======================================================
+
+
+[1] PlaySound — Play Sound (Core / Sounds)
+Plays a sound file on the engine machine.
+  device: Guid?
+  soundFile: string; Path on the engine machine
+  finishBeforeContinuing: bool
+  volume: float
+  soundName: string
+  useFileNameAsName: bool
+  Builder defaults: {"soundFile":"","finishBeforeContinuing":false,"volume":1,"soundName":"","useFileNameAsName":true}
+  Output arguments: soundFile
+
+[2] UdpBroadcast — UDP Broadcast (Core / Network)
+Sends a UDP packet to the local network.
+  port: int
+  payload: string
+  Builder defaults: {"port":4242,"payload":""}
+
+[3] WriteToFile — Write To File (Core / File IO)
+Writes text to a file (optionally appending).
+  file: string
+  text: string
+  append: bool
+  Builder defaults: {"file":"","text":"","append":true}
+
+[4] Action — Run Action (Core / Actions)
+Runs another action, either queued or immediately inside this run.
+  actionId: Guid; selects action
+  runImmedately: bool
+  Builder defaults: {"actionId":"","runImmedately":true}
+
+[5] ReadRandomLineFromFile — Read Random Line From File (Core / File IO)
+Reads random lines from a file into an argument.
+  file: string
+  parseVariables: bool
+  autoType: bool
+  overwrite: bool
+  count: string; How many lines
+  variableName: string
+  Builder defaults: {"file":"","parseVariables":false,"autoType":false,"overwrite":false,"count":"1","variableName":"randomLine"}
+  Output arguments: randomLine, randomLine0, lineCount, fileFound
+
+[6] RunExecutable — Run a Program (Core / System)
+Starts a program on the engine machine.
+  command: string; Program path
+  arguments: string
+  workingDir: string
+  envVars: Dictionary<string, string>
+  waitForExit: int; Milliseconds to wait (0 = don't wait)
+  Builder defaults: {"command":"","arguments":"","workingDir":"","envVars":{},"waitForExit":0}
+  Output arguments: exitCode
+
+[7] PlaySoundFromFolder — Play Sound From Folder (Core / Sounds)
+Plays a random sound from a folder.
+  device: Guid?
+  folder: string
+  finishBeforeContinuing: bool
+  volume: float
+  recursive: bool
+  soundName: string
+  useFileNameAsName: bool
+  Builder defaults: {"folder":"","finishBeforeContinuing":false,"volume":1,"recursive":false,"soundName":"","useFileNameAsName":true}
+  Output arguments: soundFile
+
+[8] SetTimerState — Set Timer State (Core / Timers)
+Enables, disables or toggles a timer.
+  timerId: Guid; selects timer
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  Builder defaults: {"timerId":"","state":0}
+
+[9] SetCommandState — Set Command State (Core / Commands)
+Enables, disables or toggles a command.
+  commandId: Guid; selects command
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  Builder defaults: {"commandId":"","state":0}
+
+[10] Message — Send Message to Channel (Twitch / Chat)
+Sends a chat message to your Twitch channel.
+  text: string
+  pin: bool; Twitch removed pinning; kept for import compatibility
+  pinToStreamEnd: bool; Kept for import compatibility
+  useBot: bool
+  fallback: bool
+  Builder defaults: {"text":"","pin":false,"pinToStreamEnd":false,"useBot":true,"fallback":true}
+  Output arguments: messageSent
+
+[11] RedemptionStatus — Update Redemption Status (Twitch / Rewards)
+Fulfils or cancels the reward redemption that triggered this action.
+  status: int; options [[0,"Fulfil"],[1,"Cancel (refund)"]]
+  Builder defaults: {"status":0}
+
+[12] SubscriberOnly — Subscriber Only (Twitch / Moderation / Chat Modes)
+Turns subscriber-only chat on or off.
+  status: int; options [[0,"On"],[1,"Off"]]
+  Builder defaults: {"status":0}
+
+[13] EmoteOnly — Emote Only (Twitch / Moderation / Chat Modes)
+Turns emote-only chat on or off.
+  status: int; options [[0,"On"],[1,"Off"]]
+  Builder defaults: {"status":0}
+
+[14] SlowMode — Slow Mode (Twitch / Moderation / Chat Modes)
+Turns slow mode on or off.
+  status: int; options [[0,"On"],[1,"Off"]]
+  duration: string; Seconds between messages (3–120)
+  Builder defaults: {"status":0,"duration":"30"}
+
+[15] SetChannelTitle — Set Channel Title (Twitch / Channel)
+Changes the stream title.
+  title: string
+  Builder defaults: {"title":""}
+
+[16] SetChannelGame — Set Channel Game (Twitch / Channel)
+Changes the stream category.
+  source: int; options [[0,"By name"],[1,"By id"]]
+  game: string; Category name
+  gameId: string; Twitch category id (optional)
+  Builder defaults: {"source":0,"game":"","gameId":""}
+
+[17] CreateStreamMarker — Create Stream Marker (Twitch / Channel)
+Adds a stream marker (needs to be live).
+  description: string
+  Builder defaults: {"description":""}
+  Output arguments: createMarkerPosition
+
+[18] CreateClip — Create Clip (Twitch / Channel)
+Creates a clip of the last seconds of the stream.
+  title: string
+  duration: string
+  Builder defaults: {"title":"","duration":""}
+  Output arguments: createClipSuccess, createClipId, createClipCreatedUrl, createClipEditUrl
+
+[19] RunCommercial — Run Commercial (Twitch / Ads)
+Runs an ad break.
+  duration: int; options [[30,"30 seconds"],[60,"60 seconds"],[90,"90 seconds"],[120,"2 minutes"],[180,"3 minutes"]]
+  Builder defaults: {"duration":30}
+
+[20] TwitchTimeoutUser — Timeout User (Twitch / Moderation)
+Times a user out.
+  userLogin: string; selects viewer
+  duration: string; Seconds; %args% allowed
+  reason: string
+  Builder defaults: {"userLogin":"%userName%","duration":"600","reason":""}
+
+[23] TwitchAnnounce — Send Announcement to Channel (Twitch / Chat)
+Sends a highlighted announcement to chat.
+  text: string
+  color: int; options [[0,"Primary"],[1,"Blue"],[2,"Green"],[3,"Orange"],[4,"Purple"]]
+  useBot: bool
+  fallback: bool
+  Builder defaults: {"text":"","color":0,"useBot":true,"fallback":true}
+
+[28] TwitchFollowMode — Follow Mode (Twitch / Moderation / Chat Modes)
+Turns follower-only mode on or off.
+  status: int; options [[0,"On"],[1,"Off"]]
+  duration: string; Minutes followed (0 = any follower)
+  Builder defaults: {"status":0,"duration":"0"}
+
+[29] TwitchSendShoutout — Send Shoutout (Twitch / Moderation)
+Sends a Twitch /shoutout.
+  userLogin: string; selects viewer
+  Builder defaults: {"userLogin":"%input0%"}
+
+[30] ObsSourceVisbility — Set Source Visibility State (OBS Studio / Sources)
+Shows, hides or toggles a source in a scene.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  state: int; options [[0,"Show"],[1,"Hide"],[2,"Toggle"]]
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","state":0,"connectionId":""}
+
+[31] ObsRandomGroupSourceVisible — Set Random Group Source Visible (OBS Studio / Groups)
+Shows one random source inside an OBS group.
+  sceneName: string; selects scene
+  groupName: string; selects obsGroup
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","groupName":"","connectionId":""}
+
+[32] ObsHideGroupSources — Hide Group's Sources (OBS Studio / Sources)
+Hides every source inside an OBS group.
+  sceneName: string; selects scene
+  groupName: string; selects obsGroup
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","groupName":"","connectionId":""}
+
+[33] ObsStreaming — Streaming (OBS Studio)
+Starts, stops or toggles streaming in OBS.
+  state: int; options [[0,"Start"],[1,"Stop"],[2,"Toggle"]]
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"state":0,"connectionId":""}
+
+[34] ObsSetActiveScene — Set Active Scene (OBS Studio)
+Switches OBS to a scene.
+  sceneName: string; selects scene
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","connectionId":""}
+
+[35] ObsSourceFilterState — Set Source Filter State (OBS Studio / Sources)
+Enables, disables or toggles a filter on a source.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  filterName: string; selects filter
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","filterName":"","state":0,"connectionId":""}
+
+[36] ObsFlipSource — Flip Source (OBS Studio / Sources)
+Flips a source horizontally or vertically.
+  flipMode: int; options [[0,"Horizontal"],[1,"Vertical"]]
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"flipMode":0,"sceneName":"","sourceName":"","connectionId":""}
+
+[37] ObsRotateSource — Rotate Source (OBS Studio / Sources)
+Rotates a source.
+  degrees: double
+  additive: bool
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"degrees":90,"additive":false,"sceneName":"","sourceName":"","connectionId":""}
+
+[38] ObsSetBrowserSourceUrl — Set Browser Source URL (OBS Studio / Sources)
+Changes a browser source URL.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  url: string
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","url":"","connectionId":""}
+
+[39] ObsSetGdiText — Set GDI Text (OBS Studio / Sources)
+Changes the text of a text source.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  text: string
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","text":"","connectionId":""}
+
+[40] ObsSetRandomFilterState — Set State of a Random Filter (OBS Studio / Filters)
+Turns one random filter on a source on or off.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","state":0,"connectionId":""}
+  Output arguments: filterName
+
+[41] ObsHideSourceFilters — Hide Source's Filters (OBS Studio / Sources)
+Turns off every filter on a source.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","connectionId":""}
+
+[42] ObsSourceMuteState — Set Source Mute State (OBS Studio / Sources)
+Mutes, unmutes or toggles an audio source.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  state: int; options [[0,"Mute"],[1,"Unmute"],[2,"Toggle"]]
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","state":0,"connectionId":""}
+
+[43] ObsGetCurrentScene — Get Current Scene (OBS Studio)
+Reads the current OBS scene into an argument.
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"connectionId":""}
+  Output arguments: currentScene, obs.sceneName
+
+[44] ObsSetAudioTrackState — Set Source Audio Track State (OBS Studio / Sources)
+Turns an audio track on a source on or off.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  track: int; options [[1,"Track 1"],[2,"Track 2"],[3,"Track 3"],[4,"Track 4"],[5,"Track 5"],[6,"Track 6"]]
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","track":1,"state":0,"connectionId":""}
+
+[45] ObsRecording — Recording (OBS Studio)
+Controls OBS recording.
+  state: int; options [[0,"Start"],[1,"Stop"],[2,"Toggle"],[3,"Pause"],[4,"Resume"]]
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"state":0,"connectionId":""}
+
+[46] ObsRaw — Raw (OBS Studio)
+Sends a raw obs-websocket request.
+  name: string
+  prefix: string
+  raw: string; JSON request data
+  resultsToArgs: bool
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"name":"GetVersion","prefix":"obs","raw":"{}","resultsToArgs":true,"connectionId":""}
+  Output arguments: obsRawResponse
+
+[47] ObsSceneFilterState — Set Scene Filter State (OBS Studio / Scenes)
+Enables, disables or toggles a filter on a scene.
+  sceneName: string; selects scene
+  filterName: string; selects filter
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","filterName":"","state":0,"connectionId":""}
+
+[48] ObsTakeScreenshot — Take Screenshot (OBS Studio)
+Saves a screenshot of a scene or source.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  path: string
+  quality: int
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","path":"","quality":-1,"connectionId":""}
+  Output arguments: screenshotPath
+
+[49] ObsSetMediaState — Set Media State (OBS Studio / Sources)
+Plays, pauses, stops or skips a media source.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  state: int; options [[0,"Play"],[1,"Pause"],[2,"Stop"],[3,"Restart"],[4,"Next"],[5,"Previous"]]
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","state":0,"connectionId":""}
+
+[50] AddTargetInfo — Get User Info for Target (Twitch / User)
+Looks up a Twitch user and adds their details as target* arguments.
+  userLogin: string; selects viewer
+  Builder defaults: {"userLogin":"%input0%"}
+  Output arguments: targetUser, targetUserName, targetUserId, targetDescription, targetUserProfileImageUrl, targetUserType, targetIsAffiliate, targetIsPartner, game, gameId, targetChannelTitle, tags, tagsDelimited, createdAt, accountAge
+
+[51] AddFollowAgeInfo — Get Follow Age Info for Target (Twitch / Followers)
+Checks whether a user follows and since when.
+  userLogin: string; selects viewer
+  Builder defaults: {"userLogin":"%userName%"}
+  Output arguments: isFollowing, followDate, followAgeDays, followAgeLong
+
+[52] AddTeamInfo — Get Team Info for Target (Twitch / User)
+Reads the teams a user belongs to.
+  userLogin: string; selects viewer
+  Builder defaults: {"userLogin":""}
+  Output arguments: teamCount
+
+[120] LogicIf — If/Else (Core / Logic)
+Runs the Then branch when the condition is true, otherwise the Else branch.
+  Container: if
+  input: string; Usually an %argument%
+  operation: int; options [[0,"Equals"],[1,"Does not equal"],[2,"Contains"],[3,"Regex match"],[4,"Less than"],[5,"Greater than"],[6,"Does not exist"],[7,"Equals (ignore case)"],[8,"Does not equal (ignore case)"],[9,"Is null or empty"]]
+  value: string
+  autoType: bool
+  subActions: List<_zKUoC4es1iOK9RftlTlQVoKyawi>
+  Builder defaults: {"input":"%rawInput%","operation":0,"value":"","autoType":true}
+  Output arguments: match.count, match[0]
+
+[121] GlobalGet — Global (Get) (Core / Globals)
+Reads a global (or a user's global) into an argument.
+  source: int; options [[0,"Global"],[1,"The user who triggered it"],[2,"The target user (targetUserId)"]]
+  variableName: string; selects global
+  persisted: bool
+  destinationVariable: string; Argument name (defaults to the variable name)
+  defaultValue: object; Used when the global doesn't exist
+  Builder defaults: {"source":0,"variableName":"","persisted":true,"destinationVariable":"","defaultValue":""}
+
+[122] GlobalSet — Global (Set) (Core / Globals)
+Sets, increments or decrements a global (or a user's global).
+  destination: int; options [[0,"Global"],[1,"The user who triggered it"],[2,"The target user (targetUserId)"]]
+  variableName: string; selects global
+  persisted: bool
+  source: int; options [[0,"Set to value"],[1,"Increment by value"],[2,"Decrement by value"]]
+  value: object
+  autoType: bool
+  Builder defaults: {"destination":0,"variableName":"","persisted":true,"source":0,"value":"","autoType":true}
+
+[123] SetArgument — Set Argument (Core / Arguments)
+Sets an argument for the rest of this run.
+  variableName: string
+  value: object
+  autoType: bool
+  Builder defaults: {"variableName":"","value":"","autoType":true}
+
+[124] Break — Break (Core / Logic)
+Stops this action.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+
+[125] ClearNonPersistedGlobals — Clear Non-Persisted Globals (Core / Globals)
+Clears every temporary (non-persisted) global.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+
+[126] ClearNonPersistedUserGlobals — Clear Non-Persisted User Globals (Core / Globals)
+Clears every temporary user global.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+
+[127] LogicSwitch — Switch (Core / Logic)
+Runs the first case whose value matches the input, or the default.
+  Container: switch
+  input: string
+  autoType: bool
+  subActions: List<_zKUoC4es1iOK9RftlTlQVoKyawi>
+  Builder defaults: {"input":"%input0%","autoType":false}
+
+[128] LogicWhile — While (Core / Logic)
+Repeats its steps while the condition is true (up to a safety limit).
+  Container: list
+  input: string
+  operation: int; options [[0,"Equals"],[1,"Does not equal"],[2,"Contains"],[3,"Regex match"],[4,"Less than"],[5,"Greater than"],[6,"Does not exist"],[7,"Equals (ignore case)"],[8,"Does not equal (ignore case)"],[9,"Is null or empty"]]
+  value: string
+  autoType: bool
+  ignoreCase: bool
+  subActions: List<_zKUoC4es1iOK9RftlTlQVoKyawi>
+  Builder defaults: {"input":"","operation":4,"value":"","autoType":true,"ignoreCase":false}
+
+[129] LogicLoopBreak — Loop Break (Core / Logic)
+Leaves the enclosing While loop.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+
+[130] LogicLoopContinue — Loop Continue (Core / Logic)
+Skips to the next While iteration.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+
+[200] RewardSetEnabledState — Set Enabled State (Twitch / Rewards)
+Enables, disables or toggles a channel point reward.
+  rewardId: string; selects reward
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  Builder defaults: {"rewardId":"","state":0}
+
+[201] RewardSetPausedState — Set Paused State (Twitch / Rewards)
+Pauses, unpauses or toggles a reward.
+  rewardId: string; selects reward
+  state: int; options [[0,"Pause"],[1,"Unpause"],[2,"Toggle"]]
+  Builder defaults: {"rewardId":"","state":0}
+
+[202] RewardSetCost — Set Cost (Twitch / Rewards)
+Changes a reward's cost.
+  rewardId: string; selects reward
+  cost: string
+  operator: int; options [[0,"Set to"],[1,"Add"],[2,"Subtract"]]
+  Builder defaults: {"rewardId":"","cost":"","operator":0}
+
+[204] RewardSetCooldown — Set Global Cooldown (Twitch / Rewards)
+Changes a reward's global cooldown (seconds).
+  rewardId: string; selects reward
+  cooldown: string
+  additive: bool
+  Builder defaults: {"rewardId":"","cooldown":"","additive":false}
+
+[205] RewardSetTitle — Set Title (Twitch / Rewards)
+Renames a reward.
+  rewardId: string; selects reward
+  title: string
+  Builder defaults: {"rewardId":"","title":""}
+
+[206] RewardSetPrompt — Set Prompt (Twitch / Rewards)
+Changes a reward's prompt.
+  rewardId: string; selects reward
+  prompt: string
+  Builder defaults: {"rewardId":"","prompt":""}
+
+[207] RewardUpdate — Update (Twitch / Rewards)
+Updates a reward's title, prompt and cost.
+  rewardId: string; selects reward
+  title: string
+  prompt: string
+  cost: string
+  operator: int; options [[0,"Set to"],[1,"Add"],[2,"Subtract"]]
+  Builder defaults: {"rewardId":"","title":"","prompt":"","cost":"","operator":0}
+
+[208] RewardGetInfo — Get Reward Info (Twitch / Rewards)
+Reads a reward's details into arguments.
+  rewardId: string; selects reward
+  Builder defaults: {"rewardId":""}
+  Output arguments: rewardId, rewardName, rewardPrompt, rewardCost, rewardEnabled, rewardPaused, rewardBackgroundColor
+
+[209] RewardResetCounter — Reset Reward Counter (Twitch / Rewards)
+Resets a reward's redemption counter.
+  rewardId: string; selects reward
+  Builder defaults: {"rewardId":""}
+
+[210] RewardResetUserCounters — Reset Reward User Counters (Twitch / Rewards)
+Resets every user's counter for a reward.
+  rewardId: string; selects reward
+  Builder defaults: {"rewardId":""}
+
+[211] RewardSetGroupEnabledState — Set Group Enabled State (Twitch / Rewards)
+Enables, disables or toggles every reward in a reward group.
+  groupName: string; selects rewardGroup
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  Builder defaults: {"groupName":"","state":0}
+
+[212] RewardSetGroupPausedState — Set Group Paused State (Twitch / Rewards)
+Pauses, unpauses or toggles every reward in a reward group.
+  groupName: string; selects rewardGroup
+  state: int; options [[0,"Pause"],[1,"Unpause"],[2,"Toggle"]]
+  Builder defaults: {"groupName":"","state":0}
+
+[213] RewardSetBackgroundColor — Set Background Color (Twitch / Rewards)
+Changes a reward's background colour.
+  rewardId: string; selects reward
+  backgroundColor: string
+  random: bool
+  Builder defaults: {"rewardId":"","backgroundColor":"","random":false}
+
+[214] RewardSetMaxPerUserPerStream — Set Max per User per Stream (Twitch / Rewards)
+Sets how often one viewer can redeem per stream.
+  rewardId: string; selects reward
+  redeems: string
+  additive: bool
+  Builder defaults: {"rewardId":"","redeems":"","additive":false}
+
+[215] RewardSetMaxPerStream — Set Max Per Stream (Twitch / Rewards)
+Sets how often a reward can be redeemed per stream.
+  rewardId: string; selects reward
+  redeems: string
+  additive: bool
+  Builder defaults: {"rewardId":"","redeems":"","additive":false}
+
+[251] ClearChannelTags — Clear Channel Tags (Twitch / Tags)
+Removes every stream tag.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+
+[252] SetChannelTags — Set Channel Tags (Twitch / Tags)
+Replaces the stream tags (up to 10).
+  tags: List<string>
+  Builder defaults: {"tags":[]}
+
+[253] AddChannelTag — Add Channel Tag (Twitch / Tags)
+Adds a stream tag.
+  tag: string
+  Builder defaults: {"tag":""}
+
+[254] RemoveChannelTag — Remove Channel Tag (Twitch / Tags)
+Removes a stream tag.
+  tag: string
+  Builder defaults: {"tag":""}
+
+[321] ObsSetReplayBufferState — Set Replay Buffer State (OBS Studio / Replay)
+Controls the OBS replay buffer.
+  state: int; options [[0,"Start"],[1,"Stop"],[2,"Toggle"],[3,"Save"]]
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"state":0,"connectionId":""}
+
+[322] ObsSetMediaSourceFile — Set Media Source File (OBS Studio / Sources)
+Changes a media source's file.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  fileName: string
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","fileName":"","connectionId":""}
+
+[323] ObsSetImageSourceFile — Set Image Source File (OBS Studio / Sources)
+Changes an image source's file.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  fileName: string
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","fileName":"","connectionId":""}
+
+[324] ObsGetSceneItemProperties — Get Scene Item Properties (OBS Studio / Scenes)
+Reads a scene item's properties.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","connectionId":""}
+  Output arguments: obs.sceneItemId
+
+[325] ObsHideSceneSources — Hide Scene's Sources (OBS Studio / Scenes)
+Hides every source in a scene.
+  sceneName: string; selects scene
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","connectionId":""}
+
+[326] ObsSetRandomSceneSourceVisible — Set Random Scene Source Visible (OBS Studio / Scenes)
+Shows one random source in a scene.
+  sceneName: string; selects scene
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","connectionId":""}
+
+[327] ObsSetColorSourceColor — Set Color Source Color (OBS Studio / Sources)
+Changes a colour source's colour.
+  sceneName: string; selects scene
+  sourceName: string; selects source
+  color: string
+  random: bool
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"sceneName":"","sourceName":"","color":"","random":false,"connectionId":""}
+
+[328] ObsGetStatus — Get Status (OBS Studio)
+Reads OBS connection, streaming and recording status.
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"connectionId":""}
+  Output arguments: obsConnected, obsStreaming, obsRecording
+
+[329] ObsCreateRecordChapter — Create Record Chapter (OBS Studio)
+Adds a chapter marker to the recording.
+  chapterName: string
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"chapterName":"","connectionId":""}
+
+[500] TwitchStartRaid — Start Raid (Twitch / Raid)
+Starts a raid to another channel.
+  userLogin: string; selects viewer
+  Builder defaults: {"userLogin":"%input0%"}
+
+[501] TwitchCancelRaid — Cancel Raid (Twitch / Raid)
+Cancels a pending raid.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+
+[502] TwitchAddVip — Add VIP (Twitch / Moderation)
+Gives a user VIP.
+  userLogin: string; selects viewer
+  Builder defaults: {"userLogin":""}
+
+[503] TwitchRemoveVip — Remove VIP (Twitch / Moderation)
+Removes a user's VIP.
+  userLogin: string; selects viewer
+  Builder defaults: {"userLogin":""}
+
+[504] TwitchAddModerator — Add Moderator (Twitch / Moderation)
+Makes a user a moderator.
+  userLogin: string; selects viewer
+  Builder defaults: {"userLogin":""}
+
+[505] TwitchRemoveModerator — Remove Moderator (Twitch / Moderation)
+Removes a user's moderator role.
+  userLogin: string; selects viewer
+  Builder defaults: {"userLogin":""}
+
+[506] TwitchGetFollowerCount — Get Follower Count (Twitch / Followers)
+Reads the follower count.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: followerCount
+
+[507] TwitchGetLatestFollower — Get Latest Follower (Twitch / Followers)
+Reads the latest follower.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: latestFollower, latestFollowerUserName, latestFollowerId, latestFollowerDate
+
+[508] TwitchGetSubscriberCount — Get Subscriber Count (Twitch / Subscribers)
+Reads the subscriber count and points.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: subscriberCount, subscriberPoints
+
+[601] SpeakerBotSpeakUdp — Speak (UDP) (Speaker.bot)
+Speaks text with Speaker.bot over UDP.
+  alias: string
+  message: string
+  badWordFilter: bool
+  Builder defaults: {"alias":"","message":"","badWordFilter":false}
+
+[602] SpeakerBotSpeak — Speak (Speaker.bot)
+Speaks text with Speaker.bot over WebSocket.
+  alias: string
+  message: string
+  badWordFilter: bool
+  delay: bool
+  silent: bool
+  Builder defaults: {"alias":"","message":"","badWordFilter":false,"delay":false,"silent":false}
+
+[603] SpeakerBotSetEnabledState — Set Enabled State (Speaker.bot)
+Enables or disables Speaker.bot.
+  state: int; options [[0,"Enable"],[1,"Disable"]]
+  Builder defaults: {"state":0}
+
+[604] SpeakerBotSetPausedState — Set Paused State (Speaker.bot)
+Pauses or resumes Speaker.bot.
+  state: int; options [[0,"Pause"],[1,"Resume"]]
+  Builder defaults: {"state":0}
+
+[605] SpeakerBotStopSpeaking — Stop Speaking (Speaker.bot)
+Stops Speaker.bot speaking.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+
+[606] SpeakerBotClearPending — Clear Pending (Speaker.bot)
+Clears Speaker.bot's queue.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+
+[607] SpeakerBotActivateVoiceGateProfile — Activate VoiceGate Profile (Speaker.bot)
+Switches the Speaker.bot VoiceGate profile.
+  profileId: Guid; Optional
+  profileName: string
+  Builder defaults: {"profileId":"","profileName":""}
+
+[1000] GetQuote — Get Quote (Core / Quotes)
+Reads a random or specific quote.
+  quoteType: _g2Tf2bH3NnMGK3aholRugJ4bX9B; options [[0,"Random"],[1,"Specific id"]]
+  quoteId: string
+  Builder defaults: {"quoteId":"","quoteType":0}
+  Output arguments: quote, quoteId, quoteUser, quoteUserId, quoteGame, quotePlatform, quoteTime, quoteTimestamp, success
+
+[1001] SetActionQueuePauseState — Set Action Queue Pause State (Core / Action Queues)
+Pauses or resumes an action queue.
+  actionQueueId: Guid?; selects queue
+  state: int; options [[0,"Pause"],[1,"Resume"]]
+  clear: bool
+  Builder defaults: {"actionQueueId":"","state":0,"clear":false}
+
+[1002] DelayAction — Delay (Core)
+Waits before the next step.
+  value: string
+  maxValue: string
+  random: bool
+  Builder defaults: {"value":"1000","maxValue":"","random":false}
+
+[1003] GetRandomNumber — Get Random Number (Core / Logic)
+Generates a random number.
+  randomType: int; options [[0,"Whole number"],[1,"Decimal 0–1"]]
+  min: int
+  max: int
+  Builder defaults: {"randomType":0,"min":1,"max":100}
+  Output arguments: randomNumber, randomFloat, randomPercent
+
+[1004] SetActionState — Set Action State (Core / Actions)
+Enables, disables or toggles an action.
+  actionId: Guid; selects action
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  Builder defaults: {"actionId":"","state":0}
+
+[1005] ClearActionQueue — Clear Action Queue (Core / Action Queues)
+Clears pending runs from a queue.
+  actionQueueId: Guid?; selects queue
+  Builder defaults: {"actionQueueId":""}
+
+[1006] ReadLinesFromFile — Read Lines From File (Core / File IO)
+Reads every line of a file.
+  file: string
+  parseVariables: bool
+  autoType: bool
+  variableName: string
+  Builder defaults: {"file":"","parseVariables":false,"autoType":false,"variableName":"lines"}
+  Output arguments: lineCount, fileFound
+
+[1007] FetchUrl — Fetch URL (Core / Network)
+Requests a URL and stores the response.
+  url: string
+  variableName: string
+  headers: Dictionary<string, string>
+  parseAsJson: bool
+  autoType: bool
+  Builder defaults: {"url":"","variableName":"response","headers":{},"parseAsJson":false,"autoType":false}
+  Output arguments: response
+
+[1009] Comment — Comment (Core / Misc)
+A note for yourself; does nothing.
+  value: string
+  color: string
+  Builder defaults: {"value":"","color":""}
+
+[1010] SetCommandGroupState — Set Command Group State (Core / Commands)
+Enables, disables or toggles every command in a group.
+  groupName: string; selects commandGroup
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  Builder defaults: {"groupName":"","state":0}
+
+[1011] SetActionGroupState — Set Action Group State (Core / Actions)
+Enables, disables or toggles every action in a group.
+  groupName: string; selects actionGroup
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  Builder defaults: {"groupName":"","state":0}
+  Output arguments: actionsEnabled, actionsDisabled
+
+[1012] KeyboardPress — Keyboard Press (Core / System)
+Presses a key (Windows app in Local mode only).
+  key: _84Z7gncectaTcBDjtCBlJ1WxVdt._0RLD4J6cM6rICM4mfLE6vfypx5x
+  modifiers: _84Z7gncectaTcBDjtCBlJ1WxVdt._cEZ3q10S5xxacP9xx54D7XVUn8S
+  Builder defaults: {}
+
+[1013] GetCommands — Get Commands (Core / Commands)
+Lists commands into an argument.
+  groupName: string; selects commandGroup
+  variableName: string
+  includeAll: bool
+  ignoreAliases: bool
+  hasPermission: bool
+  Builder defaults: {"groupName":"","variableName":"commands","includeAll":false,"ignoreAliases":false,"hasPermission":false}
+  Output arguments: commands, commandsList
+
+[1014] GetCommandState — Get Command State (Core / Commands)
+Reads whether a command is enabled.
+  commandId: Guid; selects command
+  Builder defaults: {"commandId":""}
+  Output arguments: commandState
+
+[1015] GetCommandGroupState — Get Command Group State (Core / Commands)
+Reads whether a command group is enabled.
+  groupName: string; selects commandGroup
+  Builder defaults: {"groupName":""}
+  Output arguments: commandGroupState
+
+[1016] GetActionState — Get Action State (Core / Actions)
+Reads whether an action is enabled.
+  actionId: Guid; selects action
+  Builder defaults: {"actionId":""}
+  Output arguments: actionState
+
+[1017] GetActionGroupState — Get Action Group State (Core / Actions)
+Reads whether an action group is enabled.
+  groupName: string; selects actionGroup
+  Builder defaults: {"groupName":""}
+  Output arguments: actionGroupState
+
+[1020] LogEntry — Log (Core / Misc)
+Writes a line to the engine log.
+  logLevel: LogEventLevel; options [[0,"Verbose"],[1,"Debug"],[2,"Information"],[3,"Warning"],[4,"Error"],[5,"Fatal"]]
+  message: string
+  Builder defaults: {"message":"","logLevel":2}
+
+[1021] ReadSpecificLineFromFile — Read Specific Line From File (Core / File IO)
+Reads one line of a file.
+  file: string
+  parseVariables: bool
+  autoType: bool
+  count: string
+  variableName: string
+  Builder defaults: {"file":"","parseVariables":false,"autoType":false,"count":"1","variableName":"line"}
+
+[1022] SetActionQueueBlockingState — Set Action Queue Blocking State (Core / Action Queues)
+Makes a queue blocking or concurrent.
+  actionQueueId: Guid; selects queue
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  Builder defaults: {"actionQueueId":"","state":0}
+
+[1023] GetInput — Get Input (Core / Logic)
+Asks for text input (Windows app only).
+  title: string
+  prompt: string
+  originalText: string
+  outputVariable: string
+  autoTypeOutput: bool
+  Builder defaults: {"title":"","prompt":"","originalText":"","outputVariable":"input","autoTypeOutput":false}
+
+[1024] ToastNotification — Toast Notification (Core / System)
+Shows a Windows toast notification.
+  toastId: string
+  title: string
+  text: string
+  attribution: string
+  iconPath: string
+  Builder defaults: {"toastId":"","title":"","text":"","attribution":"","iconPath":""}
+
+[1026] ResetFirstWords — Reset First Words (Settings)
+Clears the first-words list.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+
+[1027] ResetCredits — Reset Credits (Settings)
+Credits are not tracked by CherBot; does nothing.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+
+[1028] SetSubActionState — Set Sub-Action State (Core / Actions)
+Enables, disables or toggles a step inside an action.
+  actionId: Guid; selects action
+  subActionId: Guid; selects subAction
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  Builder defaults: {"actionId":"","subActionId":"","state":0}
+
+[1031] SendLocalSignal — Send Local Signal (Core / Signals)
+Sends a local signal that Wait For Local Signal steps receive.
+  signalName: string
+  useArge: bool
+  customArgs: Dictionary<string, string>
+  queueSignal: bool
+  Builder defaults: {"signalName":"","useArge":false,"customArgs":{},"queueSignal":false}
+
+[1032] WaitForLocalSignal — Wait For Local Signal (Core / Signals)
+Waits until a local signal arrives (or times out).
+  signalName: string
+  overwrite: bool
+  timeout: string
+  Builder defaults: {"signalName":"","overwrite":false,"timeout":"30000"}
+  Output arguments: signalName, signalTimeout, hasResult
+
+[1033] SetTriggerState — Set Trigger State (Core / Triggers)
+Enables, disables or toggles one trigger of an action.
+  actionId: Guid; selects action
+  triggerId: Guid; selects trigger
+  state: int; options [[0,"Enable"],[1,"Disable"],[2,"Toggle"]]
+  Builder defaults: {"actionId":"","triggerId":"","state":0}
+
+[1034] CustomEventTrigger — Custom Event Trigger (Core / Triggers)
+Raises a Custom Event that other actions (and overlays) can trigger on.
+  eventName: string
+  useArgs: bool
+  Builder defaults: {"eventName":"","useArgs":true}
+
+[1035] GetQuoteCount — Get Quote Count (Core / Quotes)
+Counts the stored quotes.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: quoteCount
+
+[1036] DeleteQuote — Delete Quote (Core / Quotes)
+Deletes a quote by id.
+  quoteId: string
+  Builder defaults: {"quoteId":""}
+  Output arguments: success
+
+[1037] AddQuote — Add Quote (Core / Quotes)
+Adds a quote from an argument.
+  quoteVariable: string
+  Builder defaults: {"quoteVariable":"rawInput"}
+  Output arguments: quoteId, quote
+
+[1038] SetSubActionWeight — Set Sub-Action Weight (Core / Actions)
+Changes a step's weight inside a random group.
+  actionId: Guid; selects action
+  subActionId: Guid; selects subAction
+  weight: string
+  Builder defaults: {"actionId":"","subActionId":""}
+
+[1039] FileExists — File Exists (Core / File IO)
+Checks whether a file exists.
+  file: string
+  variableName: string
+  Builder defaults: {"file":"","variableName":"fileExists"}
+
+[1040] FolderExists — Folder Exists (Core / File IO)
+Checks whether a folder exists.
+  folder: string
+  variableName: string
+  Builder defaults: {"folder":"","variableName":"folderExists"}
+
+[50001] CherBotPoints — Points Command (CherBot / Community)
+Replies with the user's points and rank (sets %reply%).
+  platform: string
+  Builder defaults: {"platform":"twitch"}
+  Output arguments: points, rank, reply
+
+[50002] CherBotLeaderboard — Points Leaderboard (CherBot / Community)
+Replies with the top of the leaderboard (sets %reply%).
+  count: int
+  platform: string
+  Builder defaults: {"count":5,"platform":"twitch"}
+  Output arguments: leaderboard, leaderboardText, reply
+
+[50003] CherBotFirstWords — First Words Command (CherBot / Community)
+Replies with today's first chatter (sets %reply%).
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: firstWord, reply
+
+[50004] CherBotDiscordHub — Discord Hub Command (CherBot / Community)
+Handles the !disc command (sets %reply%).
+  defaultUrl: string
+  Builder defaults: {"defaultUrl":""}
+  Output arguments: discordUrl, reply
+
+[50005] CherBotAwardPoints — Award Points (CherBot / Community)
+Gives (or takes) loyalty points.
+  amount: string
+  target: int; options [[0,"The user who triggered it"],[1,"The target user"]]
+  platform: string
+  Builder defaults: {"amount":"10","target":0,"platform":"twitch"}
+  Output arguments: amount, points
+
+[50010] CherBotGamble — Game: Gamble (CherBot / Games)
+Gamble game: reads the bet from input0, sets %reply%.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: reply
+
+[50011] CherBotSlots — Game: Slots (CherBot / Games)
+Slots game: reads the bet from input0, sets %reply%.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: reply
+
+[50012] CherBotCoinflip — Game: Coinflip (CherBot / Games)
+Coinflip game: heads/tails and a bet, sets %reply%.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: reply
+
+[50013] CherBotDuel — Game: Duel (CherBot / Games)
+Duel game: challenge, accept or decline.
+  mode: string; options [["challenge","Challenge"],["accept","Accept"],["decline","Decline"]]
+  Builder defaults: {"mode":"challenge"}
+  Output arguments: reply
+
+[50014] CherBotHeist — Game: Heist (CherBot / Games)
+Heist game: joins (or starts) the heist, sets %reply%.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: reply
+
+[50015] CherBotRoulette — Game: Roulette (CherBot / Games)
+Roulette game: a bet and red/black/green/number, sets %reply%.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: reply
+
+[50020] CherBotSceneFromChat — OBS: Scene From Chat (CherBot / OBS)
+Switches OBS to the scene named in the chat message (exact, then prefix, then contains).
+  allowedScenes: List<string>; selects scene; Empty = every scene
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"allowedScenes":[],"connectionId":""}
+  Output arguments: sceneName, reply
+
+[50021] CherBotListScenes — OBS: List Scenes (CherBot / OBS)
+Lists the OBS scenes (sets %reply%).
+  allowedScenes: List<string>; selects scene; Empty = every scene
+  connectionId: Guid; selects obsConnection; Leave on "first connected" unless you run several OBS instances
+  Builder defaults: {"allowedScenes":[],"connectionId":""}
+  Output arguments: reply
+
+[50030] CherBotGiveawayEnter — Giveaway: Enter (CherBot / Giveaways)
+Enters the chatter into a giveaway (input0 = tickets).
+  giveawayId: Guid; selects giveaway
+  Builder defaults: {"giveawayId":""}
+  Output arguments: giveawayEntered, giveawayResult
+
+[50031] CherBotGiveawayControl — Giveaway: Control (CherBot / Giveaways)
+Starts, stops, draws, rerolls or cancels a giveaway.
+  operation: string; options [["","From chat (first word)"],["start","Start"],["stop","Stop"],["draw","Draw"],["reroll","Reroll"],["cancel","Cancel"]]
+  giveawayId: Guid; selects giveaway; Empty = the open one (or the name typed in chat)
+  durationSeconds: int; Start only; 0 = the giveaway's own duration
+  Builder defaults: {"operation":"start","giveawayId":"","durationSeconds":0}
+  Output arguments: giveawayResult, reply
+
+[50040] CherBotCustomCommandResponse — Custom Command Response (CherBot / Commands)
+Sends a custom command's response.
+  customCommandId: Guid; selects customCommand
+  Builder defaults: {"customCommandId":""}
+  Output arguments: customCommandResponse
+
+[50041] CherBotSpamFilterPermit — Spam Filter: Permit Links (CherBot / Moderation)
+Lets a user post links for the spam filter's permit window.
+  userLogin: string; selects viewer
+  Builder defaults: {"userLogin":"%input0%"}
+  Output arguments: permitSeconds, reply
+
+[99900] Group — Group ()
+Groups steps; with Random on, runs one of them by weight.
+  Container: list
+  name: string
+  color: string
+  random: bool
+  subActions: List<_zKUoC4es1iOK9RftlTlQVoKyawi>
+  Builder defaults: {"name":"Group","color":"","random":false}
+
+[99901] IfTrueGroup —  ()
+Then branch of an If.
+  Container: list
+  random: bool
+  subActions: List<_zKUoC4es1iOK9RftlTlQVoKyawi>
+  Builder defaults: {"random":false}
+
+[99902] IfFalseGroup —  ()
+Else branch of an If.
+  Container: list
+  random: bool
+  subActions: List<_zKUoC4es1iOK9RftlTlQVoKyawi>
+  Builder defaults: {"random":false}
+
+[99903] SwitchCaseGroup — Switch Case ()
+A Switch case: runs when the input equals one of its values.
+  Container: list
+  caseSensitive: bool
+  values: List<string>
+  random: bool
+  subActions: List<_zKUoC4es1iOK9RftlTlQVoKyawi>
+  Builder defaults: {"caseSensitive":false,"values":[],"random":false}
+
+[99904] SwitchDefaultGroup —  ()
+The Switch default: runs when no case matched.
+  Container: list
+  random: bool
+  subActions: List<_zKUoC4es1iOK9RftlTlQVoKyawi>
+  Builder defaults: {"random":false}
+
+[99998] ExecuteMethod — Execute C# Method (Core / C#)
+Calls a method of another Execute C# Code step.
+  executeCodeId: Guid; selects csharp
+  method: string
+  runOnUiThread: bool
+  saveResultToVariable: bool
+  saveToVariable: string
+  Builder defaults: {"executeCodeId":"","method":"Execute","runOnUiThread":false,"saveResultToVariable":false,"saveToVariable":""}
+
+[99999] ExecuteCode — Execute C# Code (Core / C#)
+Runs C# code (CPH API).
+  name: string
+  description: string
+  references: List<string>; Extra assembly references
+  byteCode: byte[]
+  precompile: bool
+  delayStart: bool
+  saveResultToVariable: bool
+  saveToVariable: string
+  Builder defaults: {"name":"Code","description":"","references":[],"precompile":true,"delayStart":false,"saveResultToVariable":false,"saveToVariable":"","byteCode":""}
+
+COMPLETE SUPPORTED CPH INTERFACE (EXACT C# SIGNATURES)
+======================================================
+
+using System.Collections.Generic;
+using Streamer.bot.Common.Events;
+using Streamer.bot.Plugin.Interface.Enums;
+using Streamer.bot.Plugin.Interface.Model;
+
+namespace Streamer.bot.Plugin.Interface;
+
+/// <summary>
+/// The <c>CPH</c> object available to C# scripts. This is CherBot's subset of Streamer.bot's script API, using the same
+/// names and signatures so existing scripts compile. Methods outside the subset are not declared, so scripts that use them
+/// fail at compile time with a clear error instead of misbehaving at run time.
+/// </summary>
+public interface IInlineInvokeProxy
+{
+    // ── arguments ────────────────────────────────────────────────────────────
+    bool TryGetArg(string argName, out object value);
+    bool TryGetArg<T>(string argName, out T value);
+    void SetArgument(string variableName, object value);
+    EventType GetEventType();
+
+    // ── globals ──────────────────────────────────────────────────────────────
+    T GetGlobalVar<T>(string varName, bool persisted = true);
+    void SetGlobalVar(string varName, object value, bool persisted = true);
+    void UnsetGlobalVar(string varName, bool persisted = true);
+    List<GlobalVariableValue> GetGlobalVarValues(bool persisted = true);
+    T GetTwitchUserVar<T>(string userLogin, string varName, bool persisted = true);
+    void SetTwitchUserVar(string userLogin, string varName, object value, bool persisted = true);
+    T GetTwitchUserVarById<T>(string userId, string varName, bool persisted = true);
+    void SetTwitchUserVarById(string userId, string varName, object value, bool persisted = true);
+    void UnsetTwitchUserVar(string userLogin, string varName, bool persisted = true);
+
+    // ── actions, queues, commands, timers ───────────────────────────────────
+    bool ActionExists(string actionName);
+    List<ActionData> GetActions();
+    bool RunAction(string actionName, bool runImmediately = true);
+    bool RunActionById(string actionId, bool runImmediately = true);
+    void EnableAction(string actionName);
+    void DisableAction(string actionName);
+    void EnableActionById(string actionId);
+    void DisableActionById(string actionId);
+    void PauseActionQueue(string queueName);
+    void ResumeActionQueue(string queueName, bool clear = false);
+    void PauseAllActionQueues();
+    void ResumeAllActionQueues(bool clear = false);
+    void EnableCommand(string commandId);
+    void DisableCommand(string commandId);
+    void EnableTimer(string timerName);
+    void DisableTimer(string timerName);
+    void EnableTimerById(string timerId);
+    void DisableTimerById(string timerId);
+    void SetTimerInterval(string timerName, int interval);
+    bool ExecuteMethod(string executeCode, string methodName);
+
+    // ── triggers and events ──────────────────────────────────────────────────
+    bool RegisterCustomTrigger(string triggerName, string eventName, string[] categories);
+    void TriggerCodeEvent(string eventName, bool useArgs = true);
+    void TriggerCodeEvent(string eventName, Dictionary<string, object> args);
+    void TriggerCodeEvent(string eventName, string json);
+    void WebsocketBroadcastJson(string data);
+    void WebsocketBroadcastString(string data);
+
+    // ── logging and utilities ────────────────────────────────────────────────
+    void LogInfo(string logLine);
+    void LogWarn(string logLine);
+    void LogDebug(string logLine);
+    void LogError(string logLine);
+    void LogVerbose(string logLine);
+    void Wait(int milliseconds);
+    int Between(int min, int max);
+    double NextDouble();
+    double PlaySound(string fileName, float volume = 1f, bool finishBeforeContinuing = false, string? name = null, bool useFileName = true);
+    double PlaySoundFromFolder(string path, float volume = 1f, bool recursive = false, bool finishBeforeContinuing = false, string? name = null, bool useFileName = true);
+
+    // ── users, groups, quotes ────────────────────────────────────────────────
+    bool AddUserToGroup(string userName, Platform platform, string groupName);
+    bool RemoveUserFromGroup(string userName, Platform platform, string groupName);
+    bool UserInGroup(string userName, Platform platform, string groupName);
+    QuoteData? GetQuote(int quoteId);
+    int AddQuoteForTwitch(string userId, string quote, bool captureGame = false);
+
+    // ── Twitch ───────────────────────────────────────────────────────────────
+    void SendMessage(string message, bool bot = true, bool fallback = true);
+    /// <summary>Streamer.bot's "/me" message. Twitch's Helix chat API has no /me, so this sends the text as a normal message.</summary>
+    void SendAction(string action, bool bot = true, bool fallback = true);
+    void TwitchReplyToMessage(string message, string replyId, bool useBot = true, bool fallback = true);
+    void TwitchAnnounce(string message, bool bot = false, string? color = null, bool fallback = false);
+    bool TwitchTimeoutUser(string username, int duration, string? reason = null, bool bot = false);
+    TwitchUserInfoEx? TwitchGetUserInfoByLogin(string userLogin);
+    bool TwitchIsUserSubscribed(string userId, out string tier);
+    bool TwitchRedemptionFulfill(string rewardId, string redemptionId);
+    bool TwitchRedemptionCancel(string rewardId, string redemptionId);
+    bool SetChannelTitle(string title);
+    GameInfo? SetChannelGame(string game);
+    StreamMarker? CreateStreamMarker(string description);
+
+    // ── OBS ──────────────────────────────────────────────────────────────────
+    bool ObsIsConnected(int connection = 0);
+    string ObsGetCurrentScene(int connection = 0);
+    void ObsSetScene(string sceneName, int connection = 0);
+    void ObsSetSourceVisibility(string scene, string source, bool visible, int connection = 0);
+    void ObsShowSource(string scene, string source, int connection = 0);
+    void ObsHideSource(string scene, string source, int connection = 0);
+    void ObsSetFilterState(string source, string filterName, int state, int connection = 0);
+    void ObsSetFilterState(string scene, string source, string filterName, int state, int connection = 0);
+    void ObsShowFilter(string source, string filterName, int connection = 0);
+    void ObsShowFilter(string scene, string source, string filterName, int connection = 0);
+    void ObsHideFilter(string source, string filterName, int connection = 0);
+    void ObsHideFilter(string scene, string source, string filterName, int connection = 0);
+    void ObsSetGdiText(string scene, string source, string text, int connection = 0);
+    string ObsSendRaw(string requestType, string data, int connection = 0);
+}
+
+Implementation notes: only the methods declared above are provided.
+
+CPH RETURN MODELS AND PLATFORM ENUM (C#)
+========================================
+
+Platform enum values are compatibility names, not a list of connected services.
+using System;
+using System.Collections.Generic;
+
+namespace Streamer.bot.Plugin.Interface.Enums
+{
+    public enum Platform
+    {
+        Twitch,
+        YouTube,
+        Trovo,
+        Kick,
+    }
+}
+
+namespace Streamer.bot.Plugin.Interface.Model
+{
+    public class ActionData
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = "";
+        public bool Enabled { get; set; }
+        public string Group { get; set; } = "";
+        public string Queue { get; set; } = "";
+        public Guid QueueId { get; set; }
+    }
+
+    public class GlobalVariableValue
+    {
+        public string VariableName { get; set; } = "";
+        public object? Value { get; set; }
+        public DateTime LastWrite { get; set; }
+    }
+
+    public class QuoteData
+    {
+        public DateTime Timestamp { get; set; }
+        public int Id { get; set; }
+        public string UserId { get; set; } = "";
+        public string User { get; set; } = "";
+        public string Platform { get; set; } = "";
+        public string GameName { get; set; } = "";
+        public string Quote { get; set; } = "";
+    }
+
+    public class BaseUserInfo
+    {
+        public string UserName { get; set; } = "";
+        public string UserLogin { get; set; } = "";
+        public string UserId { get; set; } = "";
+        public DateTime LastActive { get; set; }
+        public DateTime PreviousActive { get; set; }
+    }
+
+    public class TwitchUserInfo : BaseUserInfo
+    {
+        public bool IsSubscribed { get; set; }
+        public string SubscriptionTier { get; set; } = "";
+        public bool IsModerator { get; set; }
+        public bool IsVip { get; set; }
+    }
+
+    public class TwitchUserInfoEx : TwitchUserInfo
+    {
+        public string Description { get; set; } = "";
+        public string ProfileImageUrl { get; set; } = "";
+        public string UserType { get; set; } = "";
+        public bool IsPartner => string.Equals(UserType, "partner", StringComparison.OrdinalIgnoreCase);
+        public bool IsAffiliate => string.Equals(UserType, "affiliate", StringComparison.OrdinalIgnoreCase);
+        public bool IsFollowing { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public double AccountAge { get; set; }
+        public string Game { get; set; } = "";
+        public string GameId { get; set; } = "";
+        public string ChannelTitle { get; set; } = "";
+        public List<string> Tags { get; set; } = new();
+    }
+
+    public class StreamMarker
+    {
+        public string Id { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+        public string Description { get; set; } = "";
+        public int PositionSeconds { get; set; }
+    }
+}
+
+namespace Streamer.bot.Plugin.Interface
+{
+    public class GameInfo
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string BoxArtUrl { get; set; } = "";
+    }
+}
+
+READABLE IMPORT EXAMPLE: !hello -> GREETING -> CHAT
+===================================================
+
+This is docs/examples/hello-workflow.json. Import Preview should report one command,
+one action, no unsupported entries, and no unresolved command links. Importing enables
+!hello for everyone. Running it sends real Twitch chat when an account is linked.
+{
+  "commands": [
+    {
+      "id": "e50b10b7-b26e-4433-8ce7-342e44ab31af",
+      "name": "AI example: hello",
+      "command": "!hello",
+      "enabled": true,
+      "mode": 0,
+      "location": 0,
+      "sources": 1,
+      "globalCooldown": 5,
+      "userCooldown": 10,
+      "grantType": 0,
+      "permittedGroups": [],
+      "group": "AI examples"
+    }
+  ],
+  "actions": [
+    {
+      "id": "339d956f-600c-4a60-8e08-611fc5905afd",
+      "name": "AI example: greet viewer",
+      "group": "AI examples",
+      "enabled": true,
+      "triggers": [
+        {
+          "id": "9cbadcc5-c299-45a6-9ae4-b9862a905eb0",
+          "type": 401,
+          "enabled": true,
+          "commandId": "e50b10b7-b26e-4433-8ce7-342e44ab31af"
+        }
+      ],
+      "subActions": [
+        {
+          "id": "f022bf5c-276f-4c0a-8028-4c892e614ba3",
+          "type": 123,
+          "index": 0,
+          "enabled": true,
+          "variableName": "greeting",
+          "value": "Hello %user%!"
+        },
+        {
+          "id": "80b1d13b-2040-4c53-b5a2-83035577a426",
+          "type": 10,
+          "index": 1,
+          "enabled": true,
+          "text": "%greeting%",
+          "useBot": true,
+          "fallback": true
+        }
+      ]
+    }
+  ]
+}
+
+CLI SOURCE: EXACT SUBCOMMANDS AND FLAGS
+=======================================
+
+using System.Text.Json;
+using CherBot.Compat.Import;
+using CherBot.Core;
+using CherBot.Core.Config;
+using CherBot.Host;
+using CherBot.Host.Security;
+using CherBot.Integrations.Community;
+using CherBot.Integrations.Twitch;
+
+// Subcommands for headless use; anything else starts the engine.
+//   cherbot import <file|-> [--dry-run] [--no-overwrite] [--rewrite-paths]
+//   cherbot export [--name <name>]          (all actions, commands and timers)
+//   cherbot token                           (prints the management API token)
+//   cherbot twitch-login <broadcaster|bot>  (device code login from a terminal)
+//   cherbot migrate-python <cherbot.db>     (imports the Python prototype's data)
+switch (args.FirstOrDefault())
+{
+    case "import":
+    {
+        var rest = args.Skip(1).ToArray();
+        var file = rest.FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal));
+        if (file is null)
+        {
+            Console.Error.WriteLine("usage: cherbot import <file|-> [--dry-run] [--no-overwrite] [--rewrite-paths] [--data-dir <dir>]");
+            return 2;
+        }
+        var app = CherBotHost.Build(HostArgs(rest));
+        var text = file == "-" ? await Console.In.ReadToEndAsync() : await File.ReadAllTextAsync(file);
+        var report = app.Services.GetRequiredService<StreamerBotImporter>().Import(text, new ImportOptions
+        {
+            DryRun = rest.Contains("--dry-run"),
+            OverwriteByName = !rest.Contains("--no-overwrite"),
+            RewritePaths = rest.Contains("--rewrite-paths"),
+        });
+        Console.WriteLine(JsonSerializer.Serialize(report, CherBotJson.Indented));
+        return 0;
+    }
+    case "export":
+    {
+        var rest = args.Skip(1).ToArray();
+        var app = CherBotHost.Build(HostArgs(rest));
+        var cfg = app.Services.GetRequiredService<ConfigService>();
+        var nameIdx = Array.IndexOf(rest, "--name");
+        var name = nameIdx >= 0 && nameIdx + 1 < rest.Length ? rest[nameIdx + 1] : "CherBot export";
+        Console.WriteLine(app.Services.GetRequiredService<StreamerBotImporter>()
+            .Export(cfg.Actions.Select(a => a.Id), cfg.Commands.Select(c => c.Id), cfg.Timers.Select(t => t.Id), name));
+        return 0;
+    }
+    case "token":
+    {
+        var app = CherBotHost.Build(HostArgs(args.Skip(1).ToArray()));
+        Console.WriteLine(app.Services.GetRequiredService<ApiToken>().Value);
+        return 0;
+    }
+    case "twitch-login":
+    {
+        var rest = args.Skip(1).ToArray();
+        if (rest.Length == 0 || !Enum.TryParse<TwitchRole>(rest[0], true, out var role))
+        {
+            Console.Error.WriteLine("usage: cherbot twitch-login <broadcaster|bot> [--data-dir <dir>] [--CherBot:Twitch:ClientId <id>]");
+            return 2;
+        }
+        var app = CherBotHost.Build(HostArgs(rest));
+        var auth = app.Services.GetRequiredService<TwitchAuth>();
+        var flow = await auth.StartDeviceFlowAsync(role, CancellationToken.None);
+        Console.WriteLine($"Open {flow.VerificationUri} and enter the code: {flow.UserCode}");
+        Console.WriteLine($"(sign in as the {role.ToString().ToLowerInvariant()} account; the code expires at {flow.ExpiresAt:t})");
+        while (auth.Flow(role) is { Status: "pending" }) await Task.Delay(1000);
+        var final = auth.Flow(role)!;
+        Console.WriteLine(final.Status == "complete" ? $"Linked {role.ToString().ToLowerInvariant()} account: {final.Login}" : $"Login {final.Status}: {final.Error}");
+        return final.Status == "complete" ? 0 : 1;
+    }
+    case "migrate-python":
+    {
+        var rest = args.Skip(1).ToArray();
+        var path = rest.FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal));
+        if (path is null)
+        {
+            Console.Error.WriteLine("usage: cherbot migrate-python <path/to/python/cherbot.db> [--data-dir <dir>]");
+            return 2;
+        }
+        var app = CherBotHost.Build(HostArgs(rest));
+        var report = app.Services.GetRequiredService<PythonMigration>().Run(path);
+        Console.WriteLine(JsonSerializer.Serialize(report, CherBotJson.Indented));
+        return 0;
+    }
+    default:
+        await CherBotHost.Build(args).RunAsync();
+        return 0;
+}
+
+// Keeps --data-dir and configuration overrides, drops subcommand flags.
+static string[] HostArgs(string[] rest)
+{
+    var keep = new List<string>();
+    for (var i = 0; i < rest.Length; i++)
+    {
+        if (rest[i].StartsWith("--CherBot:", StringComparison.OrdinalIgnoreCase) || rest[i] == "--data-dir")
+        {
+            keep.Add(rest[i]);
+            if (i + 1 < rest.Length) keep.Add(rest[++i]);
+        }
+        else if (rest[i].StartsWith("--data-dir=", StringComparison.Ordinal)) keep.Add(rest[i]);
+    }
+    return [.. keep];
+}
+
+API ROUTE INVENTORY (DISCOVERY; SEE BODY SHAPES ABOVE)
+======================================================
+
+
+CustomCommandEndpoints.cs:
+  GET /v1/custom-commands
+  POST /v1/custom-commands
+  GET /v1/custom-commands/{id:guid}
+  PUT /v1/custom-commands/{id:guid}
+  DELETE /v1/custom-commands/{id:guid}
+  POST /v1/custom-commands/{id:guid}/test
+  POST /v1/custom-commands/preview
+  POST /v1/custom-commands/import
+
+GamesEndpoints.cs:
+  GET /v1/games/settings
+  PUT /v1/games/settings
+  GET /v1/games/state
+  GET /v1/games/commands
+
+GiveawayEndpoints.cs:
+  GET /v1/giveaways
+  POST /v1/giveaways
+  GET /v1/giveaways/{id:guid}
+  PUT /v1/giveaways/{id:guid}
+  DELETE /v1/giveaways/{id:guid}
+  POST /v1/giveaways/{id:guid}/start
+  POST /v1/giveaways/{id:guid}/stop
+  POST /v1/giveaways/{id:guid}/draw
+  POST /v1/giveaways/{id:guid}/reroll
+  POST /v1/giveaways/{id:guid}/cancel
+  POST /v1/giveaways/{id:guid}/reset
+  GET /v1/giveaways/{id:guid}/entries
+  DELETE /v1/giveaways/{id:guid}/entries/{platform}/{userId}
+  GET /v1/giveaways/{id:guid}/winners
+  POST /v1/giveaways/{id:guid}/winners/{winnerId:long}/claim
+  GET /v1/giveaways/messages/defaults
+
+HelperEndpoints.cs:
+  GET /v1/obs/scenes
+  GET /v1/obs/scene-items
+  GET /v1/obs/filters
+  GET /v1/obs/inputs
+  POST /v1/obs/reconnect
+  POST /v1/obs/scene
+  POST /v1/obs/scene-item
+  GET /v1/twitch/rewards/list
+  GET /v1/twitch/channel
+  PATCH /v1/twitch/channel
+  GET /v1/twitch/categories
+  POST /v1/twitch/marker
+  POST /v1/twitch/clip
+  POST /v1/twitch/commercial
+  POST /v1/twitch/shoutout
+  GET /v1/viewers
+  POST /v1/actions/{id:guid}/duplicate
+  POST /v1/actions/{id:guid}/test
+  PUT /v1/users/{platform}/{userId}/globals/{name}
+  DELETE /v1/users/{platform}/{userId}/globals/{name}
+  GET /v1/ui/settings
+  PUT /v1/ui/settings
+
+IntegrationEndpoints.cs:
+  GET /v1/obs/connections
+  POST /v1/obs/connections
+  DELETE /v1/obs/connections/{id:guid}
+  POST /v1/obs/request
+  GET /v1/speakerbot/status
+  POST /v1/speakerbot/speak
+
+LoyaltyEndpoints.cs:
+  GET /v1/loyalty/settings
+  PUT /v1/loyalty/settings
+  GET /v1/points
+  POST /v1/points/give-active
+  POST /v1/points/watch-now
+  DELETE /v1/points/{platform}
+
+ManagementApi.cs:
+  GET /v1/actions
+  GET /v1/actions/{id:guid}
+  POST /v1/actions
+  PUT /v1/actions/{id:guid}
+  DELETE /v1/actions/{id:guid}
+  POST /v1/actions/{id:guid}/enabled
+  POST /v1/actions/{id:guid}/run
+  POST /v1/doaction
+  GET /v1/runs
+  GET /v1/queues
+  POST /v1/queues
+  PUT /v1/queues/{id:guid}
+  DELETE /v1/queues/{id:guid}
+  POST /v1/queues/{key}/pause
+  POST /v1/queues/{key}/resume
+  POST /v1/queues/{key}/clear
+  GET /v1/commands
+  GET /v1/commands/{id:guid}
+  POST /v1/commands
+  PUT /v1/commands/{id:guid}
+  DELETE /v1/commands/{id:guid}
+  POST /v1/commands/{id:guid}/reset-counters
+  GET /v1/timers
+  POST /v1/timers
+  PUT /v1/timers/{id:guid}
+  DELETE /v1/timers/{id:guid}
+  POST /v1/timers/{id:guid}/fire
+  GET /v1/globals
+  PUT /v1/globals/{name}
+  DELETE /v1/globals/{name}
+  GET /v1/users/{platform}/globals
+  GET /v1/quotes
+  POST /v1/quotes
+  DELETE /v1/quotes/{id:long}
+  GET /v1/groups
+  POST /v1/groups/{group}
+  DELETE /v1/groups/{group}/{platform}/{userId}
+  GET /v1/events
+  GET /v1/events/recent
+  POST /v1/events/publish
+  POST /v1/chat/simulate
+  GET /v1/catalog/events
+  GET /v1/events/sample
+  GET /v1/catalog/subactions
+  GET /v1/integrations
+  POST /v1/import
+  POST /v1/export
+  GET /v1/media
+
+ModuleEndpoints.cs:
+  GET /v1/modules
+  GET /v1/modules/{id}/settings
+  PUT /v1/modules/{id}/settings
+  POST /v1/modules/{id}/enabled
+  GET /v1/modules/chat-alerts/kinds
+  POST /v1/modules/chat-alerts/test
+  POST /v1/modules/spam-filter/test
+  GET /v1/modules/spam-filter/log
+  POST /v1/modules/spam-filter/permit
+
+SystemEndpoints.cs:
+  GET /health
+  GET /version
+
+TwitchEndpoints.cs:
+  GET /v1/twitch/status
+  POST /v1/twitch/reconnect
+  POST /v1/twitch/auth/{role}/device
+  GET /v1/twitch/auth/{role}
+  DELETE /v1/twitch/auth/{role}
+  GET /v1/twitch/auth/{role}/authorize-url
+  GET /twitch/callback
+  POST /v1/twitch/chat
+  POST /v1/twitch/eventsub/loopback
+  GET /v1/twitch/rewards
+  PUT /v1/twitch/rewards/{rewardId}
+  GET /v1/leaderboard
+  PUT /v1/points/{platform}/{userId}
+  GET /v1/first-words
+  DELETE /v1/first-words
+  POST /v1/migrate/python
+
+END OF CHERBOT AI REFERENCE

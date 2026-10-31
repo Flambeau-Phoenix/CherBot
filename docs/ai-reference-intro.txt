@@ -1,0 +1,244 @@
+CHERBOT: CONTEXT FOR AN AI ASSISTANT
+==================================
+
+PURPOSE AND BOUNDARIES
+CherBot brings Streamer.bot-style automation to native Linux without Wine.
+It runs headless as a console/service, with a CLI, authenticated management
+API, browser UI, and Windows desktop shell (Local engine or Remote client).
+Twitch and OBS are implemented integrations. Speaker.bot is a separate
+service CherBot can call. This is an independent engine, NOT the entire
+Streamer.bot product or API. Use only the supported catalogs/signatures below.
+Windows desktop actions require Windows and suitable desktop services; Windows
+assemblies, COM, registry, key presses, and GDI APIs are not portable to Linux.
+Enum names such as YouTube/Kick/Trovo do not mean those services are supported.
+
+HOW TO ANSWER A USER
+- Prefer the simplest usable output: UI instructions, C#, readable import
+  JSON, or shell + HTTP. Give complete code, installation steps, and a test.
+- Ask for missing essential details: trigger, allowed role, cooldown, exact
+  OBS scene/source/filter names, engine OS, paths on the ENGINE, and output.
+- Never invent CPH methods, IDs, fields, enum values, endpoints, or variables.
+  If the reference lacks a capability, explain the limit and an alternative.
+- Never invent an encoded/compressed export. Readable JSON imports work.
+- Use placeholders for unknown instance IDs and credentials. Ask users to
+  resolve tokens locally; this reference contains no real credentials.
+- Match the installed version to this reference. Do not claim testing you
+  did not perform. Review outputs before running on a live stream.
+
+ENGINE MODEL
+An action has triggers and ordered subActions. A command is a separate record
+whose ID is referenced by a Command Triggered trigger (401) on an action.
+Timers likewise have their own records and Timed Actions triggers (701).
+Actions can also be started through API, another action, or the dashboard.
+Groups organize records. Queues control execution. Use a blocking queue for
+ordered runs; a read/increment/write counter is not atomic across concurrent
+runs. RunNow / CPH.RunAction(..., true) bypasses the queue. Prevent recursion.
+
+VARIABLES: THREE DIFFERENT SYNTAXES
+1. Action arguments: %user%, %rawInput%, %input0%, %rewardName%, %bits%.
+   Use only variables supplied by the trigger or set by earlier steps.
+   Unknown arguments remain as literal placeholders. Arguments are matched
+   case-insensitively. Templates do NOT execute arbitrary C# expressions.
+   Formatting: %counter:N0%, %price:0.00%, %actionQueuedAt:HH:mm%.
+   Dots/brackets can be part of literal keys (e.g. match[0]); they are not a
+   general JSON traversal language. Plain API runs supply only their args and
+   run metadata, not a fabricated Twitch user or a real trigger's fields.
+2. Persisted globals: ~deaths~. These survive restart. ~name~ reads persisted
+   globals only. For temporary globals and user globals use the relevant
+   get/set step or CPH API; they are not automatically ~name~ substitutions.
+   C# strings do not automatically expand %name% or ~name~: read with CPH.
+3. Custom-command response tokens: {user}, {touser}, {args}, {1}, {2},
+   {count}, {random:1-100}, {pick:a|b|c}, {uptime}, {game}, {title},
+   {followage}, {points}, {currency}, {channel}. These belong to the custom
+   command response renderer, not every arbitrary Send Message field.
+   Custom responses also accept %arguments% and ~persistedGlobals~.
+   Other modules have their own token sets; do not assume they share these.
+   Command argument words are zero-based (%input0% is first); friendly tokens
+   are one-based ({1} is first). Command rawInput is text after the command.
+   Optional user/subscription/reward fields depend on the actual event.
+
+CSHARP SCRIPTS
+Add an Execute C# Code step (99999) to an action; do not put a console Main
+method or a project file into that step. Use:
+
+public class CPHInline
+{
+    public bool Execute()
+    {
+        if (!CPH.TryGetArg<string>("user", out var user)) user = "friend";
+        CPH.SetArgument("greeting", $"Hello {user}!");
+        CPH.SendMessage($"Hello {user}!");
+        return true;
+    }
+}
+
+CPH and args are injected through CPHInlineBase. args is a COPY of arguments;
+use CPH.SetArgument to update the running action. Check missing arguments with
+TryGetArg<T> rather than indexing args blindly. Return true to continue, false
+to stop the action. CPH calls are synchronous; the entry point is bool Execute,
+not async Task<bool>. CherBot adds the base class if you omit one. Init() and
+Dispose() hooks are available on that base. .NET 8 libraries and Newtonsoft.Json
+are referenced. Extra compatible DLLs go in <data folder>/references/ and must
+be configured on the code step's references field (see its field catalog).
+Scripts run with the engine account's full permissions. CPH.Wait takes ms.
+In JSON, Execute C# Code accepts a plain "code" string (CherBot extension),
+or base64-encoded UTF-8 source in "byteCode" for compatibility. It is source,
+not compiled assembly bytes. Prefer "code" when generating readable CherBot JSON.
+CPH.SendAction sends normal chat text (Helix has no equivalent /me message).
+CPH.Between uses inclusive min/max; OBS filter state 0=visible, 1=hidden,
+2=toggle. Script OBS connection indices are zero-based; prefer explicit names
+and check connectivity. CPH.ObsSendRaw accepts an OBS v5 request name and a JSON
+object string; verify OBS-specific payloads separately if not described here.
+
+Example persisted counter, placed behind an appropriate command/queue:
+
+public class CPHInline
+{
+    public bool Execute()
+    {
+        var count = CPH.GetGlobalVar<long>("deaths", true) + 1;
+        CPH.SetGlobalVar("deaths", count, true);
+        CPH.SetArgument("deathCount", count);
+        CPH.SendMessage($"Deaths: {count}");
+        return true;
+    }
+}
+
+JSON RECORDS AND IMPORTS
+Import a top-level {"actions":[],"commands":[],"timers":[],"queues":[]}.
+Arrays can be omitted. Use valid unique UUIDs; keep linked IDs consistent.
+API POST /v1/actions takes ONE action, not the full import wrapper.
+Action fields: id, name, group, enabled, queue (UUID or null), alwaysRun,
+randomAction, concurrent, excludeFromHistory, excludeFromPending,
+triggers[], subActions[]. Triggers: id, type (integer), enabled, plus filters
+listed for that trigger. Steps: id, type (integer), index (zero-based), enabled,
+weight (random selection), plus type-specific fields at the SAME object level.
+Fields do not live inside a generic "parameters" or "settings" object.
+Nested steps use subActions[] (and parentId when needed); normalize indices in
+each list. If(120) has Then(99901)/Else(99902) lanes; Switch(127) has
+Case(99903)/Default(99904) lanes. These lane IDs are container structures.
+Use the step catalog for the condition, loop, list and foreach field shapes.
+
+Command fields: id, name, command (aliases separated by newline), enabled,
+include, mode (0 basic, 1 regex), location (0 start, 1 exact, 2 anywhere),
+sources (1=Twitch chat), ignoreBotAccount, ignoreInternal, caseSensitive,
+globalCooldown, userCooldown (seconds), persistCounter, persistUserCounter,
+group, grantType (0 allow, 1 deny), permittedGroups[] (named user groups).
+With grantType=0 an empty permittedGroups list allows everyone. For built-in
+role gates use the custom-command minRole model or an action permission step;
+do not assume a plain command's arbitrary minRole property enforces a role.
+Timer fields: id, name, enabled, repeat, interval (seconds), randomInterval,
+upperInterval (seconds), lines (minimum chat lines, 0 disables), counter.
+Queue fields: id, name, blocking (true serializes runs).
+The default queue is 00000000-0000-0000-0000-000000000000; the action queue
+field can be null to use it. A matching command alone sends no response.
+Import updates identical IDs and can replace identical names. Preview first.
+--no-overwrite prevents replacement by name; identical IDs can still update.
+
+CUSTOM TEXT COMMAND API (easier for simple replies)
+POST /v1/custom-commands takes an object such as:
+{"name":"!hello","aliases":["!hi"],"enabled":true,
+ "responses":["Hello {user}!"],"minRole":"everyone",
+ "globalCooldown":5,"userCooldown":10}
+It creates its command and action; response is {command: <definition>, ...}.
+Other fields: lineDelayMs (default 1000), replyMode (chat/reply/announcement),
+color (primary/blue/green/orange/purple), permittedGroups[], cost (points),
+onlyWhileLive. minRole: everyone/subscriber/vip/moderator/broadcaster.
+responses are random variants; newlines within a variant send separate lines.
+Use PUT /v1/custom-commands/{id} with the complete definition to update.
+Preview without sending: POST /v1/custom-commands/preview with
+{"definition":{"name":"!hello","responses":["Hello {user}!"]},
+ "user":"Viewer","input":"@Friend"}. Returns {lines:[...]}.
+These records are not imported via the ordinary commands[] array. For a
+portable action import, use normal command + trigger + action records instead.
+
+CLI: HEADLESS OPERATION
+cherbot [--data-dir <dir>]                       run the engine
+cherbot token [--data-dir <dir>]                 print the management token
+cherbot import <file|-> [--dry-run] [--no-overwrite] [--rewrite-paths]
+cherbot export [--name <name>]                   print an encoded export
+cherbot twitch-login <broadcaster|bot>           device-code account linking
+cherbot migrate-python <old.db>                 migrate prototype data
+All commands accept --data-dir and --CherBot:Section:Key value overrides.
+On Windows use cherbot.exe / .\cherbot.exe. In a Linux build directory use
+./cherbot when it is not on PATH. No CLI "create-action" or "run-action"
+subcommands exist; use the management API for live engine changes.
+Do not run multiple engines against the same data folder. Stop the engine
+before offline imports. Use API requests to mutate a running engine.
+Defaults: user Linux ~/.local/share/cherbot (or XDG_DATA_HOME/cherbot),
+root/system service /var/lib/cherbot, Windows %ProgramData%\CherBot.
+Config is <data>/cherbot.json; engine settings need restart. API changes to
+actions, commands, timers, globals, and OBS connections apply immediately.
+Back up the entire data folder, including keys/, with the engine stopped.
+
+MANAGEMENT API
+Web UI / API base: http://127.0.0.1:8091 . Bind to a trusted LAN/VPN address
+for remote clients; do not propose opening all interfaces as a default.
+/health and /version are public. /v1 requests require Authorization: Bearer
+<local API token>, or X-CherBot-Token. ?token= is accepted for EventSource.
+Do not confuse this management API with the Streamer.bot-compatible WebSocket
+port 8080, optional unauthenticated HTTP port 7474, or UDP port 4242.
+
+Important routes and body shapes:
+GET /v1/actions -> {actions:[...]}; GET /v1/actions/{id} -> one action.
+POST /v1/actions -> action; PUT /v1/actions/{id} -> complete action.
+POST /v1/actions/{id}/enabled {"enabled":true}.
+POST /v1/actions/{id}/run {"args":{"user":"Viewer"},"wait":true}
+  waits and bypasses the queue; result has status, trace and args.
+  With wait:false it queues the action and returns status/runId.
+POST /v1/actions/{id}/test {"sampleArgs":{"user":"Viewer"}}
+  uses a real event sample when available and isTest=true; returns {result,...}.
+GET /v1/runs?limit=10 -> {runs:[...]}.
+GET /v1/commands -> {commands:[...]}; POST /v1/commands -> one command.
+GET /v1/timers -> {timers:[{timer:{...},nextFire:...}]}; POST -> one timer.
+GET /v1/queues -> {queues:[live states],definitions:[queue records]}.
+POST /v1/queues/{key}/pause or /resume or /clear (key=all/default/UUID/name).
+GET /v1/globals?persisted=true -> {globals:[...]};
+PUT /v1/globals/{name} {"value":12,"persisted":true}.
+POST /v1/import?dryRun=true&overwrite=false with raw text/plain JSON/export;
+  report has actions/commands/timers/queues, unsupported[], paths[], warnings[].
+POST /v1/export {"actions":["UUID"],"commands":["UUID"],"timers":[],
+  "name":"My workflow"} -> {export:"..."}; actions must be explicitly listed.
+GET /v1/catalog/subactions -> {subActions:[...]} (supported flag).
+GET /v1/catalog/events -> {events:[...]} (emitted flag).
+GET /v1/events/recent?limit=25 -> {events:[...]}.
+GET /v1/events (SSE); ?since=<sequence> or Last-Event-ID resumes events.
+POST /v1/chat/simulate {"message":"!hello","user":"tester","role":"viewer"}
+  feeds normal command pipeline; replies and other effects can be real.
+GET /v1/twitch/status; GET /v1/integrations; GET /v1/obs/connections.
+POST /v1/obs/connections {"name":"Main","host":"192.0.2.20",
+  "port":4455,"password":"<set locally>"}.
+GET /v1/obs/scenes; GET /v1/obs/scene-items?scene=<URL-encoded name>.
+POST /v1/obs/scene {"sceneName":"Be Right Back"}.
+POST /v1/obs/request {"requestType":"GetSceneList"} for raw OBS requests.
+Additional route names are listed below for discovery. That inventory is not
+a complete request-body schema; do not guess bodies for undocumented routes.
+
+Bash example (read the token locally; never send it to the AI):
+CHERBOT_URL=http://127.0.0.1:8091
+CHERBOT_TOKEN="$(./cherbot token --data-dir /path/to/data)"
+curl --fail-with-body -H "Authorization: Bearer $CHERBOT_TOKEN" \
+  "$CHERBOT_URL/v1/queues"
+curl --fail-with-body -H "Authorization: Bearer $CHERBOT_TOKEN" \
+  -H 'Content-Type: application/json' --data-binary @action.json \
+  "$CHERBOT_URL/v1/actions"
+For a full import wrapper use /v1/import and Content-Type:text/plain instead.
+PowerShell: $cherbotToken = (& .\cherbot.exe token --data-dir 'C:\CherBotData').Trim();
+$cherbotHeaders = @{ Authorization = "Bearer $cherbotToken" };
+Invoke-RestMethod 'http://127.0.0.1:8091/v1/queues' -Headers $cherbotHeaders
+
+TESTING AND DIAGNOSIS
+Preview JSON imports first; verify unsupported is empty and linked IDs exist.
+Save & Test, /actions/{id}/test, /run, C# scripts, and the chat simulator can
+send REAL chat, modify OBS, run files, mutate globals or spend points.
+isTest does not suppress these effects automatically. For text-only preview
+use the custom-command preview endpoint. To isolate an action, disable its
+triggers and use a disposable instance without live integrations.
+Use Monitor recent runs and traces, or GET /v1/runs and the engine logs.
+Unknown %variables% that remain literal usually mean wrong trigger or a missing
+earlier step. C# compile errors often mean an unsupported method/signature.
+Unknown OBS scene/source names must be corrected against the actual engine.
+Only use the emitted/supported catalog entries below; imported placeholders
+for other types do not run. Fields listed as builder defaults are starter
+values, not a guarantee that omitting required fields will execute correctly.
+

@@ -1,0 +1,41 @@
+I want you to build a stream automation for CherBot. Read the attached
+cherbot-ai-reference.txt before answering. CherBot is an independent native
+Linux/Windows engine with partial Streamer.bot compatibility. Treat the
+reference's supported APIs and catalogs as the source of truth.
+
+WHAT I WANT
+[Describe the workflow in plain language. What starts it? What should happen?]
+
+MY SETUP
+- CherBot version: [version shown in the Web UI]
+- Engine: [Linux / Windows Local desktop / Windows Service]
+- Interface I use: [Web UI / Windows app / terminal]
+- Twitch: [broadcaster linked? separate bot account?]
+- OBS: [connected? which connection? exact scene/source/filter names?]
+- Other integrations or files: [Speaker.bot, sound paths ON THE ENGINE, etc.]
+- Who can trigger this: [everyone / subscribers / VIPs / moderators / only me]
+- Cooldown, cost, duration, limits: [fill in or say none]
+- Output I prefer: [Web UI steps / C# / importable JSON / Bash or PowerShell
+  using the management API / choose the simplest supported approach]
+
+YOUR ANSWER SHOULD
+1. Explain the workflow and prerequisites. Ask only for missing details that
+   block a working result; use labeled placeholders for names/IDs.
+2. Use only CPH signatures, emitted trigger IDs, supported step IDs, documented
+   fields, enum values, and variables from the attachment. Do not assume the
+   full Streamer.bot API exists. If something is unsupported, say so and give
+   the closest supported alternative.
+3. Give the complete result, with no omitted code or JSON. For C#, use public
+   class CPHInline and public bool Execute(), and explain which trigger and
+   Execute C# Code step to add. For JSON, use a readable CherBot import object
+   and real UUIDs for linked records. Do not fabricate a compressed export.
+4. Explain exactly where to paste/import/run the result. Use Linux paths when
+   my engine is Linux. Do not request or include real API tokens or passwords;
+   use local environment variables or placeholders.
+5. Include a practical test and expected result. Label tests that send real
+   Twitch chat, run scripts, change OBS, spend points, or change stored data.
+   A simulator or isTest flag is not a sandbox.
+6. Include likely errors and how to undo the changes you suggest.
+
+Do not claim the result has been executed or tested unless you actually did
+so. If my CherBot version differs from the attachment, flag that mismatch.

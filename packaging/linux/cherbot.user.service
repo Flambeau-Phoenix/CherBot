@@ -1,0 +1,18 @@
+# Per-user CherBot service (no root). Installed by "install.sh --user" to ~/.config/systemd/user/cherbot.service.
+# Data lives in ~/.local/share/cherbot; config in ~/.local/share/cherbot/cherbot.json.
+# Keep it running after logout with: loginctl enable-linger "$USER"
+[Unit]
+Description=CherBot (headless Streamer.bot-compatible bot)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=notify
+ExecStart=%h/cherbot/cherbot --data-dir %h/.local/share/cherbot
+WorkingDirectory=%h/cherbot
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+
+[Install]
+WantedBy=default.target

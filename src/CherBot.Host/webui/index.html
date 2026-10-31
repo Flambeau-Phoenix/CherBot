@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CherBot</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="brand">CherBot <span id="version" class="muted small"></span></div>
+      <nav id="nav" class="nav"></nav>
+      <div class="sidebar-foot">
+        <div id="engine-status" class="engine-status" role="status">Connecting…</div>
+        <div id="engine-address" class="muted small engine-address"></div>
+        <div id="badges" class="badges" aria-live="polite"></div>
+      </div>
+    </aside>
+
+    <main id="main">
+      <!-- ── login ─────────────────────────────────────────────── -->
+      <section id="login" class="panel hidden">
+        <h2>Connect to CherBot</h2>
+        <p>Paste the API token. On the engine machine run <code>cherbot token</code>, or open <code>api-token</code> in the data folder.</p>
+        <form id="login-form" class="row">
+          <label class="grow">API token <input id="login-token" type="password" autocomplete="off" required></label>
+          <button type="submit" class="primary">Connect</button>
+        </form>
+        <p id="login-error" class="error" role="alert"></p>
+      </section>
+
+      <div id="page" class="page"></div>
+    </main>
+  </div>
+
+  <dialog id="dialog">
+    <form method="dialog" class="dialog-body">
+      <h3 id="dialog-title"></h3>
+      <div id="dialog-content"></div>
+      <p id="dialog-error" class="error" role="alert"></p>
+      <menu class="row end">
+        <button value="cancel" class="ghost">Close</button>
+        <button id="dialog-ok" value="ok" class="primary">OK</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <div id="popover-root"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

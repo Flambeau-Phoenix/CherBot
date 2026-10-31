@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Basic.Reference.Assemblies.Net80" Version="1.7.9" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CherBot.Core\CherBot.Core.csproj" />
+    <ProjectReference Include="..\CherBot.Integrations\CherBot.Integrations.csproj" />
+    <ProjectReference Include="..\CherBot.Plugin.Interface\CherBot.Plugin.Interface.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="CherBot.Tests" />
+  </ItemGroup>
+
+</Project>

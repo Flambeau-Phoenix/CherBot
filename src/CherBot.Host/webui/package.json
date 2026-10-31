@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "module",
+  "description": "Marks the web UI's .js files as ES modules for the Node coverage test (tests/ui). Not embedded in the binary."
+}

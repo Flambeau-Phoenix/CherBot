@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CherBot sound overlay</title>
+  <style>html, body { margin: 0; background: transparent; }</style>
+</head>
+<body>
+<!--
+  Add as an OBS Browser Source: http://<cherbot-host>:8091/overlay.html#token=<api token>
+  Plays sounds when CherBot's Engine:SoundMode is "overlay" (or "auto" with no local audio player).
+  The audio files must be inside one of Engine:MediaRoots.
+-->
+<script>
+'use strict';
+const token = (location.hash.match(/token=([^&]+)/) || [])[1] || new URLSearchParams(location.search).get('token') || '';
+const playing = new Set();
+
+function connect() {
+  const es = new EventSource(`/v1/events?token=${encodeURIComponent(token)}`);
+  es.onmessage = (msg) => {
+    let ev;
+    try { ev = JSON.parse(msg.data); } catch { return; }
+    if (ev.source !== 'CherBot') return;
+    if (ev.type === 'PlaySound') {
+      const audio = new Audio(`${ev.data.url}&token=${encodeURIComponent(token)}`);
+      audio.volume = Math.max(0, Math.min(1, Number(ev.data.volume ?? 1)));
+      playing.add(audio);
+      audio.addEventListener('ended', () => playing.delete(audio));
+      audio.play().catch(err => console.warn('CherBot overlay: playback blocked', err));
+    } else if (ev.type === 'StopSounds') {
+      playing.forEach(a => a.pause());
+      playing.clear();
+    }
+  };
+  es.onerror = () => { es.close(); setTimeout(connect, 3000); };
+}
+connect();
+</script>
+</body>
+</html>

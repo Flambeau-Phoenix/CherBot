@@ -1,0 +1,12 @@
+{
+  "name": "cherbot-compat-client-test",
+  "private": true,
+  "type": "module",
+  "description": "Drives CherBot's Streamer.bot-compatible WebSocket server with the official @streamerbot/client.",
+  "scripts": {
+    "test": "node compat-test.mjs"
+  },
+  "dependencies": {
+    "@streamerbot/client": "2.0.1"
+  }
+}

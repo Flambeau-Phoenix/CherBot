@@ -1,0 +1,5007 @@
+{
+ "events": [
+  {
+   "id": 101,
+   "name": "TwitchFollow",
+   "source": "Twitch",
+   "type": "Follow",
+   "display": "Follow",
+   "category": "Twitch / Channel",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 102,
+   "name": "TwitchCheer",
+   "source": "Twitch",
+   "type": "Cheer",
+   "display": "Cheer",
+   "category": "Twitch / Chat",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 103,
+   "name": "TwitchSub",
+   "source": "Twitch",
+   "type": "Sub",
+   "display": "Subscription",
+   "category": "Twitch / Subscriptions",
+   "fields": [
+    "tiers:_zG9fSfowhgyhnk6rDxfeliZqBps"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 104,
+   "name": "TwitchReSub",
+   "source": "Twitch",
+   "type": "ReSub",
+   "display": "Resubscription",
+   "category": "Twitch / Subscriptions",
+   "fields": [
+    "tiers:_zG9fSfowhgyhnk6rDxfeliZqBps",
+    "min:int",
+    "max:int"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 105,
+   "name": "TwitchGiftSub",
+   "source": "Twitch",
+   "type": "GiftSub",
+   "display": "Gift Subscription",
+   "category": "Twitch / Subscriptions",
+   "fields": [
+    "tiers:_zG9fSfowhgyhnk6rDxfeliZqBps",
+    "min:int",
+    "max:int",
+    "subType:TriggerTwitchGiftSubType",
+    "monthsGifted:_YeoMwPBfaIYTMKdT9lZoKfpbkWM"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 106,
+   "name": "TwitchGiftBomb",
+   "source": "Twitch",
+   "type": "GiftBomb",
+   "display": "Gift Bomb",
+   "category": "Twitch / Subscriptions",
+   "fields": [
+    "tiers:_zG9fSfowhgyhnk6rDxfeliZqBps",
+    "min:int",
+    "max:int",
+    "subType:TriggerTwitchGiftSubType"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 107,
+   "name": "TwitchRaid",
+   "source": "Twitch",
+   "type": "Raid",
+   "display": "Raid",
+   "category": "Twitch / Raid",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 108,
+   "name": "TwitchHypeTrainStart",
+   "source": "Twitch",
+   "type": "HypeTrainStart",
+   "display": "Hype Train Start",
+   "category": "Twitch / Hype Train",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 109,
+   "name": "TwitchHypeTrainUpdate",
+   "source": "Twitch",
+   "type": "HypeTrainUpdate",
+   "display": "Hype Train Update",
+   "category": "Twitch / Hype Train",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 110,
+   "name": "TwitchHypeTrainLevelUp",
+   "source": "Twitch",
+   "type": "HypeTrainLevelUp",
+   "display": "Hype Train Level Up",
+   "category": "Twitch / Hype Train",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 111,
+   "name": "TwitchHypeTrainEnd",
+   "source": "Twitch",
+   "type": "HypeTrainEnd",
+   "display": "Hype Train End",
+   "category": "Twitch / Hype Train",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 112,
+   "name": "TwitchRewardRedemption",
+   "source": "Twitch",
+   "type": "RewardRedemption",
+   "display": "Reward Redemption",
+   "category": "Twitch / Channel Reward",
+   "fields": [
+    "rewardId:string"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 113,
+   "name": "TwitchRewardCreated",
+   "source": "Twitch",
+   "type": "RewardCreated",
+   "display": "Reward Created",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 114,
+   "name": "TwitchRewardUpdated",
+   "source": "Twitch",
+   "type": "RewardUpdated",
+   "display": "Reward Updated",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 115,
+   "name": "TwitchRewardDeleted",
+   "source": "Twitch",
+   "type": "RewardDeleted",
+   "display": "Reward Deleted",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 194,
+   "name": "TwitchAutomaticRewardRedemption",
+   "source": "Twitch",
+   "type": "AutomaticRewardRedemption",
+   "display": "Automatic Reward Redemption",
+   "category": "Twitch / Channel Reward",
+   "fields": [
+    "rewardType:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 196,
+   "name": "TwitchPowerUpRedemption",
+   "source": "Twitch",
+   "type": "PowerUpRedemption",
+   "display": "Power Up Redemption",
+   "category": "Twitch / Channel Power-Ups",
+   "fields": [
+    "powerUpType:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 116,
+   "name": "TwitchCommunityGoalContribution",
+   "source": "Twitch",
+   "type": "CommunityGoalContribution",
+   "display": "Community Goal Contribution",
+   "category": "Twitch / Community Goal",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 117,
+   "name": "TwitchCommunityGoalEnded",
+   "source": "Twitch",
+   "type": "CommunityGoalEnded",
+   "display": "Community Goal Ended",
+   "category": "Twitch / Community Goal",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 118,
+   "name": "TwitchStreamUpdate",
+   "source": "Twitch",
+   "type": "StreamUpdate",
+   "display": "Stream Update",
+   "category": "Twitch / General",
+   "fields": [
+    "gameOnly:bool",
+    "gameId:string",
+    "gameName:string"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 119,
+   "name": "TwitchWhisper",
+   "source": "Twitch",
+   "type": "Whisper",
+   "display": "Whispers",
+   "category": "Twitch / Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 120,
+   "name": "TwitchFirstWord",
+   "source": "Twitch",
+   "type": "FirstWord",
+   "display": "First Words",
+   "category": "Twitch / Chat",
+   "fields": [
+    "username:string",
+    "isUserId:bool"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 121,
+   "name": "TwitchSubCounterRollover",
+   "source": "Twitch",
+   "type": "SubCounterRollover",
+   "display": "Sub Counter Rollover",
+   "category": "Twitch / Subscriptions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 123,
+   "name": "TwitchStreamUpdateGameOnConnect",
+   "source": "Twitch",
+   "type": "StreamUpdateGameOnConnect",
+   "display": "Update Game on Connect",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 124,
+   "name": "TwitchPresentViewers",
+   "source": "Twitch",
+   "type": "PresentViewers",
+   "display": "Present Viewers",
+   "category": "Twitch / General",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 125,
+   "name": "TwitchPollCreated",
+   "source": "Twitch",
+   "type": "PollCreated",
+   "display": "Poll Created",
+   "category": "Twitch / Polls",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 126,
+   "name": "TwitchPollUpdated",
+   "source": "Twitch",
+   "type": "PollUpdated",
+   "display": "Poll Updated",
+   "category": "Twitch / Polls",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 127,
+   "name": "TwitchPollCompleted",
+   "source": "Twitch",
+   "type": "PollCompleted",
+   "display": "Poll Completed",
+   "category": "Twitch / Polls",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 161,
+   "name": "TwitchPollTerminated",
+   "source": "Twitch",
+   "type": "PollTerminated",
+   "display": "Poll Terminated",
+   "category": "Twitch / Polls",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 473,
+   "name": "TwitchPollArchived",
+   "source": "Twitch",
+   "type": "PollArchived",
+   "display": "Poll Archived",
+   "category": "Twitch / Polls",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 128,
+   "name": "TwitchPredictionCreated",
+   "source": "Twitch",
+   "type": "PredictionCreated",
+   "display": "Prediction Created",
+   "category": "Twitch / Predictions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 129,
+   "name": "TwitchPredictionUpdated",
+   "source": "Twitch",
+   "type": "PredictionUpdated",
+   "display": "Prediction Updated",
+   "category": "Twitch / Predictions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 130,
+   "name": "TwitchPredictionCompleted",
+   "source": "Twitch",
+   "type": "PredictionCompleted",
+   "display": "Prediction Completed",
+   "category": "Twitch / Predictions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 131,
+   "name": "TwitchPredictionCanceled",
+   "source": "Twitch",
+   "type": "PredictionCanceled",
+   "display": "Prediction Canceled",
+   "category": "Twitch / Predictions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 132,
+   "name": "TwitchPredictionLocked",
+   "source": "Twitch",
+   "type": "PredictionLocked",
+   "display": "Prediction Locked",
+   "category": "Twitch / Predictions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 133,
+   "name": "TwitchChatMessage",
+   "source": "Twitch",
+   "type": "ChatMessage",
+   "display": "Chat Message",
+   "category": "Twitch / Chat",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 135,
+   "name": "TwitchChatMessageDeleted",
+   "source": "Twitch",
+   "type": "ChatMessageDeleted",
+   "display": "Chat Message Deleted",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 136,
+   "name": "TwitchUserTimedOut",
+   "source": "Twitch",
+   "type": "UserTimedOut",
+   "display": "User Timed Out",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "min:long",
+    "max:long"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 137,
+   "name": "TwitchUserBanned",
+   "source": "Twitch",
+   "type": "UserBanned",
+   "display": "User Banned",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 191,
+   "name": "TwitchUserUnbanned",
+   "source": "Twitch",
+   "type": "UserUnbanned",
+   "display": "User Unbanned",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 138,
+   "name": "TwitchAnnouncement",
+   "source": "Twitch",
+   "type": "Announcement",
+   "display": "Announcement",
+   "category": "Twitch / General",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 139,
+   "name": "TwitchAdRun",
+   "source": "Twitch",
+   "type": "AdRun",
+   "display": "Ad Run",
+   "category": "Twitch / Ads",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 140,
+   "name": "TwitchBotWhisper",
+   "source": "Twitch",
+   "type": "BotWhisper",
+   "display": "Bot Whispers",
+   "category": "Twitch / Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 141,
+   "name": "TwitchCharityDonation",
+   "source": "Twitch",
+   "type": "CharityDonation",
+   "display": "Charity Donation",
+   "category": "Twitch / Charity",
+   "fields": [
+    "min:decimal",
+    "max:decimal"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 142,
+   "name": "TwitchCharityCompleted",
+   "source": "Twitch",
+   "type": "CharityCompleted",
+   "display": "Charity Completed",
+   "category": "Twitch / Charity",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 143,
+   "name": "TwitchCoinCheer",
+   "source": "Twitch",
+   "type": "CoinCheer",
+   "display": "Coin Cheer",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 144,
+   "name": "TwitchShoutoutCreated",
+   "source": "Twitch",
+   "type": "ShoutoutCreated",
+   "display": "Shoutout Created",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 156,
+   "name": "TwitchShoutoutReceived",
+   "source": "Twitch",
+   "type": "ShoutoutReceived",
+   "display": "Shoutout Received",
+   "category": "Twitch / General",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 145,
+   "name": "TwitchUserUntimedOut",
+   "source": "Twitch",
+   "type": "UserUntimedOut",
+   "display": "User Untimed Out",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 146,
+   "name": "TwitchCharityStarted",
+   "source": "Twitch",
+   "type": "CharityStarted",
+   "display": "Charity Started",
+   "category": "Twitch / Charity",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 147,
+   "name": "TwitchCharityProgress",
+   "source": "Twitch",
+   "type": "CharityProgress",
+   "display": "Charity Progress",
+   "category": "Twitch / Charity",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 148,
+   "name": "TwitchGoalBegin",
+   "source": "Twitch",
+   "type": "GoalBegin",
+   "display": "Goal Begin",
+   "category": "Twitch / Channel Goal",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 149,
+   "name": "TwitchGoalProgress",
+   "source": "Twitch",
+   "type": "GoalProgress",
+   "display": "Goal Progress",
+   "category": "Twitch / Channel Goal",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 150,
+   "name": "TwitchGoalEnd",
+   "source": "Twitch",
+   "type": "GoalEnd",
+   "display": "Goal End",
+   "category": "Twitch / Channel Goal",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 151,
+   "name": "TwitchShieldModeBegin",
+   "source": "Twitch",
+   "type": "ShieldModeBegin",
+   "display": "Shield Mode Begin",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 152,
+   "name": "TwitchShieldModeEnd",
+   "source": "Twitch",
+   "type": "ShieldModeEnd",
+   "display": "Shield Mode End",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 154,
+   "name": "TwitchStreamOnline",
+   "source": "Twitch",
+   "type": "StreamOnline",
+   "display": "Stream Online",
+   "category": "Twitch / Channel",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 155,
+   "name": "TwitchStreamOffline",
+   "source": "Twitch",
+   "type": "StreamOffline",
+   "display": "Stream Offline",
+   "category": "Twitch / Channel",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 157,
+   "name": "TwitchChatCleared",
+   "source": "Twitch",
+   "type": "ChatCleared",
+   "display": "Chat Cleared",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 158,
+   "name": "TwitchRaidStart",
+   "source": "Twitch",
+   "type": "RaidStart",
+   "display": "Raid Start",
+   "category": "Twitch / Raid",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 159,
+   "name": "TwitchRaidSend",
+   "source": "Twitch",
+   "type": "RaidSend",
+   "display": "Raid Send",
+   "category": "Twitch / Raid",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 160,
+   "name": "TwitchRaidCancelled",
+   "source": "Twitch",
+   "type": "RaidCancelled",
+   "display": "Raid Cancelled",
+   "category": "Twitch / Raid",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 162,
+   "name": "TwitchPyramidSuccess",
+   "source": "Twitch",
+   "type": "PyramidSuccess",
+   "display": "Pyramid Success",
+   "category": "Twitch / Pyramid",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 163,
+   "name": "TwitchPyramidBroken",
+   "source": "Twitch",
+   "type": "PyramidBroken",
+   "display": "Pyramid Broken",
+   "category": "Twitch / Pyramid",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 164,
+   "name": "TwitchViewerCountUpdate",
+   "source": "Twitch",
+   "type": "ViewerCountUpdate",
+   "display": "Viewer Count Update",
+   "category": "Twitch / Channel",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 165,
+   "name": "TwitchGuestStarSessionBegin",
+   "source": "Twitch",
+   "type": "GuestStarSessionBegin",
+   "display": "Guest Star Session Begin",
+   "category": "Twitch / Guest Star",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 166,
+   "name": "TwitchGuestStarSessionEnd",
+   "source": "Twitch",
+   "type": "GuestStarSessionEnd",
+   "display": "Guest Star Session End",
+   "category": "Twitch / Guest Star",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 167,
+   "name": "TwitchGuestStarGuestUpdate",
+   "source": "Twitch",
+   "type": "GuestStarGuestUpdate",
+   "display": "Guest Star Guest Update",
+   "category": "Twitch / Guest Star",
+   "fields": [
+    "state:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 168,
+   "name": "TwitchGuestStarSlotUpdate",
+   "source": "Twitch",
+   "type": "GuestStarSlotUpdate",
+   "display": "Guest Star Slot Update",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 169,
+   "name": "TwitchGuestStarSettingsUpdate",
+   "source": "Twitch",
+   "type": "GuestStarSettingsUpdate",
+   "display": "Guest Star Settings Update",
+   "category": "Twitch / Guest Star",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 170,
+   "name": "TwitchHypeChat",
+   "source": "Twitch",
+   "type": "HypeChat",
+   "display": "Hype Chat",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 172,
+   "name": "TwitchHypeChatLevel",
+   "source": "Twitch",
+   "type": "HypeChatLevel",
+   "display": "Hype Chat Level",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 171,
+   "name": "TwitchRewardRedemptionUpdated",
+   "source": "Twitch",
+   "type": "RewardRedemptionUpdated",
+   "display": "Reward Redemption Updated",
+   "category": "Twitch / Channel Reward",
+   "fields": [
+    "rewardId:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 173,
+   "name": "TwitchBroadcasterAuthenticated",
+   "source": "Twitch",
+   "type": "BroadcasterAuthenticated",
+   "display": "Broadcaster Authenticated",
+   "category": "Twitch / Connections",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 174,
+   "name": "TwitchBroadcasterChatConnected",
+   "source": "Twitch",
+   "type": "BroadcasterChatConnected",
+   "display": "Broadcaster Chat Connected",
+   "category": "Twitch / Connections",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 175,
+   "name": "TwitchBroadcasterChatDisconnected",
+   "source": "Twitch",
+   "type": "BroadcasterChatDisconnected",
+   "display": "Broadcaster Chat Disconnected",
+   "category": "Twitch / Connections",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 178,
+   "name": "TwitchBroadcasterEventSubConnected",
+   "source": "Twitch",
+   "type": "BroadcasterEventSubConnected",
+   "display": "Broadcaster EventSub Connected",
+   "category": "Twitch / Connections",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 179,
+   "name": "TwitchBroadcasterEventSubDisconnected",
+   "source": "Twitch",
+   "type": "BroadcasterEventSubDisconnected",
+   "display": "Broadcaster EventSub Disconnected",
+   "category": "Twitch / Connections",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 184,
+   "name": "TwitchBotEventSubConnected",
+   "source": "Twitch",
+   "type": "BotEventSubConnected",
+   "display": "Bot Chat Connected",
+   "category": "Twitch / Connections",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 185,
+   "name": "TwitchBotEventSubDisconnected",
+   "source": "Twitch",
+   "type": "BotEventSubDisconnected",
+   "display": "Bot Chat Disconnected",
+   "category": "Twitch / Connections",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 180,
+   "name": "TwitchSevenTVEmoteAdded",
+   "source": "Twitch",
+   "type": "SevenTVEmoteAdded",
+   "display": "SevenTV Emote Added",
+   "category": "Twitch / Emotes",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 181,
+   "name": "TwitchSevenTVEmoteRemoved",
+   "source": "Twitch",
+   "type": "SevenTVEmoteRemoved",
+   "display": "SevenTV Emote Removed",
+   "category": "Twitch / Emotes",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 182,
+   "name": "TwitchBetterTTVEmoteAdded",
+   "source": "Twitch",
+   "type": "BetterTTVEmoteAdded",
+   "display": "BetterTTV Emote Added",
+   "category": "Twitch / Emotes",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 183,
+   "name": "TwitchBetterTTVEmoteRemoved",
+   "source": "Twitch",
+   "type": "BetterTTVEmoteRemoved",
+   "display": "BetterTTV Emote Removed",
+   "category": "Twitch / Emotes",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 186,
+   "name": "TwitchUpcomingAd",
+   "source": "Twitch",
+   "type": "UpcomingAd",
+   "display": "Upcoming Ad",
+   "category": "Twitch / Ads",
+   "fields": [
+    "minutes:List<int>"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 187,
+   "name": "TwitchModeratorAdded",
+   "source": "Twitch",
+   "type": "ModeratorAdded",
+   "display": "Moderator Added",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 188,
+   "name": "TwitchModeratorRemoved",
+   "source": "Twitch",
+   "type": "ModeratorRemoved",
+   "display": "Moderator Removed",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 189,
+   "name": "TwitchVipAdded",
+   "source": "Twitch",
+   "type": "VipAdded",
+   "display": "VIP Added",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 190,
+   "name": "TwitchVipRemoved",
+   "source": "Twitch",
+   "type": "VipRemoved",
+   "display": "VIP Removed",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 192,
+   "name": "TwitchUnbanRequestApproved",
+   "source": "Twitch",
+   "type": "UnbanRequestApproved",
+   "display": "Unban Request Approved",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 193,
+   "name": "TwitchUnbanRequestDenied",
+   "source": "Twitch",
+   "type": "UnbanRequestDenied",
+   "display": "Unban Request Denied",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 195,
+   "name": "TwitchUnbanRequestCreated",
+   "source": "Twitch",
+   "type": "UnbanRequestCreated",
+   "display": "Unban Request Created",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 465,
+   "name": "TwitchBlockedTermsAdded",
+   "source": "Twitch",
+   "type": "BlockedTermsAdded",
+   "display": "Blocked Terms Added",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 466,
+   "name": "TwitchBlockedTermsDeleted",
+   "source": "Twitch",
+   "type": "BlockedTermsDeleted",
+   "display": "Blocked Terms Deleted",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 469,
+   "name": "TwitchPermittedTermsAdded",
+   "source": "Twitch",
+   "type": "PermittedTermsAdded",
+   "display": "Permitted Terms Added",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 470,
+   "name": "TwitchPermittedTermsDeleted",
+   "source": "Twitch",
+   "type": "PermittedTermsDeleted",
+   "display": "Permitted Terms Deleted",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 451,
+   "name": "TwitchChatEmoteModeOn",
+   "source": "Twitch",
+   "type": "ChatEmoteModeOn",
+   "display": "Emote Mode On",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 452,
+   "name": "TwitchChatEmoteModeOff",
+   "source": "Twitch",
+   "type": "ChatEmoteModeOff",
+   "display": "Emote Mode Off",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 453,
+   "name": "TwitchChatFollowerModeOn",
+   "source": "Twitch",
+   "type": "ChatFollowerModeOn",
+   "display": "Follower Mode On",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 454,
+   "name": "TwitchChatFollowerModeOff",
+   "source": "Twitch",
+   "type": "ChatFollowerModeOff",
+   "display": "Follower Mode Off",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 455,
+   "name": "TwitchChatFollowerModeChanged",
+   "source": "Twitch",
+   "type": "ChatFollowerModeChanged",
+   "display": "Follower Mode Changed",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 456,
+   "name": "TwitchChatSlowModeOn",
+   "source": "Twitch",
+   "type": "ChatSlowModeOn",
+   "display": "Slow Mode On",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 457,
+   "name": "TwitchChatSlowModeOff",
+   "source": "Twitch",
+   "type": "ChatSlowModeOff",
+   "display": "Slow Mode Off",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 458,
+   "name": "TwitchChatSlowModeChanged",
+   "source": "Twitch",
+   "type": "ChatSlowModeChanged",
+   "display": "Slow Mode Changed",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 459,
+   "name": "TwitchChatSubscriberModeOn",
+   "source": "Twitch",
+   "type": "ChatSubscriberModeOn",
+   "display": "Subscriber Mode On",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 460,
+   "name": "TwitchChatSubscriberModeOff",
+   "source": "Twitch",
+   "type": "ChatSubscriberModeOff",
+   "display": "Subscriber Mode Off",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 461,
+   "name": "TwitchChatUniqueModeOn",
+   "source": "Twitch",
+   "type": "ChatUniqueModeOn",
+   "display": "Unique Mode On",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 462,
+   "name": "TwitchChatUniqueModeOff",
+   "source": "Twitch",
+   "type": "ChatUniqueModeOff",
+   "display": "Unique Mode Off",
+   "category": "Twitch / Chat / Mode",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 463,
+   "name": "TwitchAutoModMessageHeld",
+   "source": "Twitch",
+   "type": "AutoModMessageHeld",
+   "display": "AutoMod Message Held",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 464,
+   "name": "TwitchAutoModMessageUpdate",
+   "source": "Twitch",
+   "type": "AutoModMessageUpdate",
+   "display": "AutoMod Message Updated",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 467,
+   "name": "TwitchWarnedUser",
+   "source": "Twitch",
+   "type": "WarnedUser",
+   "display": "Warned User",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 471,
+   "name": "TwitchWarningAcknowledged",
+   "source": "Twitch",
+   "type": "WarningAcknowledged",
+   "display": "Warning Acknowledged",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 495,
+   "name": "TwitchSuspiciousUserMessage",
+   "source": "Twitch",
+   "type": "SuspiciousUserMessage",
+   "display": "Suspicious User Message",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 468,
+   "name": "TwitchSuspiciousUserUpdate",
+   "source": "Twitch",
+   "type": "SuspiciousUserUpdate",
+   "display": "Suspicious User Update",
+   "category": "Twitch / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 472,
+   "name": "TwitchWatchStreak",
+   "source": "Twitch",
+   "type": "WatchStreak",
+   "display": "Watch Streak",
+   "category": "Twitch / Chat",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 497,
+   "name": "TwitchModiversary",
+   "source": "Twitch",
+   "type": "Modiversary",
+   "display": "Modiversary",
+   "category": "Twitch / Chat",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 474,
+   "name": "TwitchSharedChatSessionBegin",
+   "source": "Twitch",
+   "type": "SharedChatSessionBegin",
+   "display": "Shared Chat Session Begin",
+   "category": "Twitch / Shared Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 475,
+   "name": "TwitchSharedChatSessionUpdate",
+   "source": "Twitch",
+   "type": "SharedChatSessionUpdate",
+   "display": "Shared Chat Session Update",
+   "category": "Twitch / Shared Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 476,
+   "name": "TwitchSharedChatSessionEnd",
+   "source": "Twitch",
+   "type": "SharedChatSessionEnd",
+   "display": "Shared Chat Session End",
+   "category": "Twitch / Shared Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 477,
+   "name": "TwitchPrimePaidUpgrade",
+   "source": "Twitch",
+   "type": "PrimePaidUpgrade",
+   "display": "Prime Paid Upgrade",
+   "category": "Twitch / Subscriptions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 478,
+   "name": "TwitchPayItForward",
+   "source": "Twitch",
+   "type": "PayItForward",
+   "display": "Pay It Forward",
+   "category": "Twitch / Subscriptions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 479,
+   "name": "TwitchGiftPaidUpgrade",
+   "source": "Twitch",
+   "type": "GiftPaidUpgrade",
+   "display": "Gift Paid Upgrade",
+   "category": "Twitch / Subscriptions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 480,
+   "name": "TwitchBitsBadgeTier",
+   "source": "Twitch",
+   "type": "BitsBadgeTier",
+   "display": "Bits Badge Tier",
+   "category": "Twitch / Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 481,
+   "name": "TwitchSharedChatAnnouncement",
+   "source": "Twitch",
+   "type": "SharedChatAnnouncement",
+   "display": "Shared Chat Announcement",
+   "category": "Twitch / Shared Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 482,
+   "name": "TwitchSharedChatRaid",
+   "source": "Twitch",
+   "type": "SharedChatRaid",
+   "display": "Shared Chat Raid",
+   "category": "Twitch / Shared Chat",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 483,
+   "name": "TwitchSharedChatPrimePaidUpgrade",
+   "source": "Twitch",
+   "type": "SharedChatPrimePaidUpgrade",
+   "display": "Shared Chat Prime Paid Upgrade",
+   "category": "Twitch / Shared Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 484,
+   "name": "TwitchSharedChatGiftPaidUpgrade",
+   "source": "Twitch",
+   "type": "SharedChatGiftPaidUpgrade",
+   "display": "Shared Chat Gift Paid Upgrade",
+   "category": "Twitch / Shared Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 485,
+   "name": "TwitchSharedChatPayItForward",
+   "source": "Twitch",
+   "type": "SharedChatPayItForward",
+   "display": "Shared Chat Pay It Forward",
+   "category": "Twitch / Shared Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 486,
+   "name": "TwitchSharedChatSub",
+   "source": "Twitch",
+   "type": "SharedChatSub",
+   "display": "Shared Chat Sub",
+   "category": "Twitch / Shared Chat",
+   "fields": [
+    "tiers:_zG9fSfowhgyhnk6rDxfeliZqBps"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 487,
+   "name": "TwitchSharedChatResub",
+   "source": "Twitch",
+   "type": "SharedChatResub",
+   "display": "Shared Chat Resub",
+   "category": "Twitch / Shared Chat",
+   "fields": [
+    "tiers:_zG9fSfowhgyhnk6rDxfeliZqBps",
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 488,
+   "name": "TwitchSharedChatSubGift",
+   "source": "Twitch",
+   "type": "SharedChatSubGift",
+   "display": "Shared Chat Sub Gift",
+   "category": "Twitch / Shared Chat",
+   "fields": [
+    "tiers:_zG9fSfowhgyhnk6rDxfeliZqBps",
+    "min:int",
+    "max:int",
+    "subType:TriggerTwitchGiftSubType",
+    "monthsGifted:_YeoMwPBfaIYTMKdT9lZoKfpbkWM"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 489,
+   "name": "TwitchSharedChatCommunitySubGift",
+   "source": "Twitch",
+   "type": "SharedChatCommunitySubGift",
+   "display": "Shared Chat Community Sub Gift",
+   "category": "Twitch / Shared Chat",
+   "fields": [
+    "tiers:_zG9fSfowhgyhnk6rDxfeliZqBps",
+    "min:int",
+    "max:int",
+    "subType:TriggerTwitchGiftSubType"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 490,
+   "name": "TwitchSharedChatUserBanned",
+   "source": "Twitch",
+   "type": "SharedChatUserBanned",
+   "display": "Shared Chat User Banned",
+   "category": "Twitch / Shared Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 491,
+   "name": "TwitchSharedChatUserUnbanned",
+   "source": "Twitch",
+   "type": "SharedChatUserUnbanned",
+   "display": "Shared Chat User Unbanned",
+   "category": "Twitch / Shared Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 492,
+   "name": "TwitchSharedChatUserTimedout",
+   "source": "Twitch",
+   "type": "SharedChatUserTimedout",
+   "display": "Shared Chat User Timed Out",
+   "category": "Twitch / Shared Chat",
+   "fields": [
+    "min:long",
+    "max:long"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 493,
+   "name": "TwitchSharedChatUserUntimedout",
+   "source": "Twitch",
+   "type": "SharedChatUserUntimedout",
+   "display": "Shared Chat User Untimed Out",
+   "category": "Twitch / Shared Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 494,
+   "name": "TwitchSharedChatMessageDeleted",
+   "source": "Twitch",
+   "type": "SharedChatMessageDeleted",
+   "display": "Shared Chat Message Deleted",
+   "category": "Twitch / Shared Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 498,
+   "name": "TwitchSharedModiversary",
+   "source": "Twitch",
+   "type": "SharedModiversary",
+   "display": "Shared Modiversary",
+   "category": "Twitch / Shared Chat",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 496,
+   "name": "TwitchCustomPowerUpRedemption",
+   "source": "Twitch",
+   "type": "CustomPowerUpRedemption",
+   "display": "Custom Power-Up Redemption",
+   "category": "Twitch / Channel Power-Ups",
+   "fields": [
+    "customPowerUpId:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 201,
+   "name": "StreamlabsDonation",
+   "source": "Streamlabs",
+   "type": "Donation",
+   "display": "Donation",
+   "category": "Integrations / Streamlabs",
+   "fields": [
+    "min:decimal",
+    "max:decimal"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 202,
+   "name": "StreamlabsMerchandise",
+   "source": "Streamlabs",
+   "type": "Merchandise",
+   "display": "Merchandise",
+   "category": "Integrations / Streamlabs",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 203,
+   "name": "StreamlabsConnected",
+   "source": "Streamlabs",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "Integrations / Streamlabs",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 204,
+   "name": "StreamlabsDisconnected",
+   "source": "Streamlabs",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "Integrations / Streamlabs",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 205,
+   "name": "StreamlabsCharityDonation",
+   "source": "Streamlabs",
+   "type": "CharityDonation",
+   "display": "Charity Donation",
+   "category": "Integrations / Streamlabs",
+   "fields": [
+    "min:decimal",
+    "max:decimal"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 206,
+   "name": "StreamlabsAuthenticated",
+   "source": "Streamlabs",
+   "type": "Authenticated",
+   "display": "Authenticated",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 401,
+   "name": "CommandTriggered",
+   "source": "Command",
+   "type": "Triggered",
+   "display": "Command Triggered",
+   "category": "Core / Commands",
+   "fields": [
+    "commandId:Guid"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 402,
+   "name": "CommandCooldown",
+   "source": "Command",
+   "type": "Cooldown",
+   "display": "Command Cooldown",
+   "category": "Core / Commands",
+   "fields": [
+    "commandId:Guid"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 301,
+   "name": "SpeechToTextDictation",
+   "source": "SpeechToText",
+   "type": "Dictation",
+   "display": "Dictation",
+   "category": "Core / Voice Control",
+   "fields": [
+    "commandId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 302,
+   "name": "SpeechToTextCommand",
+   "source": "SpeechToText",
+   "type": "Command",
+   "display": "Command",
+   "category": "Core / Voice Control",
+   "fields": [
+    "commandId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 501,
+   "name": "FileWatcherChanged",
+   "source": "FileWatcher",
+   "type": "Changed",
+   "display": "Changed",
+   "category": "Core / File/Folder Watcher",
+   "fields": [
+    "watcherId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 502,
+   "name": "FileWatcherCreated",
+   "source": "FileWatcher",
+   "type": "Created",
+   "display": "Created",
+   "category": "Core / File/Folder Watcher",
+   "fields": [
+    "watcherId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 503,
+   "name": "FileWatcherDeleted",
+   "source": "FileWatcher",
+   "type": "Deleted",
+   "display": "Deleted",
+   "category": "Core / File/Folder Watcher",
+   "fields": [
+    "watcherId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 504,
+   "name": "FileWatcherRenamed",
+   "source": "FileWatcher",
+   "type": "Renamed",
+   "display": "Renamed",
+   "category": "Core / File/Folder Watcher",
+   "fields": [
+    "watcherId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 511,
+   "name": "FileTailChanged",
+   "source": "FileTail",
+   "type": "Changed",
+   "display": "Changed",
+   "category": "Core / File IO / File Tail",
+   "fields": [
+    "fileTailId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 601,
+   "name": "QuoteAdded",
+   "source": "Quote",
+   "type": "Added",
+   "display": "Quote Added",
+   "category": "Core / Quotes",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 602,
+   "name": "QuoteShow",
+   "source": "Quote",
+   "type": "Show",
+   "display": "Show Quote",
+   "category": "Core / Quotes",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 701,
+   "name": "TimedAction",
+   "source": "Misc",
+   "type": "TimedAction",
+   "display": "Timed Actions",
+   "category": "Core",
+   "fields": [
+    "timerId:Guid"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 702,
+   "name": "Test",
+   "source": "Misc",
+   "type": "Test",
+   "display": "Test",
+   "category": "Core",
+   "fields": [
+    "variables:Dictionary<string, string>"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 703,
+   "name": "ProcessStarted",
+   "source": "Misc",
+   "type": "ProcessStarted",
+   "display": "Process Started",
+   "category": "Core / Processes",
+   "fields": [
+    "processName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 704,
+   "name": "ProcessStopped",
+   "source": "Misc",
+   "type": "ProcessStopped",
+   "display": "Process Stopped",
+   "category": "Core / Processes",
+   "fields": [
+    "processName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 705,
+   "name": "ChatWindowAction",
+   "source": "Misc",
+   "type": "ChatWindowAction",
+   "display": "Chat Window Action",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 706,
+   "name": "StreamerbotStarted",
+   "source": "Misc",
+   "type": "StreamerbotStarted",
+   "display": "Streamer.bot Started",
+   "category": "Core",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 707,
+   "name": "StreamerbotExiting",
+   "source": "Misc",
+   "type": "StreamerbotExiting",
+   "display": "Streamer.bot Exiting",
+   "category": "",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 708,
+   "name": "ToastActivation",
+   "source": "Misc",
+   "type": "ToastActivation",
+   "display": "Toast Activation",
+   "category": "Core / System",
+   "fields": [
+    "toastId:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 709,
+   "name": "GlobalVariableUpdated",
+   "source": "Misc",
+   "type": "GlobalVariableUpdated",
+   "display": "Global Variable Updated",
+   "category": "Core / Global Variables",
+   "fields": [
+    "variableName:string",
+    "persisted:int"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 710,
+   "name": "UserGlobalVariableUpdated",
+   "source": "Misc",
+   "type": "UserGlobalVariableUpdated",
+   "display": "User Global Variable Updated",
+   "category": "Core / Global Variables",
+   "fields": [
+    "userLogon:string",
+    "platform:string",
+    "variableName:string",
+    "persisted:int"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 711,
+   "name": "GlobalVariableCreated",
+   "source": "Misc",
+   "type": "GlobalVariableCreated",
+   "display": "Global Variable Created",
+   "category": "Core / Global Variables",
+   "fields": [
+    "variableName:string",
+    "persisted:int"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 712,
+   "name": "GlobalVariableDeleted",
+   "source": "Misc",
+   "type": "GlobalVariableDeleted",
+   "display": "Global Variable Deleted",
+   "category": "Core / Global Variables",
+   "fields": [
+    "variableName:string",
+    "persisted:int"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 1,
+   "name": "Custom",
+   "source": "General",
+   "type": "Custom",
+   "display": "Custom",
+   "category": "",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 801,
+   "name": "RawAction",
+   "source": "Raw",
+   "type": "Action",
+   "display": "Action",
+   "category": "",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 802,
+   "name": "RawSubAction",
+   "source": "Raw",
+   "type": "SubAction",
+   "display": "Sub Action",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 806,
+   "name": "RawActionCompleted",
+   "source": "Raw",
+   "type": "ActionCompleted",
+   "display": "Action Completed",
+   "category": "",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 803,
+   "name": "WebsocketClientOpen",
+   "source": "WebsocketClient",
+   "type": "Open",
+   "display": "Websocket Client Opened",
+   "category": "Core / Websocket / Client",
+   "fields": [
+    "clientId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 804,
+   "name": "WebsocketClientClose",
+   "source": "WebsocketClient",
+   "type": "Close",
+   "display": "Websocket Client Closed",
+   "category": "Core / Websocket / Client",
+   "fields": [
+    "clientId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 805,
+   "name": "WebsocketClientMessage",
+   "source": "WebsocketClient",
+   "type": "Message",
+   "display": "Websocket Client Message",
+   "category": "Core / Websocket / Client",
+   "fields": [
+    "clientId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 1201,
+   "name": "StreamElementsTip",
+   "source": "StreamElements",
+   "type": "Tip",
+   "display": "Tip",
+   "category": "Integrations / StreamElements",
+   "fields": [
+    "min:decimal",
+    "max:decimal"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 1202,
+   "name": "StreamElementsMerch",
+   "source": "StreamElements",
+   "type": "Merch",
+   "display": "Merch",
+   "category": "Integrations / StreamElements",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 1203,
+   "name": "StreamElementsConnected",
+   "source": "StreamElements",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "Integrations / StreamElements",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 1204,
+   "name": "StreamElementsDisconnected",
+   "source": "StreamElements",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "Integrations / StreamElements",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 1205,
+   "name": "StreamElementsAuthenticated",
+   "source": "StreamElements",
+   "type": "Authenticated",
+   "display": "Authenticatred",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 2001,
+   "name": "WebsocketCustomServerOpen",
+   "source": "WebsocketCustomServer",
+   "type": "Open",
+   "display": "Custom Server Connection Opened",
+   "category": "Core / Websocket / Custom Server",
+   "fields": [
+    "serverId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 2002,
+   "name": "WebsocketCustomServerClose",
+   "source": "WebsocketCustomServer",
+   "type": "Close",
+   "display": "Custom Server Connection Closed",
+   "category": "Core / Websocket / Custom Server",
+   "fields": [
+    "serverId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 2003,
+   "name": "WebsocketCustomServerMessage",
+   "source": "WebsocketCustomServer",
+   "type": "Message",
+   "display": "Custom Server Message",
+   "category": "Core / Websocket / Custom Server",
+   "fields": [
+    "serverId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 3001,
+   "name": "DonorDriveDonation",
+   "source": "DonorDrive",
+   "type": "Donation",
+   "display": "Donation",
+   "category": "Integrations / DonorDrive",
+   "fields": [
+    "donorDriveId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 3002,
+   "name": "DonorDriveProfileUpdated",
+   "source": "DonorDrive",
+   "type": "ProfileUpdated",
+   "display": "Profile Updated",
+   "category": "Integrations / DonorDrive",
+   "fields": [
+    "donorDriveId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 3003,
+   "name": "DonorDriveIncentive",
+   "source": "DonorDrive",
+   "type": "Incentive",
+   "display": "Incentive",
+   "category": "Integrations / DonorDrive",
+   "fields": [
+    "donorDriveId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 4001,
+   "name": "YouTubeBroadcastStarted",
+   "source": "YouTube",
+   "type": "BroadcastStarted",
+   "display": "Broadcast Started",
+   "category": "YouTube / Broadcast",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4002,
+   "name": "YouTubeBroadcastEnded",
+   "source": "YouTube",
+   "type": "BroadcastEnded",
+   "display": "Broadcast Ended",
+   "category": "YouTube / Broadcast",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4003,
+   "name": "YouTubeMessage",
+   "source": "YouTube",
+   "type": "Message",
+   "display": "Message",
+   "category": "YouTube / Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4004,
+   "name": "YouTubeMessageDeleted",
+   "source": "YouTube",
+   "type": "MessageDeleted",
+   "display": "Message Deleted",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4005,
+   "name": "YouTubeUserBanned",
+   "source": "YouTube",
+   "type": "UserBanned",
+   "display": "User Banned",
+   "category": "YouTube / General",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4006,
+   "name": "YouTubeSuperChat",
+   "source": "YouTube",
+   "type": "SuperChat",
+   "display": "Super Chat",
+   "category": "YouTube / Chat",
+   "fields": [
+    "min:decimal",
+    "max:decimal"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 4007,
+   "name": "YouTubeSuperSticker",
+   "source": "YouTube",
+   "type": "SuperSticker",
+   "display": "Super Sticker",
+   "category": "YouTube / Chat",
+   "fields": [
+    "min:decimal",
+    "max:decimal"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 4008,
+   "name": "YouTubeNewSponsor",
+   "source": "YouTube",
+   "type": "NewSponsor",
+   "display": "New Sponsor",
+   "category": "YouTube / General",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4009,
+   "name": "YouTubeMemberMileStone",
+   "source": "YouTube",
+   "type": "MemberMileStone",
+   "display": "Member Milestone",
+   "category": "YouTube / Membership",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4010,
+   "name": "YouTubeNewSponsorOnlyStarted",
+   "source": "YouTube",
+   "type": "NewSponsorOnlyStarted",
+   "display": "Sponsor Only Started",
+   "category": "YouTube / General",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4011,
+   "name": "YouTubeNewSponsorOnlyEnded",
+   "source": "YouTube",
+   "type": "NewSponsorOnlyEnded",
+   "display": "Sponsor Only Ended",
+   "category": "YouTube / General",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4012,
+   "name": "YouTubeStatisticsUpdated",
+   "source": "YouTube",
+   "type": "StatisticsUpdated",
+   "display": "Statistics Updated",
+   "category": "YouTube / Broadcast",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4013,
+   "name": "YouTubeBroadcastUpdated",
+   "source": "YouTube",
+   "type": "BroadcastUpdated",
+   "display": "Broadcast Updated",
+   "category": "YouTube / Broadcast",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4014,
+   "name": "YouTubeMembershipGift",
+   "source": "YouTube",
+   "type": "MembershipGift",
+   "display": "Membership Gift",
+   "category": "YouTube / Membership",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4015,
+   "name": "YouTubeGiftMembershipReceived",
+   "source": "YouTube",
+   "type": "GiftMembershipReceived",
+   "display": "Gift Membership Received",
+   "category": "YouTube / Membership",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4016,
+   "name": "YouTubeFirstWords",
+   "source": "YouTube",
+   "type": "FirstWords",
+   "display": "First Words",
+   "category": "YouTube / Chat",
+   "fields": [
+    "username:string",
+    "isUserId:bool"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 4017,
+   "name": "YouTubePresentViewers",
+   "source": "YouTube",
+   "type": "PresentViewers",
+   "display": "Present Viewers",
+   "category": "YouTube / General",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4018,
+   "name": "YouTubeNewSubscriber",
+   "source": "YouTube",
+   "type": "NewSubscriber",
+   "display": "New Subscriber",
+   "category": "YouTube / General",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4019,
+   "name": "YouTubeBroadcastMonitoringStarted",
+   "source": "YouTube",
+   "type": "BroadcastMonitoringStarted",
+   "display": "Broadcast Monitoring Started",
+   "category": "YouTube / Broadcast",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4020,
+   "name": "YouTubeBroadcastMonitoringEnded",
+   "source": "YouTube",
+   "type": "BroadcastMonitoringEnded",
+   "display": "Broadcast Monitoring Ended",
+   "category": "YouTube / Broadcast",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4021,
+   "name": "YouTubeBroadcastAdded",
+   "source": "YouTube",
+   "type": "BroadcastAdded",
+   "display": "Broadcast Added",
+   "category": "YouTube / Broadcast",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4022,
+   "name": "YouTubeBroadcastRemoved",
+   "source": "YouTube",
+   "type": "BroadcastRemoved",
+   "display": "Broadcast Removed",
+   "category": "YouTube / Broadcast",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4027,
+   "name": "YouTubePollClosed",
+   "source": "YouTube",
+   "type": "PollClosed",
+   "display": "Poll Closed",
+   "category": "YouTube / Polls",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4028,
+   "name": "YouTubePollStarted",
+   "source": "YouTube",
+   "type": "PollStarted",
+   "display": "Poll Started",
+   "category": "YouTube / Polls",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4029,
+   "name": "YouTubePollUpdated",
+   "source": "YouTube",
+   "type": "PollUpdated",
+   "display": "Poll Updated",
+   "category": "YouTube / Polls",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4030,
+   "name": "YouTubeJewelsGifted",
+   "source": "YouTube",
+   "type": "JewelsGifted",
+   "display": "Jewels Gifted",
+   "category": "YouTube / Chat",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 4031,
+   "name": "YouTubeUserTimedout",
+   "source": "YouTube",
+   "type": "UserTimedout",
+   "display": "User Timed Out",
+   "category": "YouTube / General",
+   "fields": [
+    "min:long",
+    "max:long"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 4023,
+   "name": "YouTubeSevenTVEmoteAdded",
+   "source": "YouTube",
+   "type": "SevenTVEmoteAdded",
+   "display": "SevenTV Emote Added",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4024,
+   "name": "YouTubeSevenTVEmoteRemoved",
+   "source": "YouTube",
+   "type": "SevenTVEmoteRemoved",
+   "display": "SevenTV Emote Removed",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4025,
+   "name": "YouTubeBetterTTVEmoteAdded",
+   "source": "YouTube",
+   "type": "BetterTTVEmoteAdded",
+   "display": "BetterTTV Emote Added",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 4026,
+   "name": "YouTubeBetterTTVEmoteRemoved",
+   "source": "YouTube",
+   "type": "BetterTTVEmoteRemoved",
+   "display": "BetterTTV Emote Removed",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 5001,
+   "name": "PulsoidHeartRatePulse",
+   "source": "Pulsoid",
+   "type": "HeartRatePulse",
+   "display": "Heart Rate Pulse",
+   "category": "Integrations / Pulsoid",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 6001,
+   "name": "HypeRateHeartRatePulse",
+   "source": "HypeRate",
+   "type": "HeartRatePulse",
+   "display": "Heart Rate Pulse",
+   "category": "Integrations / HypeRate.io",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 6002,
+   "name": "HypeRateTwitchClipCreated",
+   "source": "HypeRate",
+   "type": "TwitchClipCreated",
+   "display": "Twitch Clip Created",
+   "category": "Integrations / HypeRate.io",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 6003,
+   "name": "HypeRateConnected",
+   "source": "HypeRate",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "Integrations / HypeRate.io",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 6004,
+   "name": "HypeRateDisconnected",
+   "source": "HypeRate",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "Integrations / HypeRate.io",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 7001,
+   "name": "KofiDonation",
+   "source": "Kofi",
+   "type": "Donation",
+   "display": "Donation",
+   "category": "Integrations / Kofi",
+   "fields": [
+    "min:decimal",
+    "max:decimal"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 7002,
+   "name": "KofiSubscription",
+   "source": "Kofi",
+   "type": "Subscription",
+   "display": "Subscription",
+   "category": "Integrations / Kofi",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 7003,
+   "name": "KofiResubscription",
+   "source": "Kofi",
+   "type": "Resubscription",
+   "display": "Resubscription",
+   "category": "Integrations / Kofi",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 7004,
+   "name": "KofiShopOrder",
+   "source": "Kofi",
+   "type": "ShopOrder",
+   "display": "Shop Order",
+   "category": "Integrations / Kofi",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 7005,
+   "name": "KofiCommission",
+   "source": "Kofi",
+   "type": "Commission",
+   "display": "Commission",
+   "category": "Integrations / Kofi",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 8001,
+   "name": "PatreonFollowCreated",
+   "source": "Patreon",
+   "type": "FollowCreated",
+   "display": "Follow Created",
+   "category": "Integrations / Patreon",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 8002,
+   "name": "PatreonFollowDeleted",
+   "source": "Patreon",
+   "type": "FollowDeleted",
+   "display": "Follow Deleted",
+   "category": "Integrations / Patreon",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 8003,
+   "name": "PatreonPledgeCreated",
+   "source": "Patreon",
+   "type": "PledgeCreated",
+   "display": "Pledge Created",
+   "category": "Integrations / Patreon",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 8004,
+   "name": "PatreonPledgeUpdated",
+   "source": "Patreon",
+   "type": "PledgeUpdated",
+   "display": "Pledge Updated",
+   "category": "Integrations / Patreon",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 8005,
+   "name": "PatreonPledgeDeleted",
+   "source": "Patreon",
+   "type": "PledgeDeleted",
+   "display": "Pledge Deleted",
+   "category": "Integrations / Patreon",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 9001,
+   "name": "ApplicationActionAdded",
+   "source": "Application",
+   "type": "ActionAdded",
+   "display": "Add Action",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 9002,
+   "name": "ApplicationActionUpdated",
+   "source": "Application",
+   "type": "ActionUpdated",
+   "display": "Update Action",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 9003,
+   "name": "ApplicationActionDeleted",
+   "source": "Application",
+   "type": "ActionDeleted",
+   "display": "Delete Action",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 9004,
+   "name": "ApplicationImport",
+   "source": "Misc",
+   "type": "ApplicationImport",
+   "display": "Import",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 9005,
+   "name": "ApplicationCommandAdded",
+   "source": "Application",
+   "type": "CommandAdded",
+   "display": "Command Added",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 9006,
+   "name": "ApplicationCommandUpdated",
+   "source": "Application",
+   "type": "CommandUpdated",
+   "display": "Command Updated",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 9007,
+   "name": "ApplicationCommandDeleted",
+   "source": "Application",
+   "type": "CommandDeleted",
+   "display": "Command Deleted",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 32001,
+   "name": "GroupAdded",
+   "source": "Group",
+   "type": "Added",
+   "display": "Added",
+   "category": "Core / Groups",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 32002,
+   "name": "GroupRemoved",
+   "source": "Group",
+   "type": "Removed",
+   "display": "Removed",
+   "category": "Core / Groups",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 32003,
+   "name": "GroupCleared",
+   "source": "Group",
+   "type": "Cleared",
+   "display": "Cleared",
+   "category": "Core / Groups",
+   "fields": [
+    "groupId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 32004,
+   "name": "GroupUsersAdded",
+   "source": "Group",
+   "type": "UsersAdded",
+   "display": "Users Added",
+   "category": "Core / Groups",
+   "fields": [
+    "groupId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 32005,
+   "name": "GroupUsersRemoved",
+   "source": "Group",
+   "type": "UsersRemoved",
+   "display": "Users Removed",
+   "category": "Core / Groups",
+   "fields": [
+    "groupId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 10001,
+   "name": "TipeeeStreamDonation",
+   "source": "TipeeeStream",
+   "type": "Donation",
+   "display": "Donation",
+   "category": "Integrations / TipeeeStream",
+   "fields": [
+    "min:decimal",
+    "max:decimal"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 11001,
+   "name": "TreatStreamTreat",
+   "source": "TreatStream",
+   "type": "Treat",
+   "display": "Treat",
+   "category": "Integrations / TreatStream",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 11002,
+   "name": "TreatStreamAuthenticated",
+   "source": "TreatStream",
+   "type": "Authenticated",
+   "display": "Authenticated",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 11003,
+   "name": "TreatStreamConnected",
+   "source": "TreatStream",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 11004,
+   "name": "TreatStreamDisconnected",
+   "source": "TreatStream",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 13001,
+   "name": "ShopifyOrderCreated",
+   "source": "Shopify",
+   "type": "OrderCreated",
+   "display": "Shopify Order Created",
+   "category": "Integrations / Shopify",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 13002,
+   "name": "ShopifyOrderPaid",
+   "source": "Shopify",
+   "type": "OrderPaid",
+   "display": "Shopify Order Paid",
+   "category": "Integrations / Shopify",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 14001,
+   "name": "ObsConnected",
+   "source": "Obs",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "OBS Studio",
+   "fields": [
+    "obsId:Guid?"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 14002,
+   "name": "ObsDisconnected",
+   "source": "Obs",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "OBS Studio",
+   "fields": [
+    "obsId:Guid?"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 14003,
+   "name": "ObsEvent",
+   "source": "Obs",
+   "type": "Event",
+   "display": "Event",
+   "category": "OBS Studio",
+   "fields": [
+    "eventName:string",
+    "obsId:Guid?"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 14004,
+   "name": "ObsSceneChanged",
+   "source": "Obs",
+   "type": "SceneChanged",
+   "display": "Scene Changed",
+   "category": "OBS Studio",
+   "fields": [
+    "sceneName:string",
+    "obsId:Guid?"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 14005,
+   "name": "ObsStreamingStarted",
+   "source": "Obs",
+   "type": "StreamingStarted",
+   "display": "Streaming Started",
+   "category": "OBS Studio",
+   "fields": [
+    "obsId:Guid?"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 14006,
+   "name": "ObsStreamingStopped",
+   "source": "Obs",
+   "type": "StreamingStopped",
+   "display": "Streaming Stopped",
+   "category": "OBS Studio",
+   "fields": [
+    "obsId:Guid?"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 14007,
+   "name": "ObsRecordingStarted",
+   "source": "Obs",
+   "type": "RecordingStarted",
+   "display": "Recording Started",
+   "category": "OBS Studio",
+   "fields": [
+    "obsId:Guid?"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 14008,
+   "name": "ObsRecordingStopped",
+   "source": "Obs",
+   "type": "RecordingStopped",
+   "display": "Recording Stopped",
+   "category": "OBS Studio",
+   "fields": [
+    "obsId:Guid?"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 14009,
+   "name": "ObsVendorEvent",
+   "source": "Obs",
+   "type": "VendorEvent",
+   "display": "Vendor Event",
+   "category": "OBS Studio",
+   "fields": [
+    "vendorName:string",
+    "eventName:string",
+    "obsId:Guid?"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 15001,
+   "name": "MidiMessage",
+   "source": "Midi",
+   "type": "Message",
+   "display": "MIDI Message",
+   "category": "Core / MIDI",
+   "fields": [
+    "midiDevice:Guid",
+    "midiEvent:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 16001,
+   "name": "InputKeyPress",
+   "source": "Inputs",
+   "type": "InputKeyPress",
+   "display": "Key Press",
+   "category": "Core / Inputs",
+   "fields": [
+    "keyCode:ushort",
+    "mask:ushort"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 16002,
+   "name": "InputMouseClick",
+   "source": "Inputs",
+   "type": "InputMouseClick",
+   "display": "Mouse Click",
+   "category": "Core / Inputs",
+   "fields": [
+    "buttons:_JyHwfhGFib0J4d9iDTSnKhu9Pig"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 17001,
+   "name": "StreamDeckAction",
+   "source": "StreamDeck",
+   "type": "Action",
+   "display": "Stream Deck Action",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 17002,
+   "name": "StreamDeckConnected",
+   "source": "StreamDeck",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "Elgato / Stream Deck",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 17003,
+   "name": "StreamDeckDisconnected",
+   "source": "StreamDeck",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "Elgato / Stream Deck",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 17004,
+   "name": "StreamDeckInfo",
+   "source": "StreamDeck",
+   "type": "Info",
+   "display": "Stream Deck Info",
+   "category": "Elgato / Stream Deck",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 18001,
+   "name": "CustomEvent",
+   "source": "Custom",
+   "type": "Event",
+   "display": "Custom",
+   "category": "Custom",
+   "fields": [
+    "eventName:string"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 18002,
+   "name": "CustomCodeEvent",
+   "source": "Custom",
+   "type": "CodeEvent",
+   "display": "Custom Code Event",
+   "category": "Custom",
+   "fields": [
+    "name:string",
+    "eventName:string"
+   ],
+   "emitted": true
+  },
+  {
+   "id": 19001,
+   "name": "VTubeStudioModelLoaded",
+   "source": "VTubeStudio",
+   "type": "ModelLoaded",
+   "display": "Model Loaded",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "modelId:string",
+    "modelName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 19002,
+   "name": "VTubeStudioModelUnloaded",
+   "source": "VTubeStudio",
+   "type": "ModelUnloaded",
+   "display": "Model Unloaded",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "modelId:string",
+    "modelName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 19003,
+   "name": "VTubeStudioBackgroundChanged",
+   "source": "VTubeStudio",
+   "type": "BackgroundChanged",
+   "display": "Background Changed",
+   "category": "Integrations / VTube Studio",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 19004,
+   "name": "VTubeStudioModelConfigChanged",
+   "source": "VTubeStudio",
+   "type": "ModelConfigChanged",
+   "display": "Model Configuration Changed",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "modelId:string",
+    "modelName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 19005,
+   "name": "VTubeStudioHotkeyTriggered",
+   "source": "VTubeStudio",
+   "type": "HotkeyTriggered",
+   "display": "Hotkey Triggered",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "modelId:string",
+    "modelName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 19006,
+   "name": "VTubeStudioModelAnimation",
+   "source": "VTubeStudio",
+   "type": "ModelAnimation",
+   "display": "Model Animation",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "modelId:string",
+    "modelName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 19007,
+   "name": "VTubeStudioConnected",
+   "source": "VTubeStudio",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "Integrations / VTube Studio",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 19008,
+   "name": "VTubeStudioDisconnected",
+   "source": "VTubeStudio",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "Integrations / VTube Studio",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 19009,
+   "name": "VTubeStudioTrackingStatusChanged",
+   "source": "VTubeStudio",
+   "type": "TrackingStatusChanged",
+   "display": "Tracking Status Changed",
+   "category": "Integrations / VTube Studio",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 19010,
+   "name": "VTubeStudioItemEvent",
+   "source": "VTubeStudio",
+   "type": "ItemEvent",
+   "display": "Item Event",
+   "category": "Integrations / VTube Studio",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 19011,
+   "name": "VTubeStudioModelClicked",
+   "source": "VTubeStudio",
+   "type": "ModelClicked",
+   "display": "Model Clicked",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "modelId:string",
+    "modelName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 20001,
+   "name": "CrowdControlGameSessionStart",
+   "source": "CrowdControl",
+   "type": "GameSessionStart",
+   "display": "Game Session Start",
+   "category": "Integrations / CrowdControl",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 20002,
+   "name": "CrowdControlGameSessionEnd",
+   "source": "CrowdControl",
+   "type": "GameSessionEnd",
+   "display": "Game Session End",
+   "category": "Integrations / CrowdControl",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 20003,
+   "name": "CrowdControlEffectRequest",
+   "source": "CrowdControl",
+   "type": "EffectRequest",
+   "display": "Effect Request",
+   "category": "Integrations / CrowdControl",
+   "fields": [
+    "gameId:string",
+    "gameName:string",
+    "packName:string",
+    "effectId:string",
+    "effectName:string",
+    "effectType:int",
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 20004,
+   "name": "CrowdControlEffectSuccess",
+   "source": "CrowdControl",
+   "type": "EffectSuccess",
+   "display": "Effect Success",
+   "category": "Integrations / CrowdControl",
+   "fields": [
+    "gameId:string",
+    "gameName:string",
+    "packName:string",
+    "effectId:string",
+    "effectName:string",
+    "effectType:int",
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 20005,
+   "name": "CrowdControlEffectFailure",
+   "source": "CrowdControl",
+   "type": "EffectFailure",
+   "display": "Effect Failure",
+   "category": "Integrations / CrowdControl",
+   "fields": [
+    "gameId:string",
+    "gameName:string",
+    "packName:string",
+    "effectId:string",
+    "effectName:string",
+    "effectType:int",
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 20006,
+   "name": "CrowdControlTimedEffectStarted",
+   "source": "CrowdControl",
+   "type": "TimedEffectStarted",
+   "display": "Timed Effect Started",
+   "category": "Integrations / CrowdControl",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 20007,
+   "name": "CrowdControlTimedEffectEnded",
+   "source": "CrowdControl",
+   "type": "TimedEffectEnded",
+   "display": "Timed Effect Ended",
+   "category": "Integrations / CrowdControl",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 20008,
+   "name": "CrowdControlTimedEffectUpdated",
+   "source": "CrowdControl",
+   "type": "TimedEffectUpdated",
+   "display": "Timed Effect Update",
+   "category": "Integrations / CrowdControl",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 20009,
+   "name": "CrowdControlCoinExchange",
+   "source": "CrowdControl",
+   "type": "CoinExchange",
+   "display": "Coin Exchange",
+   "category": "Integrations / CrowdControl",
+   "fields": [
+    "coinType:string",
+    "exchangeSource:string",
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 21001,
+   "name": "ElgatoWaveLinkOutputSwitched",
+   "source": "Elgato",
+   "type": "WaveLinkOutputSwitched",
+   "display": "Output Switched",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21002,
+   "name": "ElgatoWaveLinkOutputVolumeChanged",
+   "source": "Elgato",
+   "type": "WaveLinkOutputVolumeChanged",
+   "display": "Output Volume Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21003,
+   "name": "ElgatoWaveLinkOutputMuteChanged",
+   "source": "Elgato",
+   "type": "WaveLinkOutputMuteChanged",
+   "display": "Output Mute Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21004,
+   "name": "ElgatoWaveLinkSelectedOutputChanged",
+   "source": "Elgato",
+   "type": "WaveLinkSelectedOutputChanged",
+   "display": "Selected Output Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21005,
+   "name": "ElgatoWaveLinkInputVolumeChanged",
+   "source": "Elgato",
+   "type": "WaveLinkInputVolumeChanged",
+   "display": "Input Volume Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21006,
+   "name": "ElgatoWaveLinkInputMuteChanged",
+   "source": "Elgato",
+   "type": "WaveLinkInputMuteChanged",
+   "display": "Input Mute Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21007,
+   "name": "ElgatoWaveLinkInputNameChanged",
+   "source": "Elgato",
+   "type": "WaveLinkInputNameChanged",
+   "display": "Input Name Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21008,
+   "name": "ElgatoWaveLinkMicrophoneGainChanged",
+   "source": "Elgato",
+   "type": "WaveLinkMicrophoneGainChanged",
+   "display": "Microphone Gain Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21009,
+   "name": "ElgatoWaveLinkMicrophoneOutputVolumeChanged",
+   "source": "Elgato",
+   "type": "WaveLinkMicrophoneOutputVolumeChanged",
+   "display": "Microphone Output Volume Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21010,
+   "name": "ElgatoWaveLinkMicrophoneBalanceChanged",
+   "source": "Elgato",
+   "type": "WaveLinkMicrophoneBalanceChanged",
+   "display": "Microphone Balance Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21011,
+   "name": "ElgatoWaveLinkMicrophoneMuteChanged",
+   "source": "Elgato",
+   "type": "WaveLinkMicrophoneMuteChanged",
+   "display": "Microphone Mute Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21012,
+   "name": "ElgatoWaveLinkMicrophoneSettingChanged",
+   "source": "Elgato",
+   "type": "WaveLinkMicrophoneSettingChanged",
+   "display": "Microphone Setting Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21013,
+   "name": "ElgatoWaveLinkFilterAdded",
+   "source": "Elgato",
+   "type": "WaveLinkFilterAdded",
+   "display": "Filter Added",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21014,
+   "name": "ElgatoWaveLinkFilterChanged",
+   "source": "Elgato",
+   "type": "WaveLinkFilterChanged",
+   "display": "Filter Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21015,
+   "name": "ElgatoWaveLinkFilterDeleted",
+   "source": "Elgato",
+   "type": "WaveLinkFilterDeleted",
+   "display": "Filter Deleted",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21016,
+   "name": "ElgatoWaveLinkFilterBypassStateChanged",
+   "source": "Elgato",
+   "type": "WaveLinkFilterBypassStateChanged",
+   "display": "Filter Bypass State Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21017,
+   "name": "ElgatoWaveLinkConnected",
+   "source": "Elgato",
+   "type": "WaveLinkConnected",
+   "display": "Connected",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21018,
+   "name": "ElgatoWaveLinkDisconnected",
+   "source": "Elgato",
+   "type": "WaveLinkDisconnected",
+   "display": "Disconnected",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21019,
+   "name": "ElgatoWaveLinkInputLevelMeterChanged",
+   "source": "Elgato",
+   "type": "WaveLinkInputLevelMeterChanged",
+   "display": "Input Level Meter Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "name:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 21020,
+   "name": "ElgatoWaveLinkOutputLevelMeterChanged",
+   "source": "Elgato",
+   "type": "WaveLinkOutputLevelMeterChanged",
+   "display": "Output Level Meter Changed",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "mixerType:MixerType"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 21301,
+   "name": "ElgatoCameraHubConnected",
+   "source": "Elgato",
+   "type": "CameraHubConnected",
+   "display": "Connected",
+   "category": "Elgato / Camera Hub",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21302,
+   "name": "ElgatoCameraHubDisconnected",
+   "source": "Elgato",
+   "type": "CameraHubDisconnected",
+   "display": "Disconnected",
+   "category": "Elgato / Camera Hub",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21341,
+   "name": "ElgatoCameraHubWebcamConnected",
+   "source": "Elgato",
+   "type": "CameraHubWebcamConnected",
+   "display": "Connected",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21342,
+   "name": "ElgatoCameraHubWebcamrDisconnected",
+   "source": "Elgato",
+   "type": "CameraHubWebcamrDisconnected",
+   "display": "Disconnected",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21351,
+   "name": "ElgatoCameraHubWebcamActivated",
+   "source": "Elgato",
+   "type": "CameraHubWebcamActivated",
+   "display": "Webcam Activated",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21352,
+   "name": "ElgatoCameraHubWebcamDeactivated",
+   "source": "Elgato",
+   "type": "CameraHubWebcamDeactivated",
+   "display": "Webcam Deactivated",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21353,
+   "name": "ElgatoCameraHubSelectedWebcamChanged",
+   "source": "Elgato",
+   "type": "CameraHubSelectedWebcamChanged",
+   "display": "Selected Webcam Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21354,
+   "name": "ElgatoCameraHubWebcamMirrored",
+   "source": "Elgato",
+   "type": "CameraHubWebcamMirrored",
+   "display": "Mirrored",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21355,
+   "name": "ElgatoCameraHubWebcamFlipped",
+   "source": "Elgato",
+   "type": "CameraHubWebcamFlipped",
+   "display": "Flipped",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21356,
+   "name": "ElgatoCameraHubWebcamDeviceOrientationChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamDeviceOrientationChanged",
+   "display": "Device Orientation Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21357,
+   "name": "ElgatoCameraHubWebcamExposureAutoLockEnabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamExposureAutoLockEnabled",
+   "display": "Exposure Auto Lock Enabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21358,
+   "name": "ElgatoCameraHubWebcamExposureAutoLockDisabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamExposureAutoLockDisabled",
+   "display": "Exposure Auto Lock Disabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21359,
+   "name": "ElgatoCameraHubWebcamSnapshotTaken",
+   "source": "Elgato",
+   "type": "CameraHubWebcamSnapshotTaken",
+   "display": "Snapshot Taken",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21360,
+   "name": "ElgatoCameraHubWebcamZoomChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamZoomChanged",
+   "display": "Zoom Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21361,
+   "name": "ElgatoCameraHubWebcamContrastChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamContrastChanged",
+   "display": "Contrast Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21362,
+   "name": "ElgatoCameraHubWebcamWhiteBalanceChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamWhiteBalanceChanged",
+   "display": "White Balance Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21363,
+   "name": "ElgatoCameraHubWebcamAutoExposureEnabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamAutoExposureEnabled",
+   "display": "Auto Exposure Enabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21364,
+   "name": "ElgatoCameraHubWebcamAutoExposureDisabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamAutoExposureDisabled",
+   "display": "Auto Exposure Disabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21365,
+   "name": "ElgatoCameraHubWebcamAutoWhiteBalanceEnabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamAutoWhiteBalanceEnabled",
+   "display": "Auto White Balance Enabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21366,
+   "name": "ElgatoCameraHubWebcamAutoWhiteBalanceDisabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamAutoWhiteBalanceDisabled",
+   "display": "Auto White Balance Disabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21367,
+   "name": "ElgatoCameraHubWebcamNoiseReductionEnabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamNoiseReductionEnabled",
+   "display": "Noise Reduction Enabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21368,
+   "name": "ElgatoCameraHubWebcamNoiseReductionDisabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamNoiseReductionDisabled",
+   "display": "Noise Reduction Disabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21369,
+   "name": "ElgatoCameraHubWebcamISOChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamISOChanged",
+   "display": "ISO Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21370,
+   "name": "ElgatoCameraHubWebcamShutterSpeedChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamShutterSpeedChanged",
+   "display": "Shutter Speed Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21371,
+   "name": "ElgatoCameraHubWebcamSharpnessChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamSharpnessChanged",
+   "display": "Sharpness Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21372,
+   "name": "ElgatoCameraHubWebcamAntiFlickerChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamAntiFlickerChanged",
+   "display": "Anti Flicker Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21373,
+   "name": "ElgatoCameraHubWebcamLensChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamLensChanged",
+   "display": "Lens Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21374,
+   "name": "ElgatoCameraHubWebcamARLensChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamARLensChanged",
+   "display": "AR Lens Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21375,
+   "name": "ElgatoCameraHubWebcamBitrateChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamBitrateChanged",
+   "display": "Bitrate Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21376,
+   "name": "ElgatoCameraHubWebcamFlashEnabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamFlashEnabled",
+   "display": "Flash Enabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21377,
+   "name": "ElgatoCameraHubWebcamFlashDisabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamFlashDisabled",
+   "display": "Flash Disabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21378,
+   "name": "ElgatoCameraHubWebcamPanChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamPanChanged",
+   "display": "Pan Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21379,
+   "name": "ElgatoCameraHubTiltChanged",
+   "source": "Elgato",
+   "type": "CameraHubTiltChanged",
+   "display": "Tilt Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21380,
+   "name": "ElgatoCameraHubWebcamOverscanChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamOverscanChanged",
+   "display": "Overscan Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21381,
+   "name": "ElgatoCameraHubWebcamAutoFocusEnabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamAutoFocusEnabled",
+   "display": "Auto Focus Enabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21382,
+   "name": "ElgatoCameraHubWebcamAutoFocusDisabled",
+   "source": "Elgato",
+   "type": "CameraHubWebcamAutoFocusDisabled",
+   "display": "Auto Focus Disabled",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21383,
+   "name": "ElgatoCameraHubWebcamFocusChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamFocusChanged",
+   "display": "Focus Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21384,
+   "name": "ElgatoCameraHubWebcamWhiteBalanceTintChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamWhiteBalanceTintChanged",
+   "display": "White Balance Tint Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21385,
+   "name": "ElgatoCameraHubWebcamBrightnessChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamBrightnessChanged",
+   "display": "Brightness Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21386,
+   "name": "ElgatoCameraHubWebcamSaturationChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamSaturationChanged",
+   "display": "Saturation Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21387,
+   "name": "ElgatoCameraHubWebcamLiveISOChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamLiveISOChanged",
+   "display": "Live ISO Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21388,
+   "name": "ElgatoCameraHubWebcamLiveShutterSpeedChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamLiveShutterSpeedChanged",
+   "display": "Live Shutter Speed Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21389,
+   "name": "ElgatoCameraHubWebcamLiveWhiteBalanceChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamLiveWhiteBalanceChanged",
+   "display": "Live White Balance Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21390,
+   "name": "ElgatoCameraHubWebcamLiveWhiteBalanceTintChanged",
+   "source": "Elgato",
+   "type": "CameraHubWebcamLiveWhiteBalanceTintChanged",
+   "display": "Live White Balance Tint Changed",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21401,
+   "name": "ElgatoCameraHubPrompterConnected",
+   "source": "Elgato",
+   "type": "CameraHubPrompterConnected",
+   "display": "Connected",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21402,
+   "name": "ElgatoCameraHubPrompterDisconnected",
+   "source": "Elgato",
+   "type": "CameraHubPrompterDisconnected",
+   "display": "Disconnected",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21403,
+   "name": "ElgatoCameraHubPrompterModeChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterModeChanged",
+   "display": "Mode Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21404,
+   "name": "ElgatoCameraHubPrompterBrightnessChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterBrightnessChanged",
+   "display": "Brightness Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21405,
+   "name": "ElgatoCameraHubPrompterFontChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterFontChanged",
+   "display": "Font Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21406,
+   "name": "ElgatoCameraHubPrompterFontSizeChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterFontSizeChanged",
+   "display": "Font Size Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21407,
+   "name": "ElgatoCameraHubPrompterAutoScrollEnabled",
+   "source": "Elgato",
+   "type": "CameraHubPrompterAutoScrollEnabled",
+   "display": "Auto Scroll Enabled",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21408,
+   "name": "ElgatoCameraHubPrompterAutoScrollDisabled",
+   "source": "Elgato",
+   "type": "CameraHubPrompterAutoScrollDisabled",
+   "display": "Auto Scroll Disabled",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21409,
+   "name": "ElgatoCameraHubPrompterAutoScrollChapterEnabled",
+   "source": "Elgato",
+   "type": "CameraHubPrompterAutoScrollChapterEnabled",
+   "display": "Auto Scroll Chapter Enabled",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21410,
+   "name": "ElgatoCameraHubPrompterAutoScrollChapterDisabled",
+   "source": "Elgato",
+   "type": "CameraHubPrompterAutoScrollChapterDisabled",
+   "display": "Auto Scroll Chapter Disabled",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21411,
+   "name": "ElgatoCameraHubPrompterScrollSpeedChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterScrollSpeedChanged",
+   "display": "Scroll Speed Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21412,
+   "name": "ElgatoCameraHubPrompterOpacityChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterOpacityChanged",
+   "display": "Opacity Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21413,
+   "name": "ElgatoCameraHubPrompterHorizontalMarginChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterHorizontalMarginChanged",
+   "display": "Horizontal Margin Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21414,
+   "name": "ElgatoCameraHubPrompterVerticalMarginChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterVerticalMarginChanged",
+   "display": "Vertical Margin Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21415,
+   "name": "ElgatoCameraHubPrompterLineSpacingChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterLineSpacingChanged",
+   "display": "Line Spacing Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21416,
+   "name": "ElgatoCameraHubPrompterFontColorChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterFontColorChanged",
+   "display": "Font Color Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21417,
+   "name": "ElgatoCameraHubPrompterBackgroundColorChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterBackgroundColorChanged",
+   "display": "Background Color Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21418,
+   "name": "ElgatoCameraHubPrompterSelectedChapterChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterSelectedChapterChanged",
+   "display": "Selected Chapter Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21419,
+   "name": "ElgatoCameraHubPrompterChannelsChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterChannelsChanged",
+   "display": "Channels Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21420,
+   "name": "ElgatoCameraHubPrompterSelectedChannelChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterSelectedChannelChanged",
+   "display": "Selected Channel Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21421,
+   "name": "ElgatoCameraHubPrompterContrastChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterContrastChanged",
+   "display": "Contrast Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21422,
+   "name": "ElgatoCameraHubPrompterCrosshairEnabled",
+   "source": "Elgato",
+   "type": "CameraHubPrompterCrosshairEnabled",
+   "display": "Crosshair Enabled",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21423,
+   "name": "ElgatoCameraHubPrompterCrosshairDisabled",
+   "source": "Elgato",
+   "type": "CameraHubPrompterCrosshairDisabled",
+   "display": "Crosshair Disabled",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21424,
+   "name": "ElgatoCameraHubPrompterCrosshairImageChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterCrosshairImageChanged",
+   "display": "Crosshair Image Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21425,
+   "name": "ElgatoCameraHubPrompterCrosshairColorChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterCrosshairColorChanged",
+   "display": "Crosshair Color Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21426,
+   "name": "ElgatoCameraHubPrompterSelectedScriptChanged",
+   "source": "Elgato",
+   "type": "CameraHubPrompterSelectedScriptChanged",
+   "display": "Selected Script Changed",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21501,
+   "name": "ElgatoStreamDeckMcpConnected",
+   "source": "Elgato",
+   "type": "StreamDeckMcpConnected",
+   "display": "Connected",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 21502,
+   "name": "ElgatoStreamDeckMcpDisconnected",
+   "source": "Elgato",
+   "type": "StreamDeckMcpDisconnected",
+   "display": "Disconnected",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 22001,
+   "name": "StreamlabsDesktopConnected",
+   "source": "StreamlabsDesktop",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "Streamlabs Desktop",
+   "fields": [
+    "sdId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 22002,
+   "name": "StreamlabsDesktopDisconnected",
+   "source": "StreamlabsDesktop",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "Streamlabs Desktop",
+   "fields": [
+    "sdId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 22003,
+   "name": "StreamlabsDesktopSceneChanged",
+   "source": "StreamlabsDesktop",
+   "type": "SceneChanged",
+   "display": "Scene Changed",
+   "category": "Streamlabs Desktop",
+   "fields": [
+    "sdId:Guid",
+    "sceneName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 22004,
+   "name": "StreamlabsDesktopStreamingStarted",
+   "source": "StreamlabsDesktop",
+   "type": "StreamingStarted",
+   "display": "Streaming Started",
+   "category": "Streamlabs Desktop",
+   "fields": [
+    "sdId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 22005,
+   "name": "StreamlabsDesktopStreamingStopped",
+   "source": "StreamlabsDesktop",
+   "type": "StreamingStopped",
+   "display": "Streaming Stopped",
+   "category": "Streamlabs Desktop",
+   "fields": [
+    "sdId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 22006,
+   "name": "StreamlabsDesktopRecordingStarted",
+   "source": "StreamlabsDesktop",
+   "type": "RecordingStarted",
+   "display": "Recording Started",
+   "category": "Streamlabs Desktop",
+   "fields": [
+    "sdId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 22007,
+   "name": "StreamlabsDesktopRecordingStopped",
+   "source": "StreamlabsDesktop",
+   "type": "RecordingStopped",
+   "display": "Recording Stopped",
+   "category": "Streamlabs Desktop",
+   "fields": [
+    "sdId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 23001,
+   "name": "SpeakerBotConnected",
+   "source": "SpeakerBot",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "Integrations / Speaker.bot",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 23002,
+   "name": "SpeakerBotDisconnected",
+   "source": "SpeakerBot",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "Integrations / Speaker.bot",
+   "fields": [],
+   "emitted": true
+  },
+  {
+   "id": 24001,
+   "name": "FourthwallProductCreated",
+   "source": "Fourthwall",
+   "type": "ProductCreated",
+   "display": "Product Created",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 24002,
+   "name": "FourthwallProductUpdated",
+   "source": "Fourthwall",
+   "type": "ProductUpdated",
+   "display": "Product Updated",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 24003,
+   "name": "FourthwallGiftPurchase",
+   "source": "Fourthwall",
+   "type": "GiftPurchase",
+   "display": "Gift Purchase",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 24004,
+   "name": "FourthwallOrderPlaced",
+   "source": "Fourthwall",
+   "type": "OrderPlaced",
+   "display": "Order Placed",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 24005,
+   "name": "FourthwallOrderUpdated",
+   "source": "Fourthwall",
+   "type": "OrderUpdated",
+   "display": "Order Updated",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 24006,
+   "name": "FourthwallDonation",
+   "source": "Fourthwall",
+   "type": "Donation",
+   "display": "Donation",
+   "category": "Integrations / Fourthwall",
+   "fields": [
+    "min:decimal",
+    "max:decimal"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 24007,
+   "name": "FourthwallSubscriptionPurchased",
+   "source": "Fourthwall",
+   "type": "SubscriptionPurchased",
+   "display": "Subscription Purchased",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 24008,
+   "name": "FourthwallSubscriptionExpired",
+   "source": "Fourthwall",
+   "type": "SubscriptionExpired",
+   "display": "Subscription Expired",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 24009,
+   "name": "FourthwallSubscriptionChanged",
+   "source": "Fourthwall",
+   "type": "SubscriptionChanged",
+   "display": "Subscription Changed",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 24010,
+   "name": "FourthwallThankYouSent",
+   "source": "Fourthwall",
+   "type": "ThankYouSent",
+   "display": "Thank You Sent",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 24011,
+   "name": "FourthwallNewsletterSubscribed",
+   "source": "Fourthwall",
+   "type": "NewsletterSubscribed",
+   "display": "Newsletter Subscribed",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 24012,
+   "name": "FourthwallGiftDrawStarted",
+   "source": "Fourthwall",
+   "type": "GiftDrawStarted",
+   "display": "Gift Draw Started",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 24013,
+   "name": "FourthwallGiftDrawEnded",
+   "source": "Fourthwall",
+   "type": "GiftDrawEnded",
+   "display": "Gift Draw Ended",
+   "category": "Integrations / Fourthwall",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 27001,
+   "name": "ThrowingSystemConnected",
+   "source": "ThrowingSystem",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "Integrations / Throwing System / Connections",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 27002,
+   "name": "ThrowingSystemWebsocketConnected",
+   "source": "ThrowingSystem",
+   "type": "WebsocketConnected",
+   "display": "Websocket Connected",
+   "category": "Integrations / Throwing System / Connections",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 27003,
+   "name": "ThrowingSystemWebsocketDisconnected",
+   "source": "ThrowingSystem",
+   "type": "WebsocketDisconnected",
+   "display": "Websocket Disconnected",
+   "category": "Integrations / Throwing System / Connections",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 27004,
+   "name": "ThrowingSystemEventsConnected",
+   "source": "ThrowingSystem",
+   "type": "EventsConnected",
+   "display": "Events Connected",
+   "category": "Integrations / Throwing System / Connections",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 27005,
+   "name": "ThrowingSystemEventsDisconnected",
+   "source": "ThrowingSystem",
+   "type": "EventsDisconnected",
+   "display": "Events Disconnected",
+   "category": "Integrations / Throwing System / Connections",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 27010,
+   "name": "ThrowingSystemItemHit",
+   "source": "ThrowingSystem",
+   "type": "ItemHit",
+   "display": "Item Hit",
+   "category": "Integrations / Throwing System",
+   "fields": [
+    "itemId:string",
+    "itemName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 27011,
+   "name": "ThrowingSystemTriggerActivated",
+   "source": "ThrowingSystem",
+   "type": "TriggerActivated",
+   "display": "Trigger Activated",
+   "category": "Integrations / Throwing System",
+   "fields": [
+    "triggerId:string",
+    "triggerName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 27012,
+   "name": "ThrowingSystemTriggerEnded",
+   "source": "ThrowingSystem",
+   "type": "TriggerEnded",
+   "display": "Trigger Ended",
+   "category": "Integrations / Throwing System",
+   "fields": [
+    "triggerId:string",
+    "triggerName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 28001,
+   "name": "PallyggConnected",
+   "source": "Pallygg",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "Integrations / Pally.gg",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 28002,
+   "name": "PallyggDisconnected",
+   "source": "Pallygg",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "Integrations / Pally.gg",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 28003,
+   "name": "PallyggCampaignTip",
+   "source": "Pallygg",
+   "type": "CampaignTip",
+   "display": "Campaign Tip",
+   "category": "Integrations / Pally.gg",
+   "fields": [
+    "min:decimal",
+    "max:decimal"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 29001,
+   "name": "StreamerBotRemoteInstanceConnected",
+   "source": "StreamerBotRemote",
+   "type": "InstanceConnected",
+   "display": "Remote Instance Connected",
+   "category": "Integrations / Streamer.bot Remote",
+   "fields": [
+    "instanceId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 29002,
+   "name": "StreamerBotRemoteInstanceDisconnected",
+   "source": "StreamerBotRemote",
+   "type": "InstanceDisconnected",
+   "display": "Remote Instance Disconnected",
+   "category": "Integrations / Streamer.bot Remote",
+   "fields": [
+    "instanceId:Guid"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 29003,
+   "name": "StreamerBotRemoteInstanceTrigger",
+   "source": "StreamerBotRemote",
+   "type": "InstanceTrigger",
+   "display": "Remote Instance Trigger",
+   "category": "Integrations / Streamer.bot Remote",
+   "fields": [
+    "instanceId:Guid",
+    "eventName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 29004,
+   "name": "StreamerBotRemoteInstanceSignal",
+   "source": "StreamerBotRemote",
+   "type": "InstanceSignal",
+   "display": "Remote Instance Signal",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 34001,
+   "name": "StreamerBotCustomWebook",
+   "source": "StreamerBot",
+   "type": "CustomWebook",
+   "display": "Custom Webhook",
+   "category": "Integrations / Streamer.bot",
+   "fields": [
+    "webhookId:Guid",
+    "webhookName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 30001,
+   "name": "VoiceModConnected",
+   "source": "VoiceMod",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "Integrations / VoiceMod",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 30002,
+   "name": "VoiceModDisconnected",
+   "source": "VoiceMod",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "Integrations / VoiceMod",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 30003,
+   "name": "VoiceModVoiceLoaded",
+   "source": "VoiceMod",
+   "type": "VoiceLoaded",
+   "display": "Voice Loaded",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "voiceId:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 30004,
+   "name": "VoiceModSoundboardChanged",
+   "source": "VoiceMod",
+   "type": "SoundboardChanged",
+   "display": "Soundboard Changed",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "soundboardId:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 33001,
+   "name": "MeldStudioConnected",
+   "source": "MeldStudio",
+   "type": "Connected",
+   "display": "Connected",
+   "category": "Meld Studio",
+   "fields": [
+    "meldStudioId:Guid?"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 33002,
+   "name": "MeldStudioDisconnected",
+   "source": "MeldStudio",
+   "type": "Disconnected",
+   "display": "Disconnected",
+   "category": "Meld Studio",
+   "fields": [
+    "meldStudioId:Guid?"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 33003,
+   "name": "MeldStudioStreamingStarted",
+   "source": "MeldStudio",
+   "type": "StreamingStarted",
+   "display": "Streaming Started",
+   "category": "Meld Studio",
+   "fields": [
+    "meldStudioId:Guid?"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 33004,
+   "name": "MeldStudioStreamingStopped",
+   "source": "MeldStudio",
+   "type": "StreamingStopped",
+   "display": "Streaming Stopped",
+   "category": "Meld Studio",
+   "fields": [
+    "meldStudioId:Guid?"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 33005,
+   "name": "MeldStudioRecordingStarted",
+   "source": "MeldStudio",
+   "type": "RecordingStarted",
+   "display": "Recording Started",
+   "category": "Meld Studio",
+   "fields": [
+    "meldStudioId:Guid?"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 33006,
+   "name": "MeldStudioRecordingStopped",
+   "source": "MeldStudio",
+   "type": "RecordingStopped",
+   "display": "Recording Stopped",
+   "category": "Meld Studio",
+   "fields": [
+    "meldStudioId:Guid?"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 33007,
+   "name": "MeldStudioSceneChanged",
+   "source": "MeldStudio",
+   "type": "SceneChanged",
+   "display": "Scene Changed",
+   "category": "Meld Studio",
+   "fields": [
+    "sceneName:string",
+    "meldStudioId:Guid?"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 33008,
+   "name": "MeldStudioLayerVisbilityChanged",
+   "source": "MeldStudio",
+   "type": "LayerVisbilityChanged",
+   "display": "Layer Visibility Changed",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 33009,
+   "name": "MeldStudioLEffectEnabledStateChanged",
+   "source": "MeldStudio",
+   "type": "LEffectEnabledStateChanged",
+   "display": "Effect Enabled State Changed",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 33010,
+   "name": "MeldStudioTrackMonitoringStateChanged",
+   "source": "MeldStudio",
+   "type": "TrackMonitoringStateChanged",
+   "display": "Track Monitoring State Changed",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 33011,
+   "name": "MeldStudioTrackMustedStateChanged",
+   "source": "MeldStudio",
+   "type": "TrackMustedStateChanged",
+   "display": "Track Muted State Changed",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 33012,
+   "name": "MeldStudioEvent",
+   "source": "MeldStudio",
+   "type": "Event",
+   "display": "Event",
+   "category": "Meld Studio",
+   "fields": [
+    "eventName:string",
+    "meldStudioId:Guid?"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 35001,
+   "name": "KickBroadcasterAuthenticated",
+   "source": "Kick",
+   "type": "BroadcasterAuthenticated",
+   "display": "Broadcaster Authenticated",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35002,
+   "name": "KickBroadcasterChatConnected",
+   "source": "Kick",
+   "type": "BroadcasterChatConnected",
+   "display": "Broadcaster Chat Connected",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35003,
+   "name": "KickBroadcasterChatDisconnected",
+   "source": "Kick",
+   "type": "BroadcasterChatDisconnected",
+   "display": "Broadcaster Chat Disconnected",
+   "category": "",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35008,
+   "name": "KickFirstWords",
+   "source": "Kick",
+   "type": "FirstWords",
+   "display": "First Words",
+   "category": "Kick / Chat",
+   "fields": [
+    "username:string",
+    "isUserId:bool"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 35009,
+   "name": "KickPresentViewers",
+   "source": "Kick",
+   "type": "PresentViewers",
+   "display": "Present Viewers",
+   "category": "Kick / General",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35010,
+   "name": "KickChatMessage",
+   "source": "Kick",
+   "type": "ChatMessage",
+   "display": "Chat Message",
+   "category": "Kick / Chat",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35011,
+   "name": "KickFollow",
+   "source": "Kick",
+   "type": "Follow",
+   "display": "Follow",
+   "category": "Kick / Channel",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35012,
+   "name": "KickStreamOnline",
+   "source": "Kick",
+   "type": "StreamOnline",
+   "display": "Stream Online",
+   "category": "Kick / Channel",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35013,
+   "name": "KickStreamOffline",
+   "source": "Kick",
+   "type": "StreamOffline",
+   "display": "Stream Offline",
+   "category": "Kick / Channel",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35014,
+   "name": "KickSubscription",
+   "source": "Kick",
+   "type": "Subscription",
+   "display": "Subscription",
+   "category": "Kick / Subscriptions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35015,
+   "name": "KickResubscription",
+   "source": "Kick",
+   "type": "Resubscription",
+   "display": "Resubscription",
+   "category": "Kick / Subscriptions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35016,
+   "name": "KickGiftSubscription",
+   "source": "Kick",
+   "type": "GiftSubscription",
+   "display": "Gift Subscription",
+   "category": "Kick / Subscriptions",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35017,
+   "name": "KickMassGiftSubscription",
+   "source": "Kick",
+   "type": "MassGiftSubscription",
+   "display": "Mass Gift Subscription",
+   "category": "Kick / Subscriptions",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 35018,
+   "name": "KickUserTimedOut",
+   "source": "Kick",
+   "type": "UserTimedOut",
+   "display": "User Timed Out",
+   "category": "Kick / Moderation",
+   "fields": [
+    "min:long",
+    "max:long"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 35019,
+   "name": "KickUserBanned",
+   "source": "Kick",
+   "type": "UserBanned",
+   "display": "User Banned",
+   "category": "Kick / Moderation",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35020,
+   "name": "KickChannelUpdate",
+   "source": "Kick",
+   "type": "ChannelUpdate",
+   "display": "Channel Update",
+   "category": "Kick / General",
+   "fields": [
+    "gameOnly:bool",
+    "gameId:string",
+    "gameName:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 35021,
+   "name": "KickSevenTVEmoteAdded",
+   "source": "Kick",
+   "type": "SevenTVEmoteAdded",
+   "display": "SevenTV Emote Added",
+   "category": "Kick / Emotes",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35022,
+   "name": "KickSevenTVEmoteRemoved",
+   "source": "Kick",
+   "type": "SevenTVEmoteRemoved",
+   "display": "SevenTV Emote Removed",
+   "category": "Kick / Emotes",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 35023,
+   "name": "KickViewerCountUpdate",
+   "source": "Kick",
+   "type": "ViewerCountUpdate",
+   "display": "Viewer Count Update",
+   "category": "Kick / Channel",
+   "fields": [
+    "min:int",
+    "max:int"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 35024,
+   "name": "KickRewardRedemption",
+   "source": "Kick",
+   "type": "RewardRedemption",
+   "display": "Reward Redemption",
+   "category": "Kick / Channel Reward",
+   "fields": [
+    "rewardId:string"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 35025,
+   "name": "KickKicksGifted",
+   "source": "Kick",
+   "type": "KicksGifted",
+   "display": "Kicks Gifted",
+   "category": "Kick / Kicks Gifted",
+   "fields": [
+    "min:long",
+    "max:long"
+   ],
+   "emitted": false
+  },
+  {
+   "id": 36001,
+   "name": "StreamLootsPackPurchased",
+   "source": "StreamLoots",
+   "type": "PackPurchased",
+   "display": "Pack Purchased",
+   "category": "Integrations / StreamLoots",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 36002,
+   "name": "StreamLootsPackGifted",
+   "source": "StreamLoots",
+   "type": "PackGifted",
+   "display": "Pack Gifted",
+   "category": "Integrations / StreamLoots",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 36003,
+   "name": "StreamLootsCardRedeemed",
+   "source": "StreamLoots",
+   "type": "CardRedeemed",
+   "display": "Card Redeemed",
+   "category": "Integrations / StreamLoots",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 36004,
+   "name": "StreamLootsReaction",
+   "source": "StreamLoots",
+   "type": "Reaction",
+   "display": "Reaction",
+   "category": "Integrations / StreamLoots",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 37001,
+   "name": "ThroneGiftPurchased",
+   "source": "Throne",
+   "type": "GiftPurchased",
+   "display": "Gift Purchased",
+   "category": "Integrations / Throne",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 37002,
+   "name": "ThroneContributionPurchased",
+   "source": "Throne",
+   "type": "ContributionPurchased",
+   "display": "Contribution Purchased",
+   "category": "Integrations / Throne",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 37003,
+   "name": "ThroneGiftCrowdfunded",
+   "source": "Throne",
+   "type": "GiftCrowdfunded",
+   "display": "Gift Crowdfunded",
+   "category": "Integrations / Throne",
+   "fields": [],
+   "emitted": false
+  },
+  {
+   "id": 42001,
+   "name": "SystemClipboardChanged",
+   "source": "System",
+   "type": "ClipboardChanged",
+   "display": "Clipboard Changed",
+   "category": "Core / System",
+   "fields": [],
+   "emitted": false
+  }
+ ]
+}

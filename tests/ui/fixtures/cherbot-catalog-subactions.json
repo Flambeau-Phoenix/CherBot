@@ -1,0 +1,4573 @@
+{
+ "subActions": [
+  {
+   "id": 1,
+   "name": "PlaySound",
+   "display": "Play Sound",
+   "category": "Core / Sounds",
+   "fields": [
+    "device:Guid?",
+    "soundFile:string",
+    "finishBeforeContinuing:bool",
+    "volume:float",
+    "soundName:string",
+    "useFileNameAsName:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 2,
+   "name": "UdpBroadcast",
+   "display": "UDP Broadcast",
+   "category": "Core / Network",
+   "fields": [
+    "port:int",
+    "payload:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 3,
+   "name": "WriteToFile",
+   "display": "Write To File",
+   "category": "Core / File IO",
+   "fields": [
+    "file:string",
+    "text:string",
+    "append:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 4,
+   "name": "Action",
+   "display": "Run Action",
+   "category": "Core / Actions",
+   "fields": [
+    "actionId:Guid",
+    "runImmedately:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 5,
+   "name": "ReadRandomLineFromFile",
+   "display": "Read Random Line From File",
+   "category": "Core / File IO",
+   "fields": [
+    "file:string",
+    "parseVariables:bool",
+    "autoType:bool",
+    "overwrite:bool",
+    "count:string",
+    "variableName:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 6,
+   "name": "RunExecutable",
+   "display": "Run a Program",
+   "category": "Core / System",
+   "fields": [
+    "command:string",
+    "arguments:string",
+    "workingDir:string",
+    "envVars:Dictionary<string, string>",
+    "waitForExit:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 7,
+   "name": "PlaySoundFromFolder",
+   "display": "Play Sound From Folder",
+   "category": "Core / Sounds",
+   "fields": [
+    "device:Guid?",
+    "folder:string",
+    "finishBeforeContinuing:bool",
+    "volume:float",
+    "recursive:bool",
+    "soundName:string",
+    "useFileNameAsName:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 8,
+   "name": "SetTimerState",
+   "display": "Set Timer State",
+   "category": "Core / Timers",
+   "fields": [
+    "timerId:Guid",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 9,
+   "name": "SetCommandState",
+   "display": "Set Command State",
+   "category": "Core / Commands",
+   "fields": [
+    "commandId:Guid",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 10,
+   "name": "Message",
+   "display": "Send Message to Channel",
+   "category": "Twitch / Chat",
+   "fields": [
+    "text:string",
+    "pin:bool",
+    "pinToStreamEnd:bool",
+    "useBot:bool",
+    "fallback:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 11,
+   "name": "RedemptionStatus",
+   "display": "Update Redemption Status",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "status:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 12,
+   "name": "SubscriberOnly",
+   "display": "Subscriber Only",
+   "category": "Twitch / Moderation / Chat Modes",
+   "fields": [
+    "status:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 13,
+   "name": "EmoteOnly",
+   "display": "Emote Only",
+   "category": "Twitch / Moderation / Chat Modes",
+   "fields": [
+    "status:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 14,
+   "name": "SlowMode",
+   "display": "Slow Mode",
+   "category": "Twitch / Moderation / Chat Modes",
+   "fields": [
+    "status:int",
+    "duration:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 15,
+   "name": "SetChannelTitle",
+   "display": "Set Channel Title",
+   "category": "Twitch / Channel",
+   "fields": [
+    "title:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 16,
+   "name": "SetChannelGame",
+   "display": "Set Channel Game",
+   "category": "Twitch / Channel",
+   "fields": [
+    "source:int",
+    "game:string",
+    "gameId:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 17,
+   "name": "CreateStreamMarker",
+   "display": "Create Stream Marker",
+   "category": "Twitch / Channel",
+   "fields": [
+    "description:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 18,
+   "name": "CreateClip",
+   "display": "Create Clip",
+   "category": "Twitch / Channel",
+   "fields": [
+    "title:string",
+    "duration:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 19,
+   "name": "RunCommercial",
+   "display": "Run Commercial",
+   "category": "Twitch / Ads",
+   "fields": [
+    "duration:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 20,
+   "name": "TwitchTimeoutUser",
+   "display": "Timeout User",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string",
+    "duration:string",
+    "reason:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 21,
+   "name": "TwitchAddBroadcasterInformation",
+   "display": "Add Broadcaster Information",
+   "category": "Twitch / User",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 22,
+   "name": "TwitchAddRandomUsers",
+   "display": "Add Random Users",
+   "category": "Twitch / User",
+   "fields": [
+    "present:bool",
+    "count:string",
+    "includeFrom:bool",
+    "groups:List<string>"
+   ],
+   "supported": false
+  },
+  {
+   "id": 23,
+   "name": "TwitchAnnounce",
+   "display": "Send Announcement to Channel",
+   "category": "Twitch / Chat",
+   "fields": [
+    "text:string",
+    "color:int",
+    "useBot:bool",
+    "fallback:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 24,
+   "name": "TwitchAddViewerCount",
+   "display": "Add Viewer Count",
+   "category": "Twitch / Channel",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 25,
+   "name": "TwitchGetCharityCampaign",
+   "display": "Get Latest Charity Campaign",
+   "category": "Twitch / Charity",
+   "fields": [
+    "text:string",
+    "preferredAccount:int",
+    "color:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 26,
+   "name": "TwitchGetShieldModeStatus",
+   "display": "Get Shield Mode Status",
+   "category": "Twitch / Moderation / Shield",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 27,
+   "name": "TwitchUpdateShieldModeStatus",
+   "display": "Update Shield Mode Status",
+   "category": "Twitch / Moderation / Shield",
+   "fields": [
+    "status:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 28,
+   "name": "TwitchFollowMode",
+   "display": "Follow Mode",
+   "category": "Twitch / Moderation / Chat Modes",
+   "fields": [
+    "status:int",
+    "duration:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 29,
+   "name": "TwitchSendShoutout",
+   "display": "Send Shoutout",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 30,
+   "name": "ObsSourceVisbility",
+   "display": "Set Source Visibility State",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 31,
+   "name": "ObsRandomGroupSourceVisible",
+   "display": "Set Random Group Source Visible",
+   "category": "OBS Studio / Groups",
+   "fields": [
+    "sceneName:string",
+    "groupName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 32,
+   "name": "ObsHideGroupSources",
+   "display": "Hide Group's Sources",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "groupName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 33,
+   "name": "ObsStreaming",
+   "display": "Streaming",
+   "category": "OBS Studio",
+   "fields": [
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 34,
+   "name": "ObsSetActiveScene",
+   "display": "Set Active Scene",
+   "category": "OBS Studio",
+   "fields": [
+    "sceneName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 35,
+   "name": "ObsSourceFilterState",
+   "display": "Set Source Filter State",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "filterName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 36,
+   "name": "ObsFlipSource",
+   "display": "Flip Source",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "flipMode:int",
+    "sceneName:string",
+    "sourceName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 37,
+   "name": "ObsRotateSource",
+   "display": "Rotate Source",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "degrees:double",
+    "additive:bool",
+    "sceneName:string",
+    "sourceName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 38,
+   "name": "ObsSetBrowserSourceUrl",
+   "display": "Set Browser Source URL",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "url:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 39,
+   "name": "ObsSetGdiText",
+   "display": "Set GDI Text",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "text:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 40,
+   "name": "ObsSetRandomFilterState",
+   "display": "Set State of a Random Filter",
+   "category": "OBS Studio / Filters",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 41,
+   "name": "ObsHideSourceFilters",
+   "display": "Hide Source's Filters",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 42,
+   "name": "ObsSourceMuteState",
+   "display": "Set Source Mute State",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 43,
+   "name": "ObsGetCurrentScene",
+   "display": "Get Current Scene",
+   "category": "OBS Studio",
+   "fields": [
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 44,
+   "name": "ObsSetAudioTrackState",
+   "display": "Set Source Audio Track State",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "track:int",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 45,
+   "name": "ObsRecording",
+   "display": "Recording",
+   "category": "OBS Studio",
+   "fields": [
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 46,
+   "name": "ObsRaw",
+   "display": "Raw",
+   "category": "OBS Studio",
+   "fields": [
+    "name:string",
+    "prefix:string",
+    "raw:string",
+    "resultsToArgs:bool",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 47,
+   "name": "ObsSceneFilterState",
+   "display": "Set Scene Filter State",
+   "category": "OBS Studio / Scenes",
+   "fields": [
+    "sceneName:string",
+    "filterName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 48,
+   "name": "ObsTakeScreenshot",
+   "display": "Take Screenshot",
+   "category": "OBS Studio",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "path:string",
+    "quality:int",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 49,
+   "name": "ObsSetMediaState",
+   "display": "Set Media State",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50,
+   "name": "AddTargetInfo",
+   "display": "Get User Info for Target",
+   "category": "Twitch / User",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 51,
+   "name": "AddFollowAgeInfo",
+   "display": "Get Follow Age Info for Target",
+   "category": "Twitch / Followers",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 52,
+   "name": "AddTeamInfo",
+   "display": "Get Team Info for Target",
+   "category": "Twitch / User",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 120,
+   "name": "LogicIf",
+   "display": "If/Else",
+   "category": "Core / Logic",
+   "fields": [
+    "input:string",
+    "operation:int",
+    "value:string",
+    "autoType:bool",
+    "subActions:List<_zKUoC4es1iOK9RftlTlQVoKyawi>"
+   ],
+   "supported": true
+  },
+  {
+   "id": 121,
+   "name": "GlobalGet",
+   "display": "Global (Get)",
+   "category": "Core / Globals",
+   "fields": [
+    "source:int",
+    "variableName:string",
+    "persisted:bool",
+    "destinationVariable:string",
+    "defaultValue:object"
+   ],
+   "supported": true
+  },
+  {
+   "id": 122,
+   "name": "GlobalSet",
+   "display": "Global (Set)",
+   "category": "Core / Globals",
+   "fields": [
+    "destination:int",
+    "variableName:string",
+    "persisted:bool",
+    "source:int",
+    "value:object",
+    "autoType:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 123,
+   "name": "SetArgument",
+   "display": "Set Argument",
+   "category": "Core / Arguments",
+   "fields": [
+    "variableName:string",
+    "value:object",
+    "autoType:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 124,
+   "name": "Break",
+   "display": "Break",
+   "category": "Core / Logic",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 125,
+   "name": "ClearNonPersistedGlobals",
+   "display": "Clear Non-Persisted Globals",
+   "category": "Core / Globals",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 126,
+   "name": "ClearNonPersistedUserGlobals",
+   "display": "Clear Non-Persisted User Globals",
+   "category": "Core / Globals",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 127,
+   "name": "LogicSwitch",
+   "display": "Switch",
+   "category": "Core / Logic",
+   "fields": [
+    "input:string",
+    "autoType:bool",
+    "subActions:List<_zKUoC4es1iOK9RftlTlQVoKyawi>"
+   ],
+   "supported": true
+  },
+  {
+   "id": 128,
+   "name": "LogicWhile",
+   "display": "While",
+   "category": "Core / Logic",
+   "fields": [
+    "input:string",
+    "operation:int",
+    "value:string",
+    "autoType:bool",
+    "ignoreCase:bool",
+    "subActions:List<_zKUoC4es1iOK9RftlTlQVoKyawi>"
+   ],
+   "supported": true
+  },
+  {
+   "id": 129,
+   "name": "LogicLoopBreak",
+   "display": "Loop Break",
+   "category": "Core / Logic",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 130,
+   "name": "LogicLoopContinue",
+   "display": "Loop Continue",
+   "category": "Core / Logic",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 200,
+   "name": "RewardSetEnabledState",
+   "display": "Set Enabled State",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 201,
+   "name": "RewardSetPausedState",
+   "display": "Set Paused State",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 202,
+   "name": "RewardSetCost",
+   "display": "Set Cost",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string",
+    "cost:string",
+    "operator:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 203,
+   "name": "RewardConfigure",
+   "display": "Configure Rewards",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "disableNotConfigured:bool"
+   ],
+   "supported": false
+  },
+  {
+   "id": 204,
+   "name": "RewardSetCooldown",
+   "display": "Set Global Cooldown",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string",
+    "cooldown:string",
+    "additive:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 205,
+   "name": "RewardSetTitle",
+   "display": "Set Title",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string",
+    "title:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 206,
+   "name": "RewardSetPrompt",
+   "display": "Set Prompt",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string",
+    "prompt:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 207,
+   "name": "RewardUpdate",
+   "display": "Update",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string",
+    "title:string",
+    "prompt:string",
+    "cost:string",
+    "operator:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 208,
+   "name": "RewardGetInfo",
+   "display": "Get Reward Info",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 209,
+   "name": "RewardResetCounter",
+   "display": "Reset Reward Counter",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 210,
+   "name": "RewardResetUserCounters",
+   "display": "Reset Reward User Counters",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 211,
+   "name": "RewardSetGroupEnabledState",
+   "display": "Set Group Enabled State",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "groupName:string",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 212,
+   "name": "RewardSetGroupPausedState",
+   "display": "Set Group Paused State",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "groupName:string",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 213,
+   "name": "RewardSetBackgroundColor",
+   "display": "Set Background Color",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string",
+    "backgroundColor:string",
+    "random:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 214,
+   "name": "RewardSetMaxPerUserPerStream",
+   "display": "Set Max per User per Stream",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string",
+    "redeems:string",
+    "additive:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 215,
+   "name": "RewardSetMaxPerStream",
+   "display": "Set Max Per Stream",
+   "category": "Twitch / Rewards",
+   "fields": [
+    "rewardId:string",
+    "redeems:string",
+    "additive:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 251,
+   "name": "ClearChannelTags",
+   "display": "Clear Channel Tags",
+   "category": "Twitch / Tags",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 252,
+   "name": "SetChannelTags",
+   "display": "Set Channel Tags",
+   "category": "Twitch / Tags",
+   "fields": [
+    "tags:List<string>"
+   ],
+   "supported": true
+  },
+  {
+   "id": 253,
+   "name": "AddChannelTag",
+   "display": "Add Channel Tag",
+   "category": "Twitch / Tags",
+   "fields": [
+    "tag:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 254,
+   "name": "RemoveChannelTag",
+   "display": "Remove Channel Tag",
+   "category": "Twitch / Tags",
+   "fields": [
+    "tag:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 321,
+   "name": "ObsSetReplayBufferState",
+   "display": "Set Replay Buffer State",
+   "category": "OBS Studio / Replay",
+   "fields": [
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 322,
+   "name": "ObsSetMediaSourceFile",
+   "display": "Set Media Source File",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "fileName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 323,
+   "name": "ObsSetImageSourceFile",
+   "display": "Set Image Source File",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "fileName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 324,
+   "name": "ObsGetSceneItemProperties",
+   "display": "Get Scene Item Properties",
+   "category": "OBS Studio / Scenes",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 325,
+   "name": "ObsHideSceneSources",
+   "display": "Hide Scene's Sources",
+   "category": "OBS Studio / Scenes",
+   "fields": [
+    "sceneName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 326,
+   "name": "ObsSetRandomSceneSourceVisible",
+   "display": "Set Random Scene Source Visible",
+   "category": "OBS Studio / Scenes",
+   "fields": [
+    "sceneName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 327,
+   "name": "ObsSetColorSourceColor",
+   "display": "Set Color Source Color",
+   "category": "OBS Studio / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "color:string",
+    "random:bool",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 328,
+   "name": "ObsGetStatus",
+   "display": "Get Status",
+   "category": "OBS Studio",
+   "fields": [
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 329,
+   "name": "ObsCreateRecordChapter",
+   "display": "Create Record Chapter",
+   "category": "OBS Studio",
+   "fields": [
+    "chapterName:string",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 401,
+   "name": "SlobsSourceVisibility",
+   "display": "Set Source Visibility State",
+   "category": "Streamlabs Desktop / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "state:int",
+    "display:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 402,
+   "name": "SlobsRandomGroupSourceVisible",
+   "display": "Set Random Group Source Visible",
+   "category": "Streamlabs Desktop / Groups",
+   "fields": [
+    "sceneName:string",
+    "groupName:string",
+    "display:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 403,
+   "name": "SlobsHideGroupSources",
+   "display": "Hide Group's Sources",
+   "category": "Streamlabs Desktop / Groups",
+   "fields": [
+    "sceneName:string",
+    "groupName:string",
+    "display:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 404,
+   "name": "SlobsStreaming",
+   "display": "Streaming",
+   "category": "Streamlabs Desktop",
+   "fields": [
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 405,
+   "name": "SlobsSetActiveScene",
+   "display": "Set Active Scene",
+   "category": "Streamlabs Desktop / Scenes",
+   "fields": [
+    "sceneName:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 406,
+   "name": "SlobsSourceFilterState",
+   "display": "Set Source Filter State",
+   "category": "Streamlabs Desktop / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "filterName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 407,
+   "name": "SlobsFlipSource",
+   "display": "Flip Source",
+   "category": "Streamlabs Desktop / Sources",
+   "fields": [
+    "flipMode:int",
+    "sceneName:string",
+    "sourceName:string",
+    "display:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 408,
+   "name": "SlobsRotateSource",
+   "display": "Rotate Source",
+   "category": "Streamlabs Desktop / Sources",
+   "fields": [
+    "degrees:double",
+    "additive:bool",
+    "sceneName:string",
+    "sourceName:string",
+    "display:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 409,
+   "name": "SlobsSetBrowserSourceUrl",
+   "display": "Set Browser Source URL",
+   "category": "Streamlabs Desktop / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "url:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 410,
+   "name": "SlobsSetGdiText",
+   "display": "Set GDI Text",
+   "category": "Streamlabs Desktop / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "text:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 411,
+   "name": "SlobsSetRandomFilterState",
+   "display": "Set State of a Random Filter",
+   "category": "Streamlabs Desktop / Filters",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 412,
+   "name": "SlobsHideSourceFilters",
+   "display": "Hide Source's Filters",
+   "category": "Streamlabs Desktop / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 413,
+   "name": "SlobsSourceMuteState",
+   "display": "Set Source Mute State",
+   "category": "Streamlabs Desktop / Sources",
+   "fields": [
+    "sceneName:string",
+    "sourceName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 414,
+   "name": "SlobsGetCurrentScene",
+   "display": "Get Current Scene",
+   "category": "Streamlabs Desktop / Scenes",
+   "fields": [
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 415,
+   "name": "SlobsRecording",
+   "display": "Recording",
+   "category": "Streamlabs Desktop",
+   "fields": [
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 417,
+   "name": "SlobsSceneFilterState",
+   "display": "Set Scene Filter State",
+   "category": "Streamlabs Desktop / Scenes",
+   "fields": [
+    "sceneName:string",
+    "filterName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 500,
+   "name": "TwitchStartRaid",
+   "display": "Start Raid",
+   "category": "Twitch / Raid",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 501,
+   "name": "TwitchCancelRaid",
+   "display": "Cancel Raid",
+   "category": "Twitch / Raid",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 502,
+   "name": "TwitchAddVip",
+   "display": "Add VIP",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 503,
+   "name": "TwitchRemoveVip",
+   "display": "Remove VIP",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 504,
+   "name": "TwitchAddModerator",
+   "display": "Add Moderator",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 505,
+   "name": "TwitchRemoveModerator",
+   "display": "Remove Moderator",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 506,
+   "name": "TwitchGetFollowerCount",
+   "display": "Get Follower Count",
+   "category": "Twitch / Followers",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 507,
+   "name": "TwitchGetLatestFollower",
+   "display": "Get Latest Follower",
+   "category": "Twitch / Followers",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 508,
+   "name": "TwitchGetSubscriberCount",
+   "display": "Get Subscriber Count",
+   "category": "Twitch / Subscribers",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 509,
+   "name": "TwitchGetLatestSubscriber",
+   "display": "Get Latest Subscriber",
+   "category": "Twitch / Subscribers",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 510,
+   "name": "TwitchClearChatMessages",
+   "display": "Clear Chat Messages",
+   "category": "Twitch / Chat",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 511,
+   "name": "TwitchBanUser",
+   "display": "Ban User",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string",
+    "reason:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 512,
+   "name": "TwitchUnbanUser",
+   "display": "Unban User",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 513,
+   "name": "TwitchUnTimeoutUser",
+   "display": "UnTimeout User",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 520,
+   "name": "TwitchGetChannelGuestStarSettings",
+   "display": "Get Channel Guest Star Settings",
+   "category": "Twitch / Guest Star",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 521,
+   "name": "TwitchUpdateChannelGuestStarSettings",
+   "display": "Update Channel Guest Star Settings",
+   "category": "Twitch / Guest Star",
+   "fields": [
+    "moderatorSendLiveEnabled:string",
+    "slotCount:string",
+    "browserSourceAudioEnabled:string",
+    "groupLayout:string",
+    "regenerateBrowserSources:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 522,
+   "name": "TwitchGetGuestStarSession",
+   "display": "Get Guest Star Session",
+   "category": "Twitch / Guest Star",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 523,
+   "name": "TwitchCreateGuestStarSession",
+   "display": "Create Guest Star Session",
+   "category": "Twitch / Guest Star",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 524,
+   "name": "TwitchEndGuestStarSession",
+   "display": "End Guest Star Session",
+   "category": "Twitch / Guest Star",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 525,
+   "name": "TwitchGetGuestStarInvites",
+   "display": "Get Guest Star Invites",
+   "category": "Twitch / Guest Star",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 526,
+   "name": "TwitchSendGuestStarInvite",
+   "display": "Send Guest Star Invite",
+   "category": "Twitch / Guest Star",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 527,
+   "name": "TwitchDeleteGuestStarInvite",
+   "display": "Delete Guest Star Invite",
+   "category": "Twitch / Guest Star",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 528,
+   "name": "TwitchAssignGuestStarSlot",
+   "display": "Assign Guest Star Slot",
+   "category": "Twitch / Guest Star",
+   "fields": [
+    "userLogin:string",
+    "slot:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 529,
+   "name": "TwitchUpdateGuestStarSlot",
+   "display": "Update Guest Star Slot",
+   "category": "Twitch / Guest Star",
+   "fields": [
+    "sourceSlot:string",
+    "destinationSlot:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 530,
+   "name": "TwitchDeleteGuestStarSlot",
+   "display": "Delete Guest Star Slot",
+   "category": "Twitch / Guest Star",
+   "fields": [
+    "userLogin:string",
+    "slot:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 531,
+   "name": "TwitchUpdateGuestStarSlotSettings",
+   "display": "Update Guest Star Slot Settings",
+   "category": "Twitch / Guest Star",
+   "fields": [
+    "slot:string",
+    "audioEnabled:string",
+    "videoEnabled:string",
+    "live:string",
+    "volume:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 550,
+   "name": "TwitchAddPresentUser",
+   "display": "Add Present User",
+   "category": "Twitch / User",
+   "fields": [
+    "userIndex:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 551,
+   "name": "TwitchGetSubCounterCount",
+   "display": "Get Twitch Sub Counter Count",
+   "category": "Twitch / Sub Counter",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 552,
+   "name": "TwitchSetSubCounterCount",
+   "display": "Set Twitch Sub Counter Count",
+   "category": "Twitch / Sub Counter",
+   "fields": [
+    "value:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 553,
+   "name": "TwitchAddUserToGroup",
+   "display": "Add User To Group",
+   "category": "Twitch / User Groups",
+   "fields": [
+    "userLogin:string",
+    "groupName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 554,
+   "name": "TwitchRemoveUserFromGroup",
+   "display": "Remove User from Group",
+   "category": "Twitch / User Groups",
+   "fields": [
+    "userLogin:string",
+    "groupName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 555,
+   "name": "TwitchSnoozeAd",
+   "display": "Snooze Ad",
+   "category": "Twitch / Ads",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 556,
+   "name": "TwitchGetAdSchedule",
+   "display": "Get Ad Schedule",
+   "category": "Twitch / Ads",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 557,
+   "name": "TwitchGetPreRollFreeTime",
+   "display": "Get Pre-roll Free Time",
+   "category": "Twitch / Ads",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 558,
+   "name": "TwitchUserInGroup",
+   "display": "User In Group",
+   "category": "Twitch / User Groups",
+   "fields": [
+    "userLogin:string",
+    "groupName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 560,
+   "name": "ReplyToMessage",
+   "display": "Reply To Message",
+   "category": "Twitch / Chat",
+   "fields": [
+    "text:string",
+    "useBot:bool",
+    "fallback:bool",
+    "replyId:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 561,
+   "name": "TwitchCreatePoll",
+   "display": "Create Poll",
+   "category": "Twitch / Polls",
+   "fields": [
+    "title:string",
+    "duration:string",
+    "channelPointsPerVote:string",
+    "choices:List<string>"
+   ],
+   "supported": false
+  },
+  {
+   "id": 562,
+   "name": "TwitchTerminateActivePoll",
+   "display": "Terminate Active Poll",
+   "category": "Twitch / Polls",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 563,
+   "name": "TwitchArchiveActivePoll",
+   "display": "Archive Active Poll",
+   "category": "Twitch / Polls",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 564,
+   "name": "SetChannelBrandedContent",
+   "display": "Set Channel Branded Content",
+   "category": "Twitch / Channel",
+   "fields": [
+    "status:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 565,
+   "name": "TwitchWarnUser",
+   "display": "Warn User",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string",
+    "reason:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 566,
+   "name": "TwitchGetActivePoll",
+   "display": "Get Active Poll",
+   "category": "Twitch / Polls",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 567,
+   "name": "TwitchGetActivePrediction",
+   "display": "Get Active Prediction",
+   "category": "Twitch / Predictions",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 568,
+   "name": "TwitchCreatePrediction",
+   "display": "Create Prediction",
+   "category": "Twitch / Predictions",
+   "fields": [
+    "title:string",
+    "predictionWindow:string",
+    "outcomes:List<string>"
+   ],
+   "supported": false
+  },
+  {
+   "id": 569,
+   "name": "TwitchCancelActivePrediction",
+   "display": "Cancel Active Prediction",
+   "category": "Twitch / Predictions",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 570,
+   "name": "TwitchLockActivePrediction",
+   "display": "Lock Active Prediction",
+   "category": "Twitch / Predictions",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 571,
+   "name": "TwitchResolveLastPrediction",
+   "display": "Resolve Last Prediction",
+   "category": "Twitch / Predictions",
+   "fields": [
+    "winningIndex:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 572,
+   "name": "TwitchResolveLastPredictionByTitle",
+   "display": "Resolve Last Prediction By Title",
+   "category": "Twitch / Predictions",
+   "fields": [
+    "outcomeTitle:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 573,
+   "name": "TwitchGetClipDownloadUrls",
+   "display": "Get Clip Download Urls",
+   "category": "Twitch / Clips",
+   "fields": [
+    "clipId:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 575,
+   "name": "TwitchGetPinnedChatMessage",
+   "display": "Get Pinned Chat Message",
+   "category": "Twitch / Chat",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 576,
+   "name": "TwitchPinChatMessage",
+   "display": "Pin Chat Message",
+   "category": "Twitch / Chat",
+   "fields": [
+    "messageId:string",
+    "duration:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 577,
+   "name": "TwitchUpdatePinnedChatMessageDuration",
+   "display": "Updated Pinned Chat Message Duration",
+   "category": "Twitch / Chat",
+   "fields": [
+    "duration:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 578,
+   "name": "TwitchUnpinChatMessage",
+   "display": "Unpin Chat Message",
+   "category": "Twitch / Chat",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 579,
+   "name": "TwitchAddSuspiciousStatus",
+   "display": "Add Suspicious Status",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string",
+    "status:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 580,
+   "name": "TwitchRemoveSuspiciousStatus",
+   "display": "Remove Suspicious Status",
+   "category": "Twitch / Moderation",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 601,
+   "name": "SpeakerBotSpeakUdp",
+   "display": "Speak (UDP)",
+   "category": "Speaker.bot",
+   "fields": [
+    "alias:string",
+    "message:string",
+    "badWordFilter:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 602,
+   "name": "SpeakerBotSpeak",
+   "display": "Speak",
+   "category": "Speaker.bot",
+   "fields": [
+    "alias:string",
+    "message:string",
+    "badWordFilter:bool",
+    "delay:bool",
+    "silent:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 603,
+   "name": "SpeakerBotSetEnabledState",
+   "display": "Set Enabled State",
+   "category": "Speaker.bot",
+   "fields": [
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 604,
+   "name": "SpeakerBotSetPausedState",
+   "display": "Set Paused State",
+   "category": "Speaker.bot",
+   "fields": [
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 605,
+   "name": "SpeakerBotStopSpeaking",
+   "display": "Stop Speaking",
+   "category": "Speaker.bot",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 606,
+   "name": "SpeakerBotClearPending",
+   "display": "Clear Pending",
+   "category": "Speaker.bot",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 607,
+   "name": "SpeakerBotActivateVoiceGateProfile",
+   "display": "Activate VoiceGate Profile",
+   "category": "Speaker.bot",
+   "fields": [
+    "profileId:Guid",
+    "profileName:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 701,
+   "name": "PolyPopTriggerAlert",
+   "display": "Trigger Alert",
+   "category": "PolyPop",
+   "fields": [
+    "alertName:string",
+    "variables:Dictionary<string, string>"
+   ],
+   "supported": false
+  },
+  {
+   "id": 1000,
+   "name": "GetQuote",
+   "display": "Get Quote",
+   "category": "Core / Quotes",
+   "fields": [
+    "quoteType:_g2Tf2bH3NnMGK3aholRugJ4bX9B",
+    "quoteId:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1001,
+   "name": "SetActionQueuePauseState",
+   "display": "Set Action Queue Pause State",
+   "category": "Core / Action Queues",
+   "fields": [
+    "actionQueueId:Guid?",
+    "state:int",
+    "clear:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1002,
+   "name": "DelayAction",
+   "display": "Delay",
+   "category": "Core",
+   "fields": [
+    "value:string",
+    "maxValue:string",
+    "random:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1003,
+   "name": "GetRandomNumber",
+   "display": "Get Random Number",
+   "category": "Core / Logic",
+   "fields": [
+    "randomType:int",
+    "min:int",
+    "max:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1004,
+   "name": "SetActionState",
+   "display": "Set Action State",
+   "category": "Core / Actions",
+   "fields": [
+    "actionId:Guid",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1005,
+   "name": "ClearActionQueue",
+   "display": "Clear Action Queue",
+   "category": "Core / Action Queues",
+   "fields": [
+    "actionQueueId:Guid?"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1006,
+   "name": "ReadLinesFromFile",
+   "display": "Read Lines From File",
+   "category": "Core / File IO",
+   "fields": [
+    "file:string",
+    "parseVariables:bool",
+    "autoType:bool",
+    "variableName:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1007,
+   "name": "FetchUrl",
+   "display": "Fetch URL",
+   "category": "Core / Network",
+   "fields": [
+    "url:string",
+    "variableName:string",
+    "headers:Dictionary<string, string>",
+    "parseAsJson:bool",
+    "autoType:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1008,
+   "name": "PickColor",
+   "display": "Pick Color",
+   "category": "Settings",
+   "fields": [
+    "alpha:int",
+    "red:int",
+    "green:int",
+    "blue:int",
+    "random:bool",
+    "variableName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 1009,
+   "name": "Comment",
+   "display": "Comment",
+   "category": "Core / Misc",
+   "fields": [
+    "value:string",
+    "color:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1010,
+   "name": "SetCommandGroupState",
+   "display": "Set Command Group State",
+   "category": "Core / Commands",
+   "fields": [
+    "groupName:string",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1011,
+   "name": "SetActionGroupState",
+   "display": "Set Action Group State",
+   "category": "Core / Actions",
+   "fields": [
+    "groupName:string",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1012,
+   "name": "KeyboardPress",
+   "display": "Keyboard Press",
+   "category": "Core / System",
+   "fields": [
+    "key:_84Z7gncectaTcBDjtCBlJ1WxVdt._0RLD4J6cM6rICM4mfLE6vfypx5x",
+    "modifiers:_84Z7gncectaTcBDjtCBlJ1WxVdt._cEZ3q10S5xxacP9xx54D7XVUn8S"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1013,
+   "name": "GetCommands",
+   "display": "Get Commands",
+   "category": "Core / Commands",
+   "fields": [
+    "groupName:string",
+    "variableName:string",
+    "includeAll:bool",
+    "ignoreAliases:bool",
+    "hasPermission:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1014,
+   "name": "GetCommandState",
+   "display": "Get Command State",
+   "category": "Core / Commands",
+   "fields": [
+    "commandId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1015,
+   "name": "GetCommandGroupState",
+   "display": "Get Command Group State",
+   "category": "Core / Commands",
+   "fields": [
+    "groupName:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1016,
+   "name": "GetActionState",
+   "display": "Get Action State",
+   "category": "Core / Actions",
+   "fields": [
+    "actionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1017,
+   "name": "GetActionGroupState",
+   "display": "Get Action Group State",
+   "category": "Core / Actions",
+   "fields": [
+    "groupName:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1018,
+   "name": "SetVoiceControlCommand",
+   "display": "Set Voice Control Command",
+   "category": "Core / Voice Control",
+   "fields": [
+    "commandId:Guid",
+    "command:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 1019,
+   "name": "SetVoiceControlCommandState",
+   "display": "Set Voice Control Command State",
+   "category": "Core / Voice Control",
+   "fields": [
+    "commandId:Guid",
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 1020,
+   "name": "LogEntry",
+   "display": "Log",
+   "category": "Core / Misc",
+   "fields": [
+    "logLevel:LogEventLevel",
+    "message:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1021,
+   "name": "ReadSpecificLineFromFile",
+   "display": "Read Specific Line From File",
+   "category": "Core / File IO",
+   "fields": [
+    "file:string",
+    "parseVariables:bool",
+    "autoType:bool",
+    "count:string",
+    "variableName:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1022,
+   "name": "SetActionQueueBlockingState",
+   "display": "Set Action Queue Blocking State",
+   "category": "Core / Action Queues",
+   "fields": [
+    "actionQueueId:Guid",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1023,
+   "name": "GetInput",
+   "display": "Get Input",
+   "category": "Core / Logic",
+   "fields": [
+    "title:string",
+    "prompt:string",
+    "originalText:string",
+    "outputVariable:string",
+    "autoTypeOutput:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1024,
+   "name": "ToastNotification",
+   "display": "Toast Notification",
+   "category": "Core / System",
+   "fields": [
+    "toastId:string",
+    "title:string",
+    "text:string",
+    "attribution:string",
+    "iconPath:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1025,
+   "name": "SetVoiceControlInput",
+   "display": "Set Voice Control Input",
+   "category": "Settings",
+   "fields": [
+    "audioDeviceId:Guid?",
+    "audioDeviceName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 1026,
+   "name": "ResetFirstWords",
+   "display": "Reset First Words",
+   "category": "Settings",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 1027,
+   "name": "ResetCredits",
+   "display": "Reset Credits",
+   "category": "Settings",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 1028,
+   "name": "SetSubActionState",
+   "display": "Set Sub-Action State",
+   "category": "Core / Actions",
+   "fields": [
+    "actionId:Guid",
+    "subActionId:Guid",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1030,
+   "name": "SetFileTailState",
+   "display": "Set File Tail State",
+   "category": "Core / File Tail",
+   "fields": [
+    "fileTailId:Guid",
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 1031,
+   "name": "SendLocalSignal",
+   "display": "Send Local Signal",
+   "category": "Core / Signals",
+   "fields": [
+    "signalName:string",
+    "useArge:bool",
+    "customArgs:Dictionary<string, string>",
+    "queueSignal:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1032,
+   "name": "WaitForLocalSignal",
+   "display": "Wait For Local Signal",
+   "category": "Core / Signals",
+   "fields": [
+    "signalName:string",
+    "overwrite:bool",
+    "timeout:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1033,
+   "name": "SetTriggerState",
+   "display": "Set Trigger State",
+   "category": "Core / Triggers",
+   "fields": [
+    "actionId:Guid",
+    "triggerId:Guid",
+    "state:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1034,
+   "name": "CustomEventTrigger",
+   "display": "Custom Event Trigger",
+   "category": "Core / Triggers",
+   "fields": [
+    "eventName:string",
+    "useArgs:bool"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1035,
+   "name": "GetQuoteCount",
+   "display": "Get Quote Count",
+   "category": "Core / Quotes",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 1036,
+   "name": "DeleteQuote",
+   "display": "Delete Quote",
+   "category": "Core / Quotes",
+   "fields": [
+    "quoteId:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1037,
+   "name": "AddQuote",
+   "display": "Add Quote",
+   "category": "Core / Quotes",
+   "fields": [
+    "quoteVariable:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1038,
+   "name": "SetSubActionWeight",
+   "display": "Set Sub-Action Weight",
+   "category": "Core / Actions",
+   "fields": [
+    "actionId:Guid",
+    "subActionId:Guid",
+    "weight:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1039,
+   "name": "FileExists",
+   "display": "File Exists",
+   "category": "Core / File IO",
+   "fields": [
+    "file:string",
+    "variableName:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 1040,
+   "name": "FolderExists",
+   "display": "Folder Exists",
+   "category": "Core / File IO",
+   "fields": [
+    "folder:string",
+    "variableName:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 4001,
+   "name": "YouTubeMessage",
+   "display": "Send Message to Channel",
+   "category": "YouTube",
+   "fields": [
+    "text:string",
+    "useBot:bool",
+    "fallback:bool",
+    "broadcast:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 4002,
+   "name": "YouTubeSetTitle",
+   "display": "Set Title",
+   "category": "YouTube",
+   "fields": [
+    "title:string",
+    "broadcast:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 4003,
+   "name": "YouTubeSetDescription",
+   "display": "Set Description",
+   "category": "YouTube",
+   "fields": [
+    "description:string",
+    "broadcast:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 4004,
+   "name": "YouTubeSetTitleAndDescription",
+   "display": "Set Title and Description",
+   "category": "YouTube",
+   "fields": [
+    "title:string",
+    "description:string",
+    "broadcast:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 4005,
+   "name": "YouTubeAddUserToGroup",
+   "display": "Add User To Group",
+   "category": "YouTube / User Groups",
+   "fields": [
+    "userLogin:string",
+    "groupName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 4006,
+   "name": "YouTubeRemoveUserFromGroup",
+   "display": "Remove User from Group",
+   "category": "YouTube / User Groups",
+   "fields": [
+    "userLogin:string",
+    "groupName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 4007,
+   "name": "YouTubeUserInGroup",
+   "display": "User In Group",
+   "category": "YouTube / User Groups",
+   "fields": [
+    "userLogin:string",
+    "groupName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 4008,
+   "name": "YouTubeBanUser",
+   "display": "Ban User",
+   "category": "YouTube / Moderation",
+   "fields": [
+    "userId:string",
+    "broadcast:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 4009,
+   "name": "YoUTubeTimeoutUser",
+   "display": "Timeout User",
+   "category": "YouTube / Moderation",
+   "fields": [
+    "userId:string",
+    "duration:string",
+    "broadcast:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 4010,
+   "name": "YouTubeAddBroadcasterInformation",
+   "display": "Add Broadcaster Information",
+   "category": "YouTube / User",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 4011,
+   "name": "YouTubeCreatePoll",
+   "display": "Create Poll",
+   "category": "YouTube / Polls",
+   "fields": [
+    "question:string",
+    "options:List<string>",
+    "broadcast:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 4012,
+   "name": "YouTubeEndPoll",
+   "display": "End Poll",
+   "category": "YouTube / Polls",
+   "fields": [
+    "broadcast:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 5001,
+   "name": "VoiceModGetCurrentVoice",
+   "display": "Get Current Voice",
+   "category": "Integrations / VoiceMod",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 5002,
+   "name": "VoiceModSelectVoice",
+   "display": "Select Voice",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "voiceId:string",
+    "voiceName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 5003,
+   "name": "VoiceModSelectRandomVoice",
+   "display": "Select Random Voice",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "mode:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 5004,
+   "name": "VoiceModSetVoiceChangerState",
+   "display": "Set Voice Changer State",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 5005,
+   "name": "VoiceModSetMuteState",
+   "display": "Set Mute State",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 5006,
+   "name": "VoiceModSetHearMyVoiceState",
+   "display": "Set Hear My Voice State",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 5007,
+   "name": "VoiceModSetCensorState",
+   "display": "Set Censor State",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 5008,
+   "name": "VoiceModSetBackgroundEffectState",
+   "display": "Set Background Effect State",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 5009,
+   "name": "VoiceModSelectVoiceById",
+   "display": "Select Voice By Id",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "voiceId:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 5010,
+   "name": "VoiceModPlaySound",
+   "display": "Play Sound",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "soundId:string",
+    "soundboardName:string",
+    "soundName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 5011,
+   "name": "VoiceModStopAllSounds",
+   "display": "Stop All Sounds",
+   "category": "Integrations / VoiceMod",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 5012,
+   "name": "VoiceModSelectVoiceByName",
+   "display": "Select Voice by Name",
+   "category": "Integrations / VoiceMod",
+   "fields": [
+    "voiceName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 6001,
+   "name": "LumiaStreamSendCommand",
+   "display": "Send Command",
+   "category": "Integrations / Lumia Stream",
+   "fields": [
+    "command:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 6002,
+   "name": "LumiaStreamSetColor",
+   "display": "Set Color",
+   "category": "Integrations / Lumia Stream",
+   "fields": [
+    "color:string",
+    "brightness:string",
+    "duration:string",
+    "transition:string",
+    "default:bool",
+    "skipQueue:bool",
+    "lights:List<_5rZN4pUjO0TLRXPZyPhNlnJaoqM._nMd3g2FEUD4F3MTtLnV6scozD7C>"
+   ],
+   "supported": false
+  },
+  {
+   "id": 6004,
+   "name": "LumiaStreamSetToDefault",
+   "display": "Set To Default",
+   "category": "Integrations / Lumia Stream",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 7001,
+   "name": "DiscordBasicWebhook",
+   "display": "Basic Webhook",
+   "category": "Integrations / Discord",
+   "fields": [
+    "name:string",
+    "username:string",
+    "webhookUrl:string",
+    "content:string",
+    "image:string",
+    "avatar:string",
+    "textToSpeech:bool"
+   ],
+   "supported": false
+  },
+  {
+   "id": 8001,
+   "name": "IFTTTNotificationBasic",
+   "display": "IFTTT Notification (Basic)",
+   "category": "Integrations / IFTTT",
+   "fields": [
+    "eventName:string",
+    "text:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 8002,
+   "name": "IFTTTNotificationAdvanced",
+   "display": "IFTTT Notification (Advanced)",
+   "category": "Integrations / IFTTT",
+   "fields": [
+    "eventName:string",
+    "args:Dictionary<string, string>"
+   ],
+   "supported": false
+  },
+  {
+   "id": 9001,
+   "name": "MidiOutNoteOn",
+   "display": "Note On",
+   "category": "Core / MIDI",
+   "fields": [
+    "device:Guid",
+    "name:string",
+    "sendNoteOff:bool",
+    "channel:string",
+    "note:string",
+    "velocity:string",
+    "duration:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 9002,
+   "name": "MidiOutControlChange",
+   "display": "Control Change",
+   "category": "Core / MIDI",
+   "fields": [
+    "device:Guid",
+    "name:string",
+    "channel:string",
+    "controller:string",
+    "value:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 9003,
+   "name": "MidiOutGeneric",
+   "display": "Generic Event",
+   "category": "Core / MIDI",
+   "fields": [
+    "device:Guid",
+    "name:string",
+    "command:int",
+    "channel:string",
+    "data1:string",
+    "data2:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 10001,
+   "name": "ClearUsersFromGroup",
+   "display": "Clear Users From Group",
+   "category": "Core / Users",
+   "fields": [
+    "groupId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 11001,
+   "name": "StreamDeckSetTitle",
+   "display": "Set Title",
+   "category": "Elgato / Stream Deck",
+   "fields": [
+    "buttonId:string",
+    "title:string",
+    "state:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 11002,
+   "name": "StreamDeckSetBackground",
+   "display": "Set Background",
+   "category": "Elgato / Stream Deck",
+   "fields": [
+    "buttonId:string",
+    "image:string",
+    "color:string",
+    "state:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 11004,
+   "name": "StreamDeckSetState",
+   "display": "Set State",
+   "category": "Elgato / Stream Deck",
+   "fields": [
+    "buttonId:string",
+    "state:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 11005,
+   "name": "StreamDeckShowAlert",
+   "display": "Show Alert",
+   "category": "Elgato / Stream Deck",
+   "fields": [
+    "buttonId:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 11006,
+   "name": "StreamDeckShowOk",
+   "display": "Show Ok",
+   "category": "Elgato / Stream Deck",
+   "fields": [
+    "buttonId:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 11007,
+   "name": "StreamDeckToggleState",
+   "display": "Toggle State",
+   "category": "Elgato / Stream Deck",
+   "fields": [
+    "buttonId:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 11008,
+   "name": "StreamDeckSetStatus",
+   "display": "Set Value",
+   "category": "Elgato / Stream Deck",
+   "fields": [
+    "buttonId:string",
+    "value:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 12001,
+   "name": "VTubeStudioLoadModel",
+   "display": "Load Model",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "modelId:string",
+    "modelName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 12002,
+   "name": "VTubeStudioLoadModelByName",
+   "display": "Load Model by Name",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "modelName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 12003,
+   "name": "VTubeStudioTriggerHotkey",
+   "display": "Trigger Hotkey",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "modelId:string",
+    "modelName:string",
+    "hotkeyId:string",
+    "hotkeyName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 12004,
+   "name": "VTubeStudioTriggerHotkeyByName",
+   "display": "Trigger Hotkey by Name",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "hotkeyName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 12005,
+   "name": "VTubeStudioMoveModel",
+   "display": "Move Model",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "seconds:string",
+    "relative:string",
+    "posX:string",
+    "posY:string",
+    "rotation:string",
+    "size:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 12006,
+   "name": "VTubeStudioGetCurrentModel",
+   "display": "Get Current Model",
+   "category": "Integrations / VTube Studio",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 12007,
+   "name": "VTubeStudioColorTint",
+   "display": "Color Tint",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "color:string",
+    "random:bool",
+    "mixWithSceneLighting:string",
+    "tintAll:bool",
+    "filterType:string",
+    "filterValues:List<string>"
+   ],
+   "supported": false
+  },
+  {
+   "id": 12008,
+   "name": "VTubeStudioResetAllColorTints",
+   "display": "Reset All Color Tints",
+   "category": "Integrations / VTube Studio",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 12009,
+   "name": "VTubeStudioSetExpressionState",
+   "display": "Set Expression State",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "expressionFile:string",
+    "expressionName:string",
+    "state:int",
+    "fadeTime:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 12010,
+   "name": "VTubeStudioSendRawRequest",
+   "display": "Send Raw Request",
+   "category": "Integrations / VTube Studio",
+   "fields": [
+    "name:string",
+    "prefix:string",
+    "request:string",
+    "raw:string",
+    "resultsToArgs:bool"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14001,
+   "name": "ElgatoWaveLinkMuteMicrophone",
+   "display": "Mute Microphone",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "microphoneName:string",
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14002,
+   "name": "ElgatoWaveLinkMuteOutput",
+   "display": "Mute Output",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "mixerType:MixerType",
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14003,
+   "name": "ElgatoWaveLinkMuteInput",
+   "display": "Mute Input",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "inputName:string",
+    "mixerType:MixerType",
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14004,
+   "name": "ElgatoWaveLinkSetBypassFilterState",
+   "display": "Set Filter Bypass State",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "inputName:string",
+    "mixerType:MixerType",
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14005,
+   "name": "ElgatoWaveLinkSetFilterState",
+   "display": "Set Filter State",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "inputName:string",
+    "filterId:string",
+    "filterName:string",
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14006,
+   "name": "ElgatoWaveLinkSetOutputMonitorDevice",
+   "display": "Set Output Monitor Device",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "deviceName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14007,
+   "name": "ElgatoWaveLinkGetSelectedOutput",
+   "display": "Get Selected Output",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 14008,
+   "name": "ElgatoWaveLinkSetOutputVolume",
+   "display": "Set Output Volume",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "mixerType:MixerType",
+    "volume:string",
+    "adjustment:bool"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14009,
+   "name": "ElgatoWaveLinkGetOutputVolumes",
+   "display": "Get Output Volumes",
+   "category": "Elgato / Wave Link",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 14010,
+   "name": "ElgatoWaveLinkSetInputVolume",
+   "display": "Set Input Volume",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "inputName:string",
+    "mixerType:MixerType",
+    "volume:string",
+    "adjustment:bool"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14011,
+   "name": "ElgatoWaveLinkGetInputInformation",
+   "display": "Get Input Information",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "inputName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14012,
+   "name": "ElgatoWaveLinkGetMicrophoneInformation",
+   "display": "Get Microphone Information",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "microphoneName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14013,
+   "name": "ElgatoWaveLinkSetMicrophoneGain",
+   "display": "Set Microphone Gain",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "microphoneName:string",
+    "gain:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14014,
+   "name": "ElgatoWaveLinkSetMicrophoneOutputVolume",
+   "display": "Set Microphone Output Volume",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "microphoneName:string",
+    "volume:string",
+    "adjustment:bool"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14015,
+   "name": "ElgatoWaveLinkSetMicrophoneBalance",
+   "display": "Set Microphone Balance",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "microphoneName:string",
+    "balance:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14016,
+   "name": "ElgatoWaveLinkGetFilterState",
+   "display": "Get Filter State",
+   "category": "Elgato / Wave Link",
+   "fields": [
+    "identifier:string",
+    "inputName:string",
+    "filterId:string",
+    "filterName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14301,
+   "name": "ElgatoCameraHubWebcamSetContrast",
+   "display": "Set Contrast",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "adjustment:bool",
+    "contrast:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14302,
+   "name": "ElgatoCameraHubWebcamSetBrightness",
+   "display": "Set Brightness",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "adjustment:bool",
+    "brightness:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14303,
+   "name": "ElgatoCameraHubWebcamSetSaturation",
+   "display": "Set Saturation",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "adjustment:bool",
+    "saturation:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14304,
+   "name": "ElgatoCameraHubWebcamSetZoom",
+   "display": "Set Zoom",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "adjustment:bool",
+    "zoom:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14305,
+   "name": "ElgatoCameraHubWebcamSetPan",
+   "display": "Set Pan",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "adjustment:bool",
+    "pan:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14306,
+   "name": "ElgatoCameraHubWebcamSetTilt",
+   "display": "Set Tilt",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "adjustment:bool",
+    "tilt:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14307,
+   "name": "ElgatoCameraHubWebcamSetFocus",
+   "display": "Set Focus",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "adjustment:bool",
+    "focus:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14308,
+   "name": "ElgatoCameraHubWebcamSetAutoWhiteBalance",
+   "display": "Set Auto White Balance",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14309,
+   "name": "ElgatoCameraHubWebcamSetWhiteBalance",
+   "display": "Set White Balance",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "adjustment:bool",
+    "whiteBalance:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14310,
+   "name": "ElgatoCameraHubWebcamSetWhiteBalanceTint",
+   "display": "Set White Balance Tint",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "adjustment:bool",
+    "whiteBalanceTint:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14311,
+   "name": "ElgatoCameraHubWebcamSetNoiseReduction",
+   "display": "Set Noise Reduction",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "state:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14312,
+   "name": "ElgatoCameraHubWebcamSetAntiFlicker",
+   "display": "Set Anti Flicker",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "antiFlicker:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14313,
+   "name": "ElgatoCameraHubWebcamSetSharpness",
+   "display": "Set Sharpness",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "adjustment:bool",
+    "sharpness:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14314,
+   "name": "ElgatoCameraHubWebcamSetDynamicRange",
+   "display": "Set Dynamic Range",
+   "category": "Elgato / Camera Hub / Webcam",
+   "fields": [
+    "dynamicRange:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14401,
+   "name": "ElgatoCameraHubEpocCamSetARLens",
+   "display": "Set AR Lens",
+   "category": "Elgato / Camera Hub / EpocCam",
+   "fields": [
+    "arLens:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14402,
+   "name": "ElgatoCameraHubEpocCamSetCamera",
+   "display": "Set Camera",
+   "category": "Elgato / Camera Hub / EpocCam",
+   "fields": [
+    "camera:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14403,
+   "name": "ElgatoCameraHubEpocCamSetBitrate",
+   "display": "Set Bitrate",
+   "category": "Elgato / Camera Hub / EpocCam",
+   "fields": [
+    "bitrate:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14404,
+   "name": "ElgatoCameraHubEpocCamSetTorchMode",
+   "display": "Set Flash Mode",
+   "category": "Elgato / Camera Hub / EpocCam",
+   "fields": [
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14601,
+   "name": "ElgatoCameraHubPrompterFastForwardChapter",
+   "display": "Fast Forward Chapter",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 14602,
+   "name": "ElgatoCameraHubPrompterRewindChapter",
+   "display": "Rewind Chapter",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 14603,
+   "name": "ElgatoCameraHubPrompterSetChapter",
+   "display": "Set Chapter",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "adjustment:bool",
+    "chapter:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14604,
+   "name": "ElgatoCameraHubPrompterSetFont",
+   "display": "Set Font",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "font:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14605,
+   "name": "ElgatoCameraHubPrompterSetFontSize",
+   "display": "Set Font Size",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "adjustment:bool",
+    "fontSize:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14606,
+   "name": "ElgatoCameraHubPrompterSetOpacity",
+   "display": "Set Opacity",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "adjustment:bool",
+    "opacity:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14607,
+   "name": "ElgatoCameraHubPrompterSetLineSpacing",
+   "display": "Set Line Spacing",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "adjustment:bool",
+    "lineSpacing:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14608,
+   "name": "ElgatoCameraHubPrompterSetHorizontalMargin",
+   "display": "Set Horizontal Margin",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "adjustment:bool",
+    "margin:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14609,
+   "name": "ElgatoCameraHubPrompterSetVerticalMargin",
+   "display": "Set Vertical Margin",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "adjustment:bool",
+    "margin:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14610,
+   "name": "ElgatoCameraHubPrompterSetBrightness",
+   "display": "Set Brightness",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "adjustment:bool",
+    "brightness:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14611,
+   "name": "ElgatoCameraHubPrompterSetAutoScrollState",
+   "display": "Set Auto Scroll State",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14612,
+   "name": "ElgatoCameraHubPrompterSetMode",
+   "display": "Set Mode",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "mode:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14614,
+   "name": "ElgatoCameraHubPrompterSetCrosshairState",
+   "display": "Set Crosshair State",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14615,
+   "name": "ElgatoCameraHubPrompterSetCrosshairImage",
+   "display": "Set Crosshair Image",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "image:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14616,
+   "name": "ElgatoCameraHubPrompterGetSelectedScript",
+   "display": "Get Selected Script",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 14617,
+   "name": "ElgatoCameraHubPrompterSetScript",
+   "display": "Set Script",
+   "category": "Elgato / Camera Hub / Prompter",
+   "fields": [
+    "uniqueId:string",
+    "scriptName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 14701,
+   "name": "ElgatoStreamDeckMcpExecuteAction",
+   "display": "Execute MCP Action",
+   "category": "Elgato / Stream Deck",
+   "fields": [
+    "actionId:string",
+    "actionName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 15001,
+   "name": "PronounsAddForUser",
+   "display": "Add Pronouns for User",
+   "category": "Integrations / Pronouns",
+   "fields": [
+    "userLogin:string",
+    "prefix:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 19001,
+   "name": "ThrowingSystemActivateTrigger",
+   "display": "Activate Trigger",
+   "category": "Integrations / Throwing System",
+   "fields": [
+    "triggerId:string",
+    "triggerName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 19002,
+   "name": "ThrowingSystemActivateTriggerByName",
+   "display": "Activate Trigger by Name",
+   "category": "Integrations / Throwing System",
+   "fields": [
+    "triggerName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 19003,
+   "name": "ThrowingSystemThrowItem",
+   "display": "Throw Item",
+   "category": "Integrations / Throwing System",
+   "fields": [
+    "itemId:string",
+    "itemName:string",
+    "delay:string",
+    "amount:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 19004,
+   "name": "ThrowingSystemThrowItemByName",
+   "display": "Throw Item by Name",
+   "category": "Integrations / Throwing System",
+   "fields": [
+    "itemName:string",
+    "delay:string",
+    "amount:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 19005,
+   "name": "ThrowingSystemThrowItems",
+   "display": "Throw Items",
+   "category": "Integrations / Throwing System",
+   "fields": [
+    "items:List<string>",
+    "delay:string",
+    "amount:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 19006,
+   "name": "ThrowingSystemThrowItemsByName",
+   "display": "Throw Items by Name",
+   "category": "Integrations / Throwing System",
+   "fields": [
+    "items:List<string>",
+    "delay:string",
+    "amount:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 20001,
+   "name": "StreamerBotRemoteInstanceSendTrigger",
+   "display": "Send Remote Trigger",
+   "category": "Streamer.bot / Remote",
+   "fields": [
+    "instanceId:Guid",
+    "eventName:string",
+    "useArge:bool",
+    "customArgs:Dictionary<string, string>"
+   ],
+   "supported": false
+  },
+  {
+   "id": 20002,
+   "name": "StreamerBotRemoteInstanceSendSignal",
+   "display": "Send Remote Signal",
+   "category": "Streamer.bot / Remote",
+   "fields": [
+    "instanceId:Guid",
+    "signalName:string",
+    "useArge:bool",
+    "customArgs:Dictionary<string, string>"
+   ],
+   "supported": false
+  },
+  {
+   "id": 20003,
+   "name": "StreamerBotRemoteInstanceWaitForSignal",
+   "display": "Wait For Remote Signal",
+   "category": "Streamer.bot / Remote",
+   "fields": [
+    "instanceId:Guid",
+    "signalName:string",
+    "overwrite:bool",
+    "timeout:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 21001,
+   "name": "StreamerBotDeckItemSetState",
+   "display": "Item Set State",
+   "category": "Streamer.bot / Decks",
+   "fields": [
+    "deckId:string",
+    "deckName:string",
+    "itemId:string",
+    "itemName:string",
+    "state:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 21002,
+   "name": "StreamerBotDeckItemToggleState",
+   "display": "Item Toggle State",
+   "category": "Streamer.bot / Decks",
+   "fields": [
+    "deckId:string",
+    "deckName:string",
+    "itemId:string",
+    "itemName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 21003,
+   "name": "StreamerBotDeckItemSetTitle",
+   "display": "Item Set Title",
+   "category": "Streamer.bot / Decks",
+   "fields": [
+    "deckId:string",
+    "deckName:string",
+    "itemId:string",
+    "itemName:string",
+    "color:string",
+    "title:string",
+    "state:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 21004,
+   "name": "StreamerBotDeckItemSetBackground",
+   "display": "Item Set Background",
+   "category": "Streamer.bot / Decks",
+   "fields": [
+    "deckId:string",
+    "deckName:string",
+    "itemId:string",
+    "itemName:string",
+    "color:string",
+    "url:string",
+    "fileId:string",
+    "state:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 21005,
+   "name": "StreamerBotDeckItemSetIcon",
+   "display": "Item Set Icon",
+   "category": "Streamer.bot / Decks",
+   "fields": [
+    "deckId:string",
+    "deckName:string",
+    "itemId:string",
+    "itemName:string",
+    "color:string",
+    "name:string",
+    "url:string",
+    "fileId:string",
+    "state:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 21006,
+   "name": "StreamerBotDeckItemSetValue",
+   "display": "Item Set Value",
+   "category": "Streamer.bot / Decks",
+   "fields": [
+    "deckId:string",
+    "deckName:string",
+    "itemId:string",
+    "itemName:string",
+    "value:string",
+    "state:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 21007,
+   "name": "StreamerBotDeckNotify",
+   "display": "Deck Notify",
+   "category": "Streamer.bot / Decks",
+   "fields": [
+    "deckId:string",
+    "deckName:string",
+    "title:string",
+    "description:string",
+    "color:string",
+    "soundId:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 21008,
+   "name": "StreamerBotDeckPageSet",
+   "display": "Page Set",
+   "category": "Streamer.bot / Decks",
+   "fields": [
+    "deckId:string",
+    "deckName:string",
+    "page:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 21009,
+   "name": "StreamerBotDeckPageNext",
+   "display": "Page Next",
+   "category": "Streamer.bot / Decks",
+   "fields": [
+    "deckId:string",
+    "deckName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 21010,
+   "name": "StreamerBotDeckPagePrev",
+   "display": "Page Previous",
+   "category": "Streamer.bot / Decks",
+   "fields": [
+    "deckId:string",
+    "deckName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 30001,
+   "name": "StopAllSoundPlayback",
+   "display": "Stop All Sound Playback",
+   "category": "Core / Sounds",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 30002,
+   "name": "StopSoundPlayback",
+   "display": "Stop Sound Playback",
+   "category": "Core / Sounds",
+   "fields": [
+    "soundName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35001,
+   "name": "KickSendMessage",
+   "display": "Send Message to Channel",
+   "category": "Kick / Chat",
+   "fields": [
+    "text:string",
+    "useBot:bool",
+    "fallback:bool"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35002,
+   "name": "KickReplyToMessage",
+   "display": "Reply To Message",
+   "category": "Kick / Chat",
+   "fields": [
+    "text:string",
+    "useBot:bool",
+    "fallback:bool",
+    "replyId:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35010,
+   "name": "KickAddBroadcasterInformation",
+   "display": "Add Broadcaster Information",
+   "category": "Kick / User",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 35011,
+   "name": "KickAddTargetInfo",
+   "display": "Get User Info for Target",
+   "category": "Kick / User",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35012,
+   "name": "KickAddRandomUsers",
+   "display": "Add Random Users",
+   "category": "Kick / User",
+   "fields": [
+    "present:bool",
+    "count:string",
+    "includeFrom:bool",
+    "groups:List<string>"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35020,
+   "name": "KickAddUserToGroup",
+   "display": "Add User To Group",
+   "category": "Kick / User Groups",
+   "fields": [
+    "userLogin:string",
+    "groupName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35021,
+   "name": "KickRemoveUserFromGroup",
+   "display": "Remove User from Group",
+   "category": "Kick / User Groups",
+   "fields": [
+    "userLogin:string",
+    "groupName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35022,
+   "name": "KickUserInGroup",
+   "display": "User In Group",
+   "category": "Kick / User Groups",
+   "fields": [
+    "userLogin:string",
+    "groupName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35030,
+   "name": "KickSetChannelTitle",
+   "display": "Set Channel Title",
+   "category": "Kick / Channel",
+   "fields": [
+    "title:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35031,
+   "name": "KickSetChannelCategory",
+   "display": "Set Channel Category",
+   "category": "Kick / Channel",
+   "fields": [
+    "source:int",
+    "categoryName:string",
+    "categoryId:int?"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35040,
+   "name": "KickBanUser",
+   "display": "Ban User",
+   "category": "Kick / Moderation",
+   "fields": [
+    "userLogin:string",
+    "reason:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35041,
+   "name": "KickUnbanUser",
+   "display": "Unban User",
+   "category": "Kick / Moderation",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35042,
+   "name": "KickTimeoutUser",
+   "display": "Timeout User",
+   "category": "Kick / Moderation",
+   "fields": [
+    "userLogin:string",
+    "duration:string",
+    "reason:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35043,
+   "name": "KickUnTimeoutUser",
+   "display": "UnTimeout User",
+   "category": "Kick / Moderation",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35101,
+   "name": "KickChannelRewardSetEnabledState",
+   "display": "Set Enabled State",
+   "category": "Kick / Rewards",
+   "fields": [
+    "rewardId:string",
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35102,
+   "name": "KickChannelRewardSetPausedState",
+   "display": "Set Paused State",
+   "category": "Kick / Rewards",
+   "fields": [
+    "rewardId:string",
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35103,
+   "name": "KickChannelRewardSetCost",
+   "display": "Set Cost",
+   "category": "Kick / Rewards",
+   "fields": [
+    "rewardId:string",
+    "cost:string",
+    "operator:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35104,
+   "name": "KickChannelRewardConfigure",
+   "display": "Configure Rewards",
+   "category": "Kick / Rewards",
+   "fields": [
+    "disableNotConfigured:bool"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35105,
+   "name": "KickChannelRewardSetTitle",
+   "display": "Set Title",
+   "category": "Kick / Rewards",
+   "fields": [
+    "rewardId:string",
+    "title:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35106,
+   "name": "KickChannelRewardSetDescription",
+   "display": "Set Description",
+   "category": "Kick / Rewards",
+   "fields": [
+    "rewardId:string",
+    "description:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35107,
+   "name": "KickChannelRewardUpdate",
+   "display": "Update",
+   "category": "Kick / Rewards",
+   "fields": [
+    "rewardId:string",
+    "title:string",
+    "description:string",
+    "cost:string",
+    "operator:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35108,
+   "name": "KickChannelRewardGetInfo",
+   "display": "Get Reward Info",
+   "category": "Kick / Rewards",
+   "fields": [
+    "rewardId:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35109,
+   "name": "KickChannelRewardResetCounter",
+   "display": "Reset Reward Counter",
+   "category": "Kick / Rewards",
+   "fields": [
+    "rewardId:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35110,
+   "name": "KickChannelRewardResetUserCounters",
+   "display": "Reset Reward User Counters",
+   "category": "Kick / Rewards",
+   "fields": [
+    "rewardId:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35111,
+   "name": "KickChannelRewardSetGroupEnabledState",
+   "display": "Set Group Enabled State",
+   "category": "Kick / Rewards",
+   "fields": [
+    "groupName:string",
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35112,
+   "name": "KickChannelRewardSetGroupPausedState",
+   "display": "Set Group Paused State",
+   "category": "Kick / Rewards",
+   "fields": [
+    "groupName:string",
+    "state:int"
+   ],
+   "supported": false
+  },
+  {
+   "id": 35113,
+   "name": "KickChannelRewardSetBackgroundColor",
+   "display": "Set Background Color",
+   "category": "Kick / Rewards",
+   "fields": [
+    "rewardId:string",
+    "backgroundColor:string",
+    "random:bool"
+   ],
+   "supported": false
+  },
+  {
+   "id": 37001,
+   "name": "StreamfogActivateLens",
+   "display": "Activate Lens",
+   "category": "Integrations / Streamfog / Lenses",
+   "fields": [
+    "lensId:string",
+    "lensName:string",
+    "duration:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 37002,
+   "name": "StreamfogDeactivateLens",
+   "display": "Deactivate Lens",
+   "category": "Integrations / Streamfog / Lenses",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 37004,
+   "name": "StreamfogActivateLensByName",
+   "display": "Activate Lens by Name",
+   "category": "Integrations / Streamfog / Lenses",
+   "fields": [
+    "lensName:string",
+    "duration:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 37011,
+   "name": "StreamfogActivateOutfit",
+   "display": "Activate Outfit",
+   "category": "Integrations / Streamfog / Outfits",
+   "fields": [
+    "outfitId:string",
+    "outfitName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 37012,
+   "name": "StreamfogResetLook",
+   "display": "Reset Look",
+   "category": "Integrations / Streamfog / Outfits",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 37013,
+   "name": "StreamfogActivateOutfitByName",
+   "display": "Activate Outfit by Name",
+   "category": "Integrations / Streamfog / Outfits",
+   "fields": [
+    "outfitName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 37014,
+   "name": "StreamfogPlayVideoBackground",
+   "display": "Play Video Background",
+   "category": "Integrations / Streamfog / Backgrounds",
+   "fields": [
+    "videoId:string",
+    "videoName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 37015,
+   "name": "StreamfogPlayVideoBackgroundByName",
+   "display": "Play Video Background by Name",
+   "category": "Integrations / Streamfog / Backgrounds",
+   "fields": [
+    "videoName:string"
+   ],
+   "supported": false
+  },
+  {
+   "id": 40000,
+   "name": "MtionGetActiveClubhouse",
+   "display": "Get Active Clubhouse",
+   "category": "Integrations / mtion",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 40001,
+   "name": "MtionSendTrigger",
+   "display": "Send Trigger",
+   "category": "Integrations / mtion",
+   "fields": [
+    "triggerId:string",
+    "triggerName:string",
+    "parameters:List<_Ac1FByCapcWHKyalbdsJZh6AVqJ>"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41001,
+   "name": "MeldStudioGetCurrentScene",
+   "display": "Get Current Scene",
+   "category": "Meld Studio",
+   "fields": [
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41002,
+   "name": "MeldStudioGetStatus",
+   "display": "Get Status",
+   "category": "Meld Studio",
+   "fields": [
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41003,
+   "name": "MeldStudioStreaming",
+   "display": "Streaming",
+   "category": "Meld Studio",
+   "fields": [
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41004,
+   "name": "MeldStudioRecording",
+   "display": "Recording",
+   "category": "Meld Studio",
+   "fields": [
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41005,
+   "name": "MeldStudioShowScene",
+   "display": "Show Scene",
+   "category": "Meld Studio",
+   "fields": [
+    "sceneName:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41006,
+   "name": "MeldStudioSetLayerVisibilityState",
+   "display": "Set Layer Visibility State",
+   "category": "Meld Studio / Layers",
+   "fields": [
+    "sceneName:string",
+    "layerName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41007,
+   "name": "MeldStudioSetEffectEnabledState",
+   "display": "Set Effect Enabled State",
+   "category": "Meld Studio / Effects",
+   "fields": [
+    "sceneName:string",
+    "layerName:string",
+    "effectName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41008,
+   "name": "MeldStudioSetLayerTrackMutedState",
+   "display": "Set Layer Track Muted State",
+   "category": "Meld Studio / Tracks",
+   "fields": [
+    "sceneName:string",
+    "layerName:string",
+    "trackName:string",
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41009,
+   "name": "MeldStudioSetTrackMutedState",
+   "display": "Set Track Muted State",
+   "category": "Meld Studio / Tracks",
+   "fields": [
+    "state:int",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41010,
+   "name": "MeldStudioTakeScreenshot",
+   "display": "Take Screenshot",
+   "category": "Meld Studio",
+   "fields": [
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41012,
+   "name": "MeldStudioSetLayerText",
+   "display": "Set Text",
+   "category": "Meld Studio / Layers",
+   "fields": [
+    "sceneName:string",
+    "layerName:string",
+    "text:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41013,
+   "name": "MeldStudioRecordClip",
+   "display": "Record Clip",
+   "category": "Meld Studio",
+   "fields": [
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41014,
+   "name": "MeldStudioSetMediaLayerSource",
+   "display": "Set Media Layer Source",
+   "category": "Meld Studio / Layers",
+   "fields": [
+    "sceneName:string",
+    "layerName:string",
+    "url:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41016,
+   "name": "MeldStudioSetBrowserLayerUrl",
+   "display": "Set Browser Layer Url",
+   "category": "Meld Studio / Layers",
+   "fields": [
+    "sceneName:string",
+    "layerName:string",
+    "url:string",
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 41017,
+   "name": "MeldStudioTakeVerticalScreenshot",
+   "display": "Take Vertical Screenshot",
+   "category": "Meld Studio",
+   "fields": [
+    "connectionId:Guid"
+   ],
+   "supported": false
+  },
+  {
+   "id": 44001,
+   "name": "StreamlabsWebsiteSpinWheel",
+   "display": "Spin Wheel",
+   "category": "Integrations / Streamlabs",
+   "fields": [],
+   "supported": false
+  },
+  {
+   "id": 99900,
+   "name": "Group",
+   "display": "Group",
+   "category": "",
+   "fields": [
+    "name:string",
+    "color:string",
+    "random:bool",
+    "subActions:List<_zKUoC4es1iOK9RftlTlQVoKyawi>"
+   ],
+   "supported": true
+  },
+  {
+   "id": 99901,
+   "name": "IfTrueGroup",
+   "display": "",
+   "category": "",
+   "fields": [
+    "random:bool",
+    "subActions:List<_zKUoC4es1iOK9RftlTlQVoKyawi>"
+   ],
+   "supported": true
+  },
+  {
+   "id": 99902,
+   "name": "IfFalseGroup",
+   "display": "",
+   "category": "",
+   "fields": [
+    "random:bool",
+    "subActions:List<_zKUoC4es1iOK9RftlTlQVoKyawi>"
+   ],
+   "supported": true
+  },
+  {
+   "id": 99903,
+   "name": "SwitchCaseGroup",
+   "display": "Switch Case",
+   "category": "",
+   "fields": [
+    "caseSensitive:bool",
+    "values:List<string>",
+    "random:bool",
+    "subActions:List<_zKUoC4es1iOK9RftlTlQVoKyawi>"
+   ],
+   "supported": true
+  },
+  {
+   "id": 99904,
+   "name": "SwitchDefaultGroup",
+   "display": "",
+   "category": "",
+   "fields": [
+    "random:bool",
+    "subActions:List<_zKUoC4es1iOK9RftlTlQVoKyawi>"
+   ],
+   "supported": true
+  },
+  {
+   "id": 99998,
+   "name": "ExecuteMethod",
+   "display": "Execute C# Method",
+   "category": "Core / C#",
+   "fields": [
+    "executeCodeId:Guid",
+    "method:string",
+    "runOnUiThread:bool",
+    "saveResultToVariable:bool",
+    "saveToVariable:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 99999,
+   "name": "ExecuteCode",
+   "display": "Execute C# Code",
+   "category": "Core / C#",
+   "fields": [
+    "name:string",
+    "description:string",
+    "references:List<string>",
+    "byteCode:byte[]",
+    "precompile:bool",
+    "delayStart:bool",
+    "saveResultToVariable:bool",
+    "saveToVariable:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50001,
+   "name": "CherBotPoints",
+   "display": "Points Command",
+   "category": "CherBot / Community",
+   "fields": [
+    "platform:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50002,
+   "name": "CherBotLeaderboard",
+   "display": "Points Leaderboard",
+   "category": "CherBot / Community",
+   "fields": [
+    "count:int",
+    "platform:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50003,
+   "name": "CherBotFirstWords",
+   "display": "First Words Command",
+   "category": "CherBot / Community",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 50004,
+   "name": "CherBotDiscordHub",
+   "display": "Discord Hub Command",
+   "category": "CherBot / Community",
+   "fields": [
+    "defaultUrl:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50005,
+   "name": "CherBotAwardPoints",
+   "display": "Award Points",
+   "category": "CherBot / Community",
+   "fields": [
+    "amount:string",
+    "target:int",
+    "platform:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50010,
+   "name": "CherBotGamble",
+   "display": "Game: Gamble",
+   "category": "CherBot / Games",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 50011,
+   "name": "CherBotSlots",
+   "display": "Game: Slots",
+   "category": "CherBot / Games",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 50012,
+   "name": "CherBotCoinflip",
+   "display": "Game: Coinflip",
+   "category": "CherBot / Games",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 50013,
+   "name": "CherBotDuel",
+   "display": "Game: Duel",
+   "category": "CherBot / Games",
+   "fields": [
+    "mode:string"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50014,
+   "name": "CherBotHeist",
+   "display": "Game: Heist",
+   "category": "CherBot / Games",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 50015,
+   "name": "CherBotRoulette",
+   "display": "Game: Roulette",
+   "category": "CherBot / Games",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 50020,
+   "name": "CherBotSceneFromChat",
+   "display": "OBS: Scene From Chat",
+   "category": "CherBot / OBS",
+   "fields": [
+    "allowedScenes:List<string>",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50021,
+   "name": "CherBotListScenes",
+   "display": "OBS: List Scenes",
+   "category": "CherBot / OBS",
+   "fields": [
+    "allowedScenes:List<string>",
+    "connectionId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50030,
+   "name": "CherBotGiveawayEnter",
+   "display": "Giveaway: Enter",
+   "category": "CherBot / Giveaways",
+   "fields": [
+    "giveawayId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50031,
+   "name": "CherBotGiveawayControl",
+   "display": "Giveaway: Control",
+   "category": "CherBot / Giveaways",
+   "fields": [
+    "operation:string",
+    "giveawayId:Guid",
+    "durationSeconds:int"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50040,
+   "name": "CherBotCustomCommandResponse",
+   "display": "Custom Command Response",
+   "category": "CherBot / Commands",
+   "fields": [
+    "customCommandId:Guid"
+   ],
+   "supported": true
+  },
+  {
+   "id": 50041,
+   "name": "CherBotSpamFilterPermit",
+   "display": "Spam Filter: Permit Links",
+   "category": "CherBot / Moderation",
+   "fields": [
+    "userLogin:string"
+   ],
+   "supported": true
+  }
+ ]
+}

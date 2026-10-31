@@ -1,0 +1,29 @@
+# System-wide CherBot service. Installed by install.sh to /etc/systemd/system/cherbot.service.
+# Data lives in /var/lib/cherbot (systemd StateDirectory); config in /var/lib/cherbot/cherbot.json.
+[Unit]
+Description=CherBot (headless Streamer.bot-compatible bot)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=notify
+User=cherbot
+Group=cherbot
+ExecStart=/opt/cherbot/cherbot
+WorkingDirectory=/opt/cherbot
+StateDirectory=cherbot
+StateDirectoryMode=0700
+# Single-file builds extract their assemblies here (the service user has no home directory).
+Environment=DOTNET_BUNDLE_EXTRACT_BASE_DIR=/var/lib/cherbot/.bundle
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/cherbot
+
+[Install]
+WantedBy=multi-user.target

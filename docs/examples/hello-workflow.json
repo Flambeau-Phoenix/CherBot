@@ -1,0 +1,53 @@
+{
+  "commands": [
+    {
+      "id": "e50b10b7-b26e-4433-8ce7-342e44ab31af",
+      "name": "AI example: hello",
+      "command": "!hello",
+      "enabled": true,
+      "mode": 0,
+      "location": 0,
+      "sources": 1,
+      "globalCooldown": 5,
+      "userCooldown": 10,
+      "grantType": 0,
+      "permittedGroups": [],
+      "group": "AI examples"
+    }
+  ],
+  "actions": [
+    {
+      "id": "339d956f-600c-4a60-8e08-611fc5905afd",
+      "name": "AI example: greet viewer",
+      "group": "AI examples",
+      "enabled": true,
+      "triggers": [
+        {
+          "id": "9cbadcc5-c299-45a6-9ae4-b9862a905eb0",
+          "type": 401,
+          "enabled": true,
+          "commandId": "e50b10b7-b26e-4433-8ce7-342e44ab31af"
+        }
+      ],
+      "subActions": [
+        {
+          "id": "f022bf5c-276f-4c0a-8028-4c892e614ba3",
+          "type": 123,
+          "index": 0,
+          "enabled": true,
+          "variableName": "greeting",
+          "value": "Hello %user%!"
+        },
+        {
+          "id": "80b1d13b-2040-4c53-b5a2-83035577a426",
+          "type": 10,
+          "index": 1,
+          "enabled": true,
+          "text": "%greeting%",
+          "useBot": true,
+          "fallback": true
+        }
+      ]
+    }
+  ]
+}

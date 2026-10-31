@@ -1,0 +1,72 @@
+<Window x:Class="CherBot.Desktop.ConnectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CherBot connection" Width="560" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
+    <StackPanel Margin="16">
+        <TextBlock Text="How should this app run CherBot?" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10" />
+
+        <RadioButton x:Name="LocalRadio" GroupName="Mode" Margin="0,4" Checked="Mode_Changed">
+            <TextBlock TextWrapping="Wrap">
+                <Run FontWeight="SemiBold">Local</Run>
+                <Run>— run the engine inside this app on this PC (127.0.0.1). Closing the window keeps it running in the tray.</Run>
+            </TextBlock>
+        </RadioButton>
+        <StackPanel x:Name="LocalPanel" Margin="24,4,0,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition /><RowDefinition /><RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Text="API port" VerticalAlignment="Center" />
+                <TextBox x:Name="LocalPort" Grid.Column="1" Margin="0,2" />
+                <TextBlock Text="WebSocket port" Grid.Row="1" VerticalAlignment="Center" />
+                <TextBox x:Name="LocalWsPort" Grid.Row="1" Grid.Column="1" Margin="0,2" />
+                <TextBlock Text="Data folder" Grid.Row="2" VerticalAlignment="Center" />
+                <TextBox x:Name="LocalDataDir" Grid.Row="2" Grid.Column="1" Margin="0,2" ToolTip="Leave empty for %ProgramData%\CherBot" />
+            </Grid>
+        </StackPanel>
+
+        <RadioButton x:Name="RemoteRadio" GroupName="Mode" Margin="0,4" Checked="Mode_Changed">
+            <TextBlock TextWrapping="Wrap">
+                <Run FontWeight="SemiBold">Remote</Run>
+                <Run>— connect to an engine running elsewhere (a server on your network, or a CherBot Windows Service).</Run>
+            </TextBlock>
+        </RadioButton>
+        <Grid x:Name="RemotePanel" Margin="24,4,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <ListBox x:Name="ProfileList" Height="120" SelectionChanged="ProfileList_SelectionChanged" />
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <Button Content="New" Width="56" Click="NewProfile_Click" />
+                    <Button Content="Delete" Width="56" Margin="4,0,0,0" Click="DeleteProfile_Click" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                <TextBlock Text="Name" />
+                <TextBox x:Name="ProfileName" Margin="0,2,0,6" />
+                <TextBlock Text="URL (e.g. http://192.168.1.50:8091)" />
+                <TextBox x:Name="ProfileUrl" Margin="0,2,0,6" />
+                <TextBlock Text="API token (from 'cherbot token' on that machine)" />
+                <PasswordBox x:Name="ProfileToken" Margin="0,2,0,6" />
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Save profile" Click="SaveProfile_Click" Padding="10,3" />
+                    <Button Content="Test" Click="TestProfile_Click" Padding="10,3" Margin="6,0,0,0" />
+                    <TextBlock x:Name="TestResult" Margin="8,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <TextBlock x:Name="Error" Foreground="Firebrick" TextWrapping="Wrap" Margin="0,4" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="Use this" IsDefault="True" Width="96" Click="Ok_Click" />
+            <Button Content="Cancel" IsCancel="True" Width="80" Margin="8,0,0,0" />
+        </StackPanel>
+    </StackPanel>
+</Window>

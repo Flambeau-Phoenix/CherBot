@@ -1,0 +1,17 @@
+bin/
+obj/
+artifacts/
+TestResults/
+*.user
+.vs/
+.idea/
+node_modules/
+*.db
+*.db-shm
+*.db-wal
+api-token
+keys/
+logs/
+cherbot.json
+.devhost/
+*.decoded.json
