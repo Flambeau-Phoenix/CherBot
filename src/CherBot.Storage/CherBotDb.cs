@@ -267,6 +267,7 @@ public sealed partial class CherBotDb
             detail TEXT NOT NULL DEFAULT '');
         CREATE INDEX idx_mod_log_ts ON mod_log(ts);
         """,
+        LiveSchema,
     ];
 
     internal static string Now() => DateTimeOffset.UtcNow.ToString("O");

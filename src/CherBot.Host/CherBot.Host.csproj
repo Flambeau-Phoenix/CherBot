@@ -23,7 +23,10 @@
     <Content Remove="webui\**" />
     <None Remove="webui\**" />
     <EmbeddedResource Include="..\..\docs\operating-guide.md" Link="webui\help\docs\operating-guide.md" />
+    <EmbeddedResource Include="..\..\docs\quick-start.md" Link="webui\help\getting-started.md" />
     <EmbeddedResource Include="..\..\docs\configuration-reference.md" Link="webui\help\docs\configuration-reference.md" />
+    <EmbeddedResource Include="..\..\docs\cherbot-ai-reference.txt" Link="webui\help\docs\cherbot-ai-reference.txt" />
+    <EmbeddedResource Include="..\..\docs\cherbot-ai-prompt.txt" Link="webui\help\docs\cherbot-ai-prompt.txt" />
     <EmbeddedResource Include="..\..\packaging\cherbot.example.json" LogicalName="CherBot.DefaultConfig.json" />
   </ItemGroup>
 

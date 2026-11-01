@@ -21,6 +21,7 @@ public interface IBotModule
     object? Settings { get; }
     void SaveSettings(JsonElement json);
     void SetEnabled(bool enabled);
+    void ReloadSettings() { }
 }
 
 public interface IModuleSettings
@@ -66,6 +67,12 @@ public abstract class BotModule<T> : IBotModule where T : class, IModuleSettings
     }
 
     protected virtual void OnSaved() { }
+
+    public void ReloadSettings()
+    {
+        _settings = Db.GetKv(Key) is { } json ? JsonSerializer.Deserialize<T>(json, CherBotJson.Options) ?? new T() : new T();
+        OnSaved();
+    }
 }
 
 /// <summary>Features with their own page (loyalty, games, giveaways, scene commands), listed so the Modules page is the single on/off overview.</summary>
@@ -79,6 +86,7 @@ public sealed class LoyaltyModuleCard(LoyaltyService loyalty) : IBotModule
     public string? Page => "loyalty";
     public object? Settings => loyalty.Settings;
     public void SaveSettings(JsonElement json) => loyalty.Save(json.Deserialize<LoyaltySettings>(CherBotJson.Options) ?? new());
+    public void ReloadSettings() => loyalty.ReloadSettings();
     public void SetEnabled(bool enabled)
     {
         loyalty.Settings.Enabled = enabled;

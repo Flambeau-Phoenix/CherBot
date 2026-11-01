@@ -53,6 +53,8 @@ class LinuxPackageTests(unittest.TestCase):
             self.assertEqual(0o644, tar.getmember(f"{self.stem}/cherbot.example.json").mode)
             self.assertNotIn(f"{self.stem}/api-token", tar.getnames())
             self.assertIn(f"{self.stem}/docs/cherbot-ai-reference.txt", tar.getnames())
+            self.assertIn(f"{self.stem}/docs/quick-start.md", tar.getnames())
+            self.assertIn(f"{self.stem}/CHANGELOG.md", tar.getnames())
 
     def test_wrong_architecture_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "linux-arm64"):

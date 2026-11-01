@@ -135,15 +135,17 @@ Arrays replace the default list entirely. For example, setting `EventSub` to `["
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `Enabled` | `true` | Initial value of the loyalty switch, and seed the built-in commands |
+| `Enabled` | `true` | Initial value of the loyalty switch; existing saved loyalty settings take precedence |
 | `FirstWordPoints` | `10` | Initial points for a chatter's first message of the stream |
 | `ChatPoints` | `1` | Initial points for every other chat message |
 
 These three only seed the loyalty settings on first start. After that, points (and every other loyalty, game, giveaway and
 module setting) are edited in the web UI and stored in the database (`kv` keys `loyalty.settings`, `games.settings`,
 `modules.<id>`; giveaways and custom commands are documents).
-| `SeedDefaults` | `true` | Create `!first`, `!points`, `!leaderboard` and `!disc` on first start (once; deleting them later is permanent) |
-| `DefaultDiscordUrl` | `https://discord.gg/cherbot` | Link used by `!disc` until the `discord_url` global is set |
+| `SeedDefaults` | `true` | Create the built-in community starter commands once; deleting them later does not recreate them |
+| `DefaultDiscordUrl` | *(empty)* | Optional link used by a configured `!disc` until the `discord_url` global is set |
+
+The public template preserves CherBot's starter commands and presets. No Discord invite, linked accounts, balances or viewer records are supplied. Game, scene, giveaway, spam-filter and song commands start disabled until configured. Upgrades do not overwrite existing configuration files or saved module settings.
 
 ## OBS — `CherBot:Obs`
 

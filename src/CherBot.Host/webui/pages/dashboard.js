@@ -1,12 +1,14 @@
 // Dashboard: live status, OBS scene and source controls, pinned actions, quick chat, stream info,
 // one-click tools, the active giveaway and a mini event feed.
 
-import { el, fill, guard, toast, card, pageHead, fmtDuration, debounce, uuid, go } from '../lib/dom.js';
+import { el, fill, guard, toast, card, pageHead, fmtDuration, debounce, uuid, go, icon } from '../lib/dom.js';
 import { get, post, api, onEvent, getUiSettings, lists, invalidate } from '../lib/api.js';
 import { eventItem } from './monitor.js';
 import { showRunResult } from '../builder/editor.js';
+import { liveChat } from '../lib/livechat.js';
 
 export async function render(root) {
+  const chat = await liveChat();
   const strip = el('div', { class: 'strip' });
   const setup = el('section', { class: 'card hidden', 'aria-label': 'Getting started' });
   const scenesNode = el('div', { class: 'btn-grid' });
@@ -17,7 +19,8 @@ export async function render(root) {
   let currentScene = null;
   let channel = null;
 
-  const stat = (k, v, cls = '') => el('div', { class: 'stat' }, el('div', { class: 'k' }, k), el('div', { class: `v ${cls}` }, v));
+  const statIcons = { Twitch: 'device-tv', Stream: 'broadcast', Uptime: 'clock', OBS: 'device-tv', Queues: 'list-details', 'Pending runs': 'player-play' };
+  const stat = (k, v, cls = '') => el('div', { class: 'stat' }, el('div', { class: 'k' }, icon(statIcons[k]), k), el('div', { class: `v ${cls}` }, v));
 
   const loadStrip = guard(async () => {
     const [health, queues] = await Promise.all([fetch('/health').then(r => r.json()), get('/v1/queues')]);
@@ -43,6 +46,7 @@ export async function render(root) {
     fill(strip,
       stat('Twitch', tw?.connected ? 'Connected' : (tw?.state || 'off'), tw?.connected ? 'ok-text' : 'warn-text'),
       stat('Stream', channel ? (channel.live ? `LIVE · ${channel.viewers} viewers` : 'Offline') : '—', channel?.live ? 'ok-text' : ''),
+      stat('Uptime', channel?.live && channel.startedAt ? fmtDuration((Date.now() - new Date(channel.startedAt).getTime()) / 1000) : '—'),
       stat('OBS', obs?.connected ? (currentScene || 'Connected') : (obs?.state || 'off'), obs?.connected ? 'ok-text' : 'warn-text'),
       stat('Queues', paused ? `${paused} paused` : 'Running', paused ? 'warn-text' : 'ok-text'),
       stat('Pending runs', String(pending)));
@@ -163,9 +167,10 @@ export async function render(root) {
     tool('Reconnect OBS', async () => { await post('/v1/obs/reconnect'); invalidate('obs'); toast('Reconnecting OBS'); setTimeout(() => { loadScenes(); loadStrip(); }, 2500); }));
 
   fill(root,
-    pageHead('Dashboard', 'Live controls for your stream.', el('a', { href: '#/monitor' }, 'Monitor →')),
+    pageHead('Live Admin', 'Live controls for your stream.', el('a', { href: '#/users' }, 'Users →'), el('a', { href: '#/monitor' }, 'Monitor →')),
     strip,
     setup,
+    chat.node,
     el('div', { class: 'grid-2' },
       card('OBS scenes', [el('button', { class: 'small ghost', onclick: () => { invalidate('obs'); loadScenes(); } }, 'Refresh')], scenesNode, sourcesNode),
       el('div', {},
@@ -200,5 +205,5 @@ export async function render(root) {
     if (ends && clock) clock.textContent = fmtDuration((ends - Date.now()) / 1000);
   }, 1000);
   const refresh = setInterval(loadStrip, 15000);
-  return { isDirty: () => channelDirty, dispose() { off(); clearInterval(tick); clearInterval(refresh); } };
+  return { isDirty: () => channelDirty, dispose() { chat.dispose(); off(); clearInterval(tick); clearInterval(refresh); } };
 }

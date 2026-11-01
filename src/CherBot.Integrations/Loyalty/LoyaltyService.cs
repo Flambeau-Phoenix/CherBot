@@ -82,8 +82,13 @@ public sealed class LoyaltyService : BackgroundService
         _db.SetKv(Key, JsonSerializer.Serialize(settings, CherBotJson.Options));
     }
 
-    public long Award(string userId, string userName, long amount) =>
-        amount == 0 || userId.Length == 0 ? _db.GetPoints(Platform, userId) : _db.AddPoints(Platform, userId, userName, amount);
+    public void ReloadSettings()
+    {
+        if (_db.GetKv(Key) is { } json) _settings = JsonSerializer.Deserialize<LoyaltySettings>(json, CherBotJson.Options) ?? new();
+    }
+
+    public long Award(string userId, string userName, long amount, string reason = "adjustment") =>
+        amount == 0 || userId.Length == 0 ? _db.GetPoints(Platform, userId) : _db.AddPoints(Platform, userId, userName, amount, reason);
 
     private double Multiplier(IReadOnlyDictionary<string, object?> d)
     {
@@ -113,7 +118,7 @@ public sealed class LoyaltyService : BackgroundService
 
         var basePoints = first ? _settings.FirstWordPoints : _settings.ChatPoints;
         var amount = (long)Math.Round(basePoints * Multiplier(chat.Data));
-        Award(userId, S(chat.Data, "user"), amount);
+        Award(userId, S(chat.Data, "user"), amount, first ? "first-message" : "chat");
     }
 
     private Task OnEventAsync(BotEvent ev)
@@ -138,7 +143,8 @@ public sealed class LoyaltyService : BackgroundService
             "Raid" => _settings.RaidBonus,
             _ => 0,
         };
-        if (bonus > 0 && userId.Length > 0) Award(userId, user, bonus);
+        if (bonus > 0 && userId.Length > 0) Award(userId, user, bonus, ev.Type switch
+        { "Follow" => "follow", "Sub" => "sub", "ReSub" => "resub", "GiftSub" or "GiftBomb" => "gift", "Cheer" => "cheer", "Raid" => "raid", _ => "adjustment" });
         return Task.CompletedTask;
     }
 
@@ -176,7 +182,7 @@ public sealed class LoyaltyService : BackgroundService
         {
             var multiplier = v.Role switch { "Moderator" or "Broadcaster" => _settings.ModeratorMultiplier, "VIP" => _settings.VipMultiplier, _ => 1.0 };
             if (v.Subscribed) multiplier = Math.Max(multiplier, _settings.SubscriberMultiplier);
-            Award(v.Id, v.Display, (long)Math.Round(_settings.WatchPoints * multiplier));
+            Award(v.Id, v.Display, (long)Math.Round(_settings.WatchPoints * multiplier), "watch");
         }
         if (viewers.Count > 0) _log.LogInformation("Watch time: {Count} viewers earned {Points} {Currency}", viewers.Count, _settings.WatchPoints, Currency);
         return viewers.Count;
@@ -221,7 +227,10 @@ public sealed class LoyaltyService : BackgroundService
             {
                 var res = await _helix.GetAsync("chat/chatters", new Dictionary<string, string?>
                 {
-                    ["broadcaster_id"] = b.UserId, ["moderator_id"] = b.UserId, ["first"] = "1000", ["after"] = cursor,
+                    ["broadcaster_id"] = b.UserId,
+                    ["moderator_id"] = b.UserId,
+                    ["first"] = "1000",
+                    ["after"] = cursor,
                 }, ct: ct);
                 foreach (var c in res.GetProperty("data").EnumerateArray())
                 {

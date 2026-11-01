@@ -38,6 +38,7 @@ def stage_release(binary_dir, target, version, rid):
         shutil.copyfile(ROOT / "packaging/linux" / name, target / name)
     shutil.copyfile(ROOT / "packaging/README-install.md", target / "README-install.md")
     shutil.copyfile(ROOT / "packaging/cherbot.example.json", target / "cherbot.example.json")
+    shutil.copyfile(ROOT / "CHANGELOG.md", target / "CHANGELOG.md")
     shutil.copytree(ROOT / "docs", target / "docs")
     readme = (ROOT / "packaging/linux/README.md").read_text(encoding="utf-8-sig")
     for key, value in {"VERSION": version, "RID": rid, "STEM": target.name}.items():

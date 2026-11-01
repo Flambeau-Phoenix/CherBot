@@ -32,7 +32,12 @@ internal static class TwitchEndpoints
             var t = auth.Get(r);
             return Json(new
             {
-                linked = t is not null, login = t?.Login, userId = t?.UserId, expiresAt = t?.ExpiresAt, scopes = t?.Scopes, flow = auth.Flow(r),
+                linked = t is not null,
+                login = t?.Login,
+                userId = t?.UserId,
+                expiresAt = t?.ExpiresAt,
+                scopes = t?.Scopes,
+                flow = auth.Flow(r),
             });
         });
         v1.MapDelete("/twitch/auth/{role}", (string role, TwitchAuth auth) =>
@@ -86,7 +91,7 @@ internal static class TwitchEndpoints
         v1.MapGet("/leaderboard", (CherBotDb db, int? limit, string? platform) =>
             Json(new { leaderboard = db.GetLeaderboard(platform ?? "twitch", Math.Clamp(limit ?? 10, 1, 100)) }));
         v1.MapPut("/points/{platform}/{userId}", (string platform, string userId, PointsIn body, CherBotDb db) =>
-            Json(new { points = body.Add ? db.AddPoints(platform, userId, body.UserName ?? "", body.Points) : db.SetPoints(platform, userId, body.UserName ?? "", body.Points) }));
+            Json(new { points = body.Add ? db.AddPoints(platform, userId, body.UserName ?? "", body.Points, "admin") : db.SetPoints(platform, userId, body.UserName ?? "", body.Points) }));
         v1.MapGet("/first-words", (CherBotDb db, int? limit) => Json(new { firstWords = db.GetFirstWords(Math.Clamp(limit ?? 50, 1, 1000)) }));
         v1.MapDelete("/first-words", (CherBotDb db) => Json(new { cleared = db.ResetFirstWords() }));
 

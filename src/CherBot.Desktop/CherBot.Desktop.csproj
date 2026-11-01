@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CherBot.Host\CherBot.Host.csproj" />
+    <Resource Include="..\CherBot.Host\webui\assets\cherbot.png" Link="Assets\cherbot.png" />
   </ItemGroup>
 
 </Project>

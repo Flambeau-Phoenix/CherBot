@@ -341,7 +341,11 @@ public sealed class GiveawayService : BackgroundService
             await Say(d, template, new() { ["winner"] = e.UserName, ["user"] = e.UserName, ["winners"] = names, ["tickets"] = e.TotalTickets });
             Raise(d, "giveaway.winner", new()
             {
-                ["winnerId"] = winnerId, ["user"] = e.UserName, ["userName"] = e.UserLogin, ["userId"] = e.UserId, ["tickets"] = e.TotalTickets,
+                ["winnerId"] = winnerId,
+                ["user"] = e.UserName,
+                ["userName"] = e.UserLogin,
+                ["userId"] = e.UserId,
+                ["tickets"] = e.TotalTickets,
                 ["claimSeconds"] = d.ClaimSeconds,
             });
         }
@@ -364,7 +368,7 @@ public sealed class GiveawayService : BackgroundService
         var refunded = 0L;
         foreach (var e in Entries(d.Id).Where(e => e.Paid > 0))
         {
-            _loyalty.Award(e.UserId, e.UserName, e.Paid);
+            _loyalty.Award(e.UserId, e.UserName, e.Paid, "giveaway");
             refunded += e.Paid;
         }
         _db.ClearGiveawayEntries(d.Id.ToString());
@@ -446,7 +450,7 @@ public sealed class GiveawayService : BackgroundService
                 await Say(d, d.Messages.NotEnoughPoints, new(who) { ["tickets"] = add, ["cost"] = d.EntryCost }, chat, replyTo);
                 return new GiveawayResult(false, "Not enough points.");
             }
-            _loyalty.Award(userId, name, -cost);
+            _loyalty.Award(userId, name, -cost, "giveaway");
         }
 
         var bonus = existing?.Bonus ?? (ChatRoles.Flag(chat, "isSubscribed") ? d.SubscriberBonusTickets : 0) + (ChatRoles.Flag(chat, "isVip") ? d.VipBonusTickets : 0);

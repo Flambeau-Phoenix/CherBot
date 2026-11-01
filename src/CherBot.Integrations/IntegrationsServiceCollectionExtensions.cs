@@ -11,6 +11,7 @@ using CherBot.Integrations.Modules;
 using CherBot.Integrations.Obs;
 using CherBot.Integrations.SpeakerBot;
 using CherBot.Integrations.Twitch;
+using CherBot.Integrations.Songs;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CherBot.Integrations;
@@ -24,6 +25,16 @@ public static class IntegrationsServiceCollectionExtensions
         services.AddHttpClient("twitch", c => c.Timeout = TimeSpan.FromSeconds(20));
         services.AddSingleton<TwitchAuth>();
         services.AddSingleton<HelixClient>();
+        services.AddSingleton<StreamSessionService>();
+        services.AddHostedService(sp => sp.GetRequiredService<StreamSessionService>());
+        services.AddSingleton<UserTrackingService>();
+        services.AddHostedService(sp => sp.GetRequiredService<UserTrackingService>());
+        services.AddSingleton<ClipService>();
+        services.AddSingleton<QuickSetupService>();
+        services.AddSingleton<ISubActionHandler, LiveCommunityHandlers>();
+        services.AddSingleton<SongRequestService>();
+        services.AddHostedService(sp => sp.GetRequiredService<SongRequestService>());
+        services.AddSingleton<ISubActionHandler, SongHandlers>();
         services.AddSingleton<TwitchEventMapper>();
         services.AddSingleton<TwitchService>();
         services.AddHostedService(sp => sp.GetRequiredService<TwitchService>());

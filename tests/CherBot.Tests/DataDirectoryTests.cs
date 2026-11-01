@@ -17,6 +17,10 @@ public class DataDirectoryTests
             using var json = JsonDocument.Parse(File.ReadAllText(config));
             Assert.Equal("", json.RootElement.GetProperty("CherBot").GetProperty("Twitch").GetProperty("ClientId").GetString());
             Assert.Equal("127.0.0.1", json.RootElement.GetProperty("CherBot").GetProperty("Api").GetProperty("Address").GetString());
+            var community = json.RootElement.GetProperty("CherBot").GetProperty("Community");
+            Assert.True(community.GetProperty("Enabled").GetBoolean());
+            Assert.True(community.GetProperty("SeedDefaults").GetBoolean());
+            Assert.Equal("", community.GetProperty("DefaultDiscordUrl").GetString());
             if (!OperatingSystem.IsWindows())
                 Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite, File.GetUnixFileMode(config));
 

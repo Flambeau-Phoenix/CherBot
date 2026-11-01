@@ -57,6 +57,12 @@ public sealed class VariableService
     public IReadOnlyList<GlobalVariable> ListGlobals(bool persisted = true) =>
         (persisted ? _persisted : _temp).Values.OrderBy(v => v.Name).ToList();
 
+    public void ReloadGlobals()
+    {
+        _persisted.Clear();
+        foreach (var row in _db.GetGlobals()) _persisted[row.Name] = new(row.Name, Decode(row.ValueJson), DateTimeOffset.Parse(row.LastWrite), true);
+    }
+
     public void SetGlobal(string name, object? value, bool persisted = true)
     {
         var store = persisted ? _persisted : _temp;

@@ -16,6 +16,15 @@ $ErrorActionPreference = 'Stop'
 $root = Resolve-Path (Join-Path $PSScriptRoot '..')
 $Output = [IO.Path]::GetFullPath($Output)
 
+function Assert-PublicPackage([string]$Path) {
+    # Publish directories may have been used to run an engine. Never zip its local data.
+    $privateFiles = @(Get-ChildItem -LiteralPath $Path -Recurse -Force | Where-Object {
+        $_.Name -in @('api-token', 'cherbot.json', 'keys', 'logs', 'profiles.json', '.env') -or
+        $_.Name -match '(?i)(\.db(?:-shm|-wal)?$|\.sqlite(?:3)?(?:-shm|-wal)?$|\.(pem|key|pfx|p12)$|^\.env\.)'
+    })
+    if ($privateFiles.Count) { throw 'Refusing to package an output directory containing runtime data or credentials. Use a fresh -Output directory.' }
+}
+
 $common = @(
     '-c', $Configuration, '--self-contained', 'true',
     '-p:PublishSingleFile=true',
@@ -27,11 +36,13 @@ $common = @(
 
 foreach ($rid in $Runtimes) {
     $out = Join-Path $Output "cherbot-$rid"
+    if (Test-Path -LiteralPath $out) { Assert-PublicPackage $out }
     Write-Host "==> engine $rid -> $out"
     dotnet publish (Join-Path $root 'src/CherBot.Host/CherBot.Host.csproj') -r $rid -o $out @common
     if ($LASTEXITCODE -ne 0) { throw "publish failed for $rid" }
     Copy-Item (Join-Path $root 'packaging/README-install.md') $out -Force
     Copy-Item (Join-Path $root 'packaging/cherbot.example.json') $out -Force
+    Copy-Item (Join-Path $root 'CHANGELOG.md') $out -Force
     New-Item -ItemType Directory -Force (Join-Path $out 'docs') | Out-Null
     Copy-Item (Join-Path $root 'docs/*') (Join-Path $out 'docs') -Recurse -Force
     if ($rid -like 'linux-*') {
@@ -42,6 +53,7 @@ foreach ($rid in $Runtimes) {
         Copy-Item (Join-Path $root 'packaging/windows/*') $out -Force
     }
     if ($Zip) {
+        Assert-PublicPackage $out
         $zipPath = Join-Path $Output "cherbot-$rid.zip"
         if (Test-Path $zipPath) { Remove-Item $zipPath }
         Compress-Archive -Path (Join-Path $out '*') -DestinationPath $zipPath
@@ -50,14 +62,17 @@ foreach ($rid in $Runtimes) {
 
 if (-not $NoDesktop -and ($Runtimes -contains 'win-x64')) {
     $out = Join-Path $Output 'cherbot-desktop-win-x64'
+    if (Test-Path -LiteralPath $out) { Assert-PublicPackage $out }
     Write-Host "==> desktop win-x64 -> $out"
     dotnet publish (Join-Path $root 'src/CherBot.Desktop/CherBot.Desktop.csproj') -r win-x64 -o $out @common
     if ($LASTEXITCODE -ne 0) { throw 'desktop publish failed' }
     Copy-Item (Join-Path $root 'packaging/README-install.md') $out -Force
     Copy-Item (Join-Path $root 'packaging/cherbot.example.json') $out -Force
+    Copy-Item (Join-Path $root 'CHANGELOG.md') $out -Force
     New-Item -ItemType Directory -Force (Join-Path $out 'docs') | Out-Null
     Copy-Item (Join-Path $root 'docs/*') (Join-Path $out 'docs') -Recurse -Force
     if ($Zip) {
+        Assert-PublicPackage $out
         $zipPath = Join-Path $Output 'cherbot-desktop-win-x64.zip'
         if (Test-Path $zipPath) { Remove-Item $zipPath }
         Compress-Archive -Path (Join-Path $out '*') -DestinationPath $zipPath

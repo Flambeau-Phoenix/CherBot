@@ -56,5 +56,5 @@ public sealed class CommunityOptions
     public int ChatPoints { get; set; } = 1;
     /// <summary>Seed the !first, !points, !leaderboard and !disc commands and actions on first start.</summary>
     public bool SeedDefaults { get; set; } = true;
-    public string DefaultDiscordUrl { get; set; } = "https://discord.gg/cherbot";
+    public string DefaultDiscordUrl { get; set; } = "";
 }

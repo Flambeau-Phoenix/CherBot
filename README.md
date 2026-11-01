@@ -45,17 +45,22 @@ The Windows app displays the engine's own Web UI. Connecting it to Linux gives y
 | **OBS** | obs-websocket v5 connections, scene/source/filter controls, dashboard controls |
 | **Community** | Custom text commands, loyalty points, six chat games, raffles, giveaways, chat alerts, emote pyramids, spam filtering |
 | **Sound & speech** | Local playback, a browser-source sound overlay for headless hosts, Speaker.bot integration |
-| **Management** | Live events, run traces, a chat simulator, Quick Setup wizards, searchable in-app help |
+| **Management** | Live Admin chat and user inspection, run traces, a chat simulator, Quick Setup workflows, searchable help |
+| **Song Requests** | Moderated YouTube, Apple Music and Spotify links; restricted YouTube browser player |
+| **Optional history** | Local activity and points history, separate chat archive opt-in, earned-points rankings, retention and export/delete controls |
+| **Sharing & AI help** | Portable feature packs with dependency previews, online CLI, version-matched prompts for external AI chats |
 | **Migration** | Streamer.bot exports, `actions.json`, `commands.json`, Windows-to-Linux path mappings |
 
 ## Get started
+
+Start with the [quick-start guide](docs/quick-start.md), also available in **Help → Quick start**. See [what's new in 0.4.0](CHANGELOG.md) for features and upgrade notes. Fresh installations keep CherBot's starter commands and presets, with no linked accounts or personal data.
 
 Packaged builds are self-contained: **you do not need the .NET SDK to run them**. A source download needs to be built first; it is not a ready-to-run installation.
 
 | Package | Choose this for |
 | --- | --- |
-| `cherbot-0.3.0-linux-x64.run` | Offline Linux x64 installer: user service, system service, or extraction only |
-| `cherbot-0.3.0-linux-x64.tar.gz` | Linux x64 release archive, including the console app and service installer |
+| `cherbot-0.4.0-linux-x64.run` | Offline Linux x64 installer: user service, system service, or extraction only |
+| `cherbot-0.4.0-linux-x64.tar.gz` | Linux x64 release archive, including the console app and service installer |
 | `cherbot-desktop-win-x64.zip` | The Windows tray app, with Local and Remote modes |
 | `cherbot-win-x64.zip` | The Windows console app or Windows Service |
 
@@ -66,12 +71,12 @@ Build artifacts are produced by GitHub Actions. See this repository's Actions pa
 Download the Linux `.run` installer and install a user service (use the version in your downloaded filename):
 
 ```bash
-bash cherbot-0.3.0-linux-x64.run --user
+bash cherbot-0.4.0-linux-x64.run --user
 ```
 
-Use `sudo bash cherbot-0.3.0-linux-x64.run` for a system service instead. The `.run` file bundles the release and verifies its payload before installing; it needs no downloads. `--help` explains its modes. The matching `.sha256` file contains checksums for both release files.
+Use `sudo bash cherbot-0.4.0-linux-x64.run` for a system service instead. The `.run` file bundles the release and verifies its payload before installing; it needs no downloads. `--help` explains its modes. The matching `.sha256` file contains checksums for both release files.
 
-Prefer an archive? Extract `cherbot-0.3.0-linux-x64.tar.gz`, open the resulting directory, and run `bash ./install.sh --user`. For console use without a service, run `./cherbot` from that directory. The archive preserves Unix executable permissions even when built on Windows. Older ZIP packages remain usable with `bash ./install.sh --user` after extraction.
+Prefer an archive? Extract `cherbot-0.4.0-linux-x64.tar.gz`, open the resulting directory, and run `bash ./install.sh --user`. For console use without a service, run `./cherbot` from that directory. The archive preserves Unix executable permissions even when built on Windows. Older ZIP packages remain usable with `bash ./install.sh --user` after extraction.
 
 For a user service:
 
@@ -105,6 +110,8 @@ For OBS, enable its WebSocket server and add the streaming PC's address, port, a
 
 ## Build your automation with AI
 
+Open **Get AI Help** in the app to download the version-matched reference and build a prompt for your operating system and preferred shell. Ask an external chat for complete CherBot CLI commands and JSON files, then preview shared feature packs on **Sharing**. Credentials stay in local token files.
+
 Describe what you want to ChatGPT, Arena, DeepSeek Chat, or another AI chat that accepts file attachments. Give it CherBot's reference so it can use the functions and variables this engine actually supports.
 
 **Upload [cherbot-ai-reference.txt](docs/cherbot-ai-reference.txt), then paste the [reusable prompt](docs/cherbot-ai-prompt.txt).** On GitHub, open the text file and download its raw contents. Packaged builds include both files in `docs/`.
@@ -133,6 +140,16 @@ The reference includes supported `CPH` signatures, template rules, trigger varia
 See [the AI guide](docs/ai-guide.md) for more examples and refreshing the reference. A reference helps an AI produce a usable answer; preview imports and inspect generated code before running it.
 
 ## Terminal & API workflow
+
+The online CLI can inspect or configure an already running local or remote engine:
+
+```bash
+cherbot api GET /v1/actions --url http://127.0.0.1:8091 --token-file /path/to/api-token
+cherbot pack preview feature.json --url http://127.0.0.1:8091 --token-file /path/to/api-token
+cherbot pack apply feature.json --url http://127.0.0.1:8091 --token-file /path/to/api-token
+```
+
+Use `--body-file request.json` for API writes. Packs include supported configuration dependencies, require explicit conflict replacement/mapping, and import actions, commands and timers disabled. Existing offline imports and Streamer.bot exports remain available.
 
 The CLI handles engine lifecycle and offline import/export. The authenticated management API handles a running engine.
 
@@ -174,6 +191,8 @@ Import an export string, `actions.json`, or `commands.json` on **Actions → Imp
 | Guide | What it covers |
 | --- | --- |
 | [Install and run](packaging/README-install.md) | Services, data folders, remote connections, account linking, import/export |
+| [Quick start](docs/quick-start.md) | Fresh-install setup, first workflows, monitoring and sharing |
+| [What's new](CHANGELOG.md) | Release features, defaults and upgrade notes |
 | [Operating guide](docs/operating-guide.md) | Everyday operation, modules, actions, scripting, troubleshooting |
 | [Configuration reference](docs/configuration-reference.md) | Configuration keys, defaults, environment variables, CLI overrides |
 | [AI guide and prompt](docs/ai-guide.md) | Asking a chat assistant for a workflow you can use |

@@ -107,7 +107,7 @@ public sealed class CommunityHandlers : SubActionHandlerGroup
             }
             var (id, name) = await ResolveTarget(c, platform, Input(c, 1));
             var amount = long.TryParse(Input(c, 2), NumberStyles.Integer, CultureInfo.InvariantCulture, out var n) ? n : 0;
-            var total = sub == "add" ? db.AddPoints(platform, id, name, amount) : db.SetPoints(platform, id, name, amount);
+            var total = sub == "add" ? db.AddPoints(platform, id, name, amount, "admin") : db.SetPoints(platform, id, name, amount);
             c.SetArg("targetUser", name);
             c.SetArg("targetPoints", total);
             c.SetArg("amount", amount);
@@ -125,8 +125,9 @@ public sealed class CommunityHandlers : SubActionHandlerGroup
                 return;
             }
             var (id, name) = await ResolveTarget(c, platform, Input(c, 1));
-            var mine = db.AddPoints(platform, userId, user, -amount);
-            var theirs = db.AddPoints(platform, id, name, amount);
+            if (!db.TransferPoints(platform, userId, user, id, name, amount)) { c.SetArg("reply", "Transfer failed: check balance and recipient."); return; }
+            var mine = db.GetPoints(platform, userId);
+            var theirs = db.GetPoints(platform, id);
             c.SetArg("targetUser", name);
             c.SetArg("targetPoints", theirs);
             c.SetArg("amount", amount);
@@ -201,7 +202,7 @@ public sealed class CommunityHandlers : SubActionHandlerGroup
     private static void DiscordCommand(SubActionDef s, RunContext c)
     {
         var vars = c.Service<VariableService>();
-        var url = CherBotJson.Format(vars.GetGlobal("discord_url")) is { Length: > 0 } g ? g : s.Str("defaultUrl", "https://discord.gg/cherbot");
+        var url = CherBotJson.Format(vars.GetGlobal("discord_url")) is { Length: > 0 } g ? g : s.Str("defaultUrl");
         var sub = Input(c, 0).ToLowerInvariant() is { Length: > 0 } x ? x : "link";
         var rest = string.Join(' ', Enumerable.Range(1, 30).Select(i => Input(c, i)).Where(w => w.Length > 0));
         var user = Who(c);
@@ -209,6 +210,7 @@ public sealed class CommunityHandlers : SubActionHandlerGroup
 
         string reply = sub switch
         {
+            _ when string.IsNullOrWhiteSpace(url) && sub != "set" => "No Discord link is configured. A moderator can use !disc set <invite URL>.",
             "link" or "invite" => $"Join the Discord hub: {url} (subcommands: !disc rules | schedule | lfg | vip)",
             "rules" => "Discord Hub Rules: 1) Be respectful 2) No spam/self-promo 3) Keep spoilers in #spoilers.",
             "schedule" or "events" => $"Community events are announced in {url}",

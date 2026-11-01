@@ -88,6 +88,11 @@ public sealed partial class CustomCommandService : IHostedService
         lock (_lock) return _defs.GetValueOrDefault(id);
     }
 
+    public void ReloadDefinitions()
+    {
+        lock (_lock) { _defs.Clear(); foreach (var definition in _config.GetDocuments<CustomCommandDef>(Kind)) _defs[definition.Id] = definition; }
+    }
+
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _config.Changed += OnConfigChanged;
@@ -192,7 +197,9 @@ public sealed partial class CustomCommandService : IHostedService
             trigger.Set("commandId", cmd.Id);
             var created = new ActionDef
             {
-                Name = def.Name, Group = Group, Triggers = [trigger],
+                Name = def.Name,
+                Group = Group,
+                Triggers = [trigger],
                 SubActions = [Seeding.Step(CustomCommandHandlers.Response, new { customCommandId = def.Id })],
             };
             _config.SaveAction(created);
@@ -245,7 +252,7 @@ public sealed partial class CustomCommandService : IHostedService
                 await SendAsync(def, msg, args, ct);
                 return [msg];
             }
-            _loyalty.Award(userId, user, -def.Cost);
+            _loyalty.Award(userId, user, -def.Cost, "command-cost");
         }
 
         var variants = def.Responses.Where(r => !string.IsNullOrWhiteSpace(r)).ToList();

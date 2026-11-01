@@ -4456,6 +4456,38 @@
    "supported": true
   },
   {
+   "id": 50006,
+   "name": "CherBotFirstClaim",
+   "display": "Claim first this stream",
+   "category": "CherBot / Community",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 50007,
+   "name": "CherBotPinned",
+   "display": "Current stream spotlight",
+   "category": "CherBot / Community",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 50008,
+   "name": "CherBotSongRequest",
+   "display": "Request a song",
+   "category": "CherBot / Songs",
+   "fields": [],
+   "supported": true
+  },
+  {
+   "id": 50009,
+   "name": "CherBotSongQueue",
+   "display": "Song queue status",
+   "category": "CherBot / Songs",
+   "fields": [],
+   "supported": true
+  },
+  {
    "id": 50010,
    "name": "CherBotGamble",
    "display": "Game: Gamble",
