@@ -32,6 +32,13 @@ jobs:
       - name: Linux installer regression test
         if: runner.os == 'Linux'
         run: bash tests/packaging/install.test.sh
+      - uses: actions/setup-python@v5
+        if: runner.os == 'Linux'
+        with:
+          python-version: '3.12'
+      - name: Linux package regression tests
+        if: runner.os == 'Linux'
+        run: python -m unittest discover -s tests/packaging -p 'test_*.py' -v
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -55,8 +62,19 @@ jobs:
         with:
           global-json-file: global.json
       - name: Publish engine
+        if: matrix.rid == 'win-x64'
         shell: pwsh
         run: ./packaging/publish.ps1 -Runtimes ${{ matrix.rid }} -NoDesktop -Zip
+      - uses: actions/setup-python@v5
+        if: matrix.rid == 'linux-x64'
+        with:
+          python-version: '3.12'
+      - name: Package Linux archive and installer
+        if: matrix.rid == 'linux-x64'
+        run: python packaging/package_linux.py
+      - name: Smoke test Linux release
+        if: matrix.rid == 'linux-x64'
+        run: bash tests/packaging/smoke-linux-release.sh artifacts/linux-release
       - name: Publish desktop
         if: matrix.rid == 'win-x64'
         shell: pwsh
@@ -64,4 +82,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: cherbot-${{ matrix.rid }}
-          path: artifacts/*.zip
+          path: |
+            artifacts/*.zip
+            artifacts/linux-release/*.tar.gz
+            artifacts/linux-release/*.run
+            artifacts/linux-release/*.sha256

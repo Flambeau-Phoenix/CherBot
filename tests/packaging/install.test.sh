@@ -16,10 +16,13 @@ trap cleanup EXIT
 mkdir "$task_dir/source" "$task_dir/destination"
 printf '#!/bin/sh\nexit 0\n' > "$task_dir/source/cherbot"
 printf '{"test":true}\n' > "$task_dir/source/appsettings.json"
+mkdir "$task_dir/source/docs"
+printf 'AI reference fixture\n' > "$task_dir/source/docs/cherbot-ai-reference.txt"
 HERE="$task_dir/source"
 install_runtime "$task_dir/destination"
 cmp "$HERE/cherbot" "$task_dir/destination/cherbot"
 cmp "$HERE/appsettings.json" "$task_dir/destination/appsettings.json"
+cmp "$HERE/docs/cherbot-ai-reference.txt" "$task_dir/destination/docs/cherbot-ai-reference.txt"
 [[ -x "$task_dir/destination/cherbot" ]]
 HERE="$task_dir/destination"
 install_runtime "$HERE"

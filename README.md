@@ -54,7 +54,8 @@ Packaged builds are self-contained: **you do not need the .NET SDK to run them**
 
 | Package | Choose this for |
 | --- | --- |
-| `cherbot-linux-x64.zip` | A Linux x64 console app or service |
+| `cherbot-0.3.0-linux-x64.run` | Offline Linux x64 installer: user service, system service, or extraction only |
+| `cherbot-0.3.0-linux-x64.tar.gz` | Linux x64 release archive, including the console app and service installer |
 | `cherbot-desktop-win-x64.zip` | The Windows tray app, with Local and Remote modes |
 | `cherbot-win-x64.zip` | The Windows console app or Windows Service |
 
@@ -62,15 +63,15 @@ Build artifacts are produced by GitHub Actions. See this repository's Actions pa
 
 ### Linux
 
-Extract the Linux package, then install a user service:
+Download the Linux `.run` installer and install a user service (use the version in your downloaded filename):
 
 ```bash
-unzip cherbot-linux-x64.zip -d cherbot
-cd cherbot
-bash ./install.sh --user
+bash cherbot-0.3.0-linux-x64.run --user
 ```
 
-Use `sudo bash ./install.sh` for a system service instead. Calling the installer through Bash also works when a ZIP created on Windows has lost Unix executable permissions.
+Use `sudo bash cherbot-0.3.0-linux-x64.run` for a system service instead. The `.run` file bundles the release and verifies its payload before installing; it needs no downloads. `--help` explains its modes. The matching `.sha256` file contains checksums for both release files.
+
+Prefer an archive? Extract `cherbot-0.3.0-linux-x64.tar.gz`, open the resulting directory, and run `bash ./install.sh --user`. For console use without a service, run `./cherbot` from that directory. The archive preserves Unix executable permissions even when built on Windows. Older ZIP packages remain usable with `bash ./install.sh --user` after extraction.
 
 For a user service:
 
@@ -204,6 +205,15 @@ bash ./packaging/publish.sh
 ```
 
 Outputs go to `artifacts/`. The Web UI uses plain ES modules with no frontend build step.
+
+To build the versioned Linux archive, offline installer, and checksums, use **Python 3.11+** with the .NET SDK:
+
+```bash
+python packaging/package_linux.py
+# Optional ARM64 build: python packaging/package_linux.py --rid linux-arm64
+```
+
+The files go to `artifacts/linux-release/`. This builder runs on Windows or Linux and assigns Linux permissions explicitly. CI also packages these files and runs a native Linux startup check. See [Linux packaging](packaging/README-linux-release.md) for verification and installer modes.
 
 <details>
 <summary>Source layout</summary>

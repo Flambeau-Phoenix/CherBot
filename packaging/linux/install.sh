@@ -20,6 +20,14 @@ install_runtime() {
   if [[ "$HERE" != "$(cd "$dest" && pwd -P)" ]]; then
     install -m 0755 "$HERE/cherbot" "$dest/cherbot"
     install -m 0644 "$HERE/appsettings.json" "$dest/appsettings.json"
+    for name in README.md README-install.md cherbot.example.json cherbot.service cherbot.user.service; do
+      [[ ! -f "$HERE/$name" ]] || install -m 0644 "$HERE/$name" "$dest/$name"
+    done
+    [[ ! -f "$HERE/install.sh" ]] || install -m 0755 "$HERE/install.sh" "$dest/install.sh"
+    if [[ -d "$HERE/docs" ]]; then
+      mkdir -p "$dest/docs"
+      cp -R "$HERE/docs/." "$dest/docs/"
+    fi
   fi
 }
 

@@ -35,6 +35,25 @@ is needed to read the stored Twitch tokens and OBS passwords.
 
 ## Linux
 
+The versioned Linux release is available as an offline `.run` installer and a `.tar.gz` archive. For example:
+
+```bash
+bash cherbot-0.3.0-linux-x64.run --user
+# Or: sudo bash cherbot-0.3.0-linux-x64.run
+```
+
+Use the version in your downloaded filename. `--help` lists options; `--extract ./unpacked` unpacks without installing a service and requires a new destination directory. The matching `.sha256` file verifies the downloaded release files. The installer also checks its embedded payload before extraction.
+
+With the archive:
+
+```bash
+tar -xzf cherbot-0.3.0-linux-x64.tar.gz
+cd cherbot-0.3.0-linux-x64
+bash ./install.sh --user
+```
+
+For older ZIP packages:
+
 ```bash
 unzip cherbot-linux-x64.zip -d cherbot && cd cherbot
 bash ./install.sh --user     # user service, no root; or: sudo bash ./install.sh for a system service

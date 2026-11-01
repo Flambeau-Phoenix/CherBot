@@ -18,7 +18,7 @@ cp "$ROOT/packaging/README-install.md" "$ROOT/packaging/cherbot.example.json" "$
 mkdir -p "$OUT/docs"
 cp -R "$ROOT/docs/." "$OUT/docs/"
 case "$RID" in
-  linux-*) cp "$ROOT"/packaging/linux/* "$OUT/" ;;
+  linux-*) for name in install.sh cherbot.service cherbot.user.service; do cp "$ROOT/packaging/linux/$name" "$OUT/"; done ;;
   win-*)   cp "$ROOT"/packaging/windows/* "$OUT/" ;;
 esac
 chmod +x "$OUT/cherbot" "$OUT/install.sh" 2>/dev/null || true

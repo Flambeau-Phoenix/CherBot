@@ -35,7 +35,9 @@ foreach ($rid in $Runtimes) {
     New-Item -ItemType Directory -Force (Join-Path $out 'docs') | Out-Null
     Copy-Item (Join-Path $root 'docs/*') (Join-Path $out 'docs') -Recurse -Force
     if ($rid -like 'linux-*') {
-        Copy-Item (Join-Path $root 'packaging/linux/*') $out -Force
+        foreach ($name in @('install.sh', 'cherbot.service', 'cherbot.user.service')) {
+            Copy-Item (Join-Path $root "packaging/linux/$name") $out -Force
+        }
     } else {
         Copy-Item (Join-Path $root 'packaging/windows/*') $out -Force
     }
