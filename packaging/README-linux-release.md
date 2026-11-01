@@ -16,17 +16,17 @@ The `.NET` version and CherBot version come from the repository's SDK/project co
 
 ## Installer modes
 
-For version 0.3.0:
+For version 0.4.0:
 
 ```bash
 # User service: ~/cherbot, data in ~/.local/share/cherbot
-bash cherbot-0.3.0-linux-x64.run --user
+bash cherbot-0.4.0-linux-x64.run --user
 
 # System service: /opt/cherbot, data in /var/lib/cherbot
-sudo bash cherbot-0.3.0-linux-x64.run
+sudo bash cherbot-0.4.0-linux-x64.run
 
 # Extract only; the destination must not already exist
-bash cherbot-0.3.0-linux-x64.run --extract ./unpacked
+bash cherbot-0.4.0-linux-x64.run --extract ./unpacked
 ```
 
 Installation requires Linux of the matching CPU architecture and systemd. Extraction supports console-only deployments without systemd. Native system-library requirements are described in the generated release's README. No Wine or separate .NET installation is needed.
@@ -54,13 +54,13 @@ bash tests/packaging/smoke-linux-release.sh artifacts/linux-release
 With both release files downloaded, verify them in their download directory:
 
 ```bash
-sha256sum -c cherbot-0.3.0-linux-x64.sha256
+sha256sum -c cherbot-0.4.0-linux-x64.sha256
 ```
 
 If only the installer was downloaded, verify just its entry:
 
 ```bash
-grep '  cherbot-0.3.0-linux-x64.run$' cherbot-0.3.0-linux-x64.sha256 | sha256sum -c -
+grep '  cherbot-0.4.0-linux-x64.run$' cherbot-0.4.0-linux-x64.sha256 | sha256sum -c -
 ```
 
 `tests/packaging/test_linux_package.py` tests file modes, private-file exclusion, architecture mismatch, exact installer payload bytes, extraction, and checksum failure. Bash tests run natively on Linux in CI; local Windows maintainers can set `CHERBOT_TEST_BASH` to their Git Bash executable for the extraction tests.

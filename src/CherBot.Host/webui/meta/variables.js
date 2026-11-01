@@ -65,7 +65,7 @@ export const eventVariables = {
   138: [...CHAT, v('announcementColor', 'Announcement colour', 'PRIMARY')],
   139: [v('adLength', 'Ad length (seconds)', '90'), v('isAutomatic', 'Scheduled ad?', 'True'), v('startedAt', 'Start time', '')],
   144: [...USER, v('viewerCount', 'Viewers shown the shoutout', '100')],
-  154: [v('broadcastUser', 'Your display name', 'Streamer'), v('broadcastUserName', 'Your login', 'streamer'), v('broadcastUserId', 'Your id', ''), v('startedAt', 'Went live at', ''), v('type', 'live', 'live')],
+  154: [v('broadcastUser', 'Your display name', 'Streamer'), v('broadcastUserName', 'Your login', 'streamer'), v('broadcastUserId', 'Your id', ''), v('streamId', 'Stable Twitch broadcast ID', ''), v('startedAt', 'Went live at', ''), v('type', 'live', 'live')],
   155: [v('broadcastUserName', 'Your login', 'streamer'), v('broadcastUserId', 'Your id', '')],
   156: [...USER, v('viewers', 'Their viewer count', '1200'), v('viewerCount', 'Their viewer count', '1200')],
   173: [v('broadcastUser', 'Linked broadcaster', 'Streamer')],

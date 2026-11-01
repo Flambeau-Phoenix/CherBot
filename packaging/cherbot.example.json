@@ -32,9 +32,10 @@
 
     "Community": {
       "Enabled": true,
+      "SeedDefaults": true,
       "FirstWordPoints": 10,
       "ChatPoints": 1,
-      "DefaultDiscordUrl": "https://discord.gg/cherbot"
+      "DefaultDiscordUrl": ""
     },
 
     "Obs": {

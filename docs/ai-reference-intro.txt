@@ -12,7 +12,16 @@ Windows desktop actions require Windows and suitable desktop services; Windows
 assemblies, COM, registry, key presses, and GDI APIs are not portable to Linux.
 Enum names such as YouTube/Kick/Trovo do not mean those services are supported.
 
+Fresh installations retain CherBot's starter commands and loyalty presets,
+with no linked accounts, personal Discord invite, balances or viewer records.
+Game, scene, giveaway, spam-filter and song commands start disabled. Existing
+installations retain their settings. Configure the stream-first contest and
+!pinned through Quick Setup; inspect existing commands before replacing them.
+History recording and chat archiving are separate opt-ins, both off by default.
+
 HOW TO ANSWER A USER
+- For Get AI Help, prefer complete CherBot online CLI commands and required
+  JSON files, including preview, application, verification and removal.
 - Prefer the simplest usable output: UI instructions, C#, readable import
   JSON, or shell + HTTP. Give complete code, installation steps, and a test.
 - Ask for missing essential details: trigger, allowed role, cooldown, exact
@@ -159,7 +168,15 @@ cherbot import <file|-> [--dry-run] [--no-overwrite] [--rewrite-paths]
 cherbot export [--name <name>]                   print an encoded export
 cherbot twitch-login <broadcaster|bot>           device-code account linking
 cherbot migrate-python <old.db>                 migrate prototype data
-All commands accept --data-dir and --CherBot:Section:Key value overrides.
+cherbot api <METHOD> </v1/path> [--body-file request.json]
+cherbot pack export pack.json --selection-file selection.json
+cherbot pack preview pack.json [--mappings-file mappings.json] [--replace]
+cherbot pack apply pack.json [--mappings-file mappings.json] [--replace]
+Online api/pack commands accept --url (default http://127.0.0.1:8091),
+--token-file, and --data-dir for local token-file discovery. They operate
+against the running engine. Preview exits 3 when a pack needs attention;
+HTTP failures exit 1 and invocation/connection errors exit 2.
+Other commands accept --data-dir and --CherBot:Section:Key value overrides.
 On Windows use cherbot.exe / .\cherbot.exe. In a Linux build directory use
 ./cherbot when it is not on PATH. No CLI "create-action" or "run-action"
 subcommands exist; use the management API for live engine changes.
@@ -199,6 +216,29 @@ POST /v1/import?dryRun=true&overwrite=false with raw text/plain JSON/export;
   report has actions/commands/timers/queues, unsupported[], paths[], warnings[].
 POST /v1/export {"actions":["UUID"],"commands":["UUID"],"timers":[],
   "name":"My workflow"} -> {export:"..."}; actions must be explicitly listed.
+GET /v1/packs/settings -> {settings:[shareable setting keys]}.
+POST /v1/packs/export {"actions":["UUID"],"settings":[],"globals":[],
+  "name":"Feature name","description":"","author":"","version":"1.0.0"}
+  returns readable feature pack JSON. Dependencies are included automatically.
+POST /v1/packs/preview or /v1/packs/apply with
+  {"pack":<feature pack object>,"replace":false,"mappings":{}}
+  returns canApply/alreadyInstalled/changes/conflicts/missing/review/errors.
+Mappings use "field:originalValue":"targetValue" (for example
+"sceneName:Old Scene":"Main Scene"). Preview after changing mappings.
+Actions, commands, timers and enabled module settings import disabled.
+After review, enable BOTH the action and its command through existing APIs.
+Pack metadata requires formatVersion:1, an explicit UUID id, numeric version,
+name, description, author, minimumCherBotVersion, actions/commands/timers/queues,
+customCommands, settings (allow-listed settings object) and globals (selected
+name:value object). Do not embed credentials or viewer data in packs.
+GET /v1/live and /v1/users -> recent observed chat data, not every video viewer.
+GET /v1/quicksetup/status; GET /v1/quicksetup/first/preview or /clip/preview.
+POST /v1/quicksetup/first or /clip {"enabled":true,"bonus":100,"replace":false}.
+Legacy !first conversion needs explicit replacement; !firstwords keeps ranking.
+GET /v1/songs -> settings, requests, playerConnected.
+PUT /v1/songs/settings takes the full SongSettings model (source below).
+GET /v1/tracking/settings; PUT with enabled/chatArchive/detailDays/chatDays.
+Extended statistics default off; chat archive is a separate opt-in.
 GET /v1/catalog/subactions -> {subActions:[...]} (supported flag).
 GET /v1/catalog/events -> {events:[...]} (emitted flag).
 GET /v1/events/recent?limit=25 -> {events:[...]}.

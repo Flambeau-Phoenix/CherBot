@@ -19,6 +19,9 @@ public sealed class FakeTwitchHandler : HttpMessageHandler
     public HashSet<string> RejectTokens { get; } = [];
     public string Login { get; set; } = "streamer";
     public string UserId { get; set; } = "1001";
+    public string? StreamId { get; set; }
+    public int ClipPendingPolls { get; set; }
+    public HttpStatusCode ClipStatus { get; set; } = HttpStatusCode.Accepted;
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
@@ -40,12 +43,20 @@ public sealed class FakeTwitchHandler : HttpMessageHandler
                 return Json(HttpStatusCode.OK, new
                 {
                     access_token = body.Contains("refresh_token") ? "refreshed-token" : "device-token",
-                    refresh_token = "refresh-1", expires_in = 14400, token_type = "bearer",
+                    refresh_token = "refresh-1",
+                    expires_in = 14400,
+                    token_type = "bearer",
                 });
             case ("id.twitch.tv", "/oauth2/validate"):
                 return Json(HttpStatusCode.OK, new { login = Login, user_id = UserId, scopes = new[] { "user:read:chat", "user:write:chat" }, expires_in = 14400 });
             case ("api.twitch.tv", "/helix/users"):
                 return Json(HttpStatusCode.OK, new { data = new[] { new { id = UserId, login = Login, display_name = "Streamer", broadcaster_type = "affiliate", description = "", profile_image_url = "", created_at = "2020-01-01T00:00:00Z" } } });
+            case ("api.twitch.tv", "/helix/streams"):
+                return StreamId is null ? Json(HttpStatusCode.OK, new { data = Array.Empty<object>() }) : Json(HttpStatusCode.OK, new { data = new[] { new { id = StreamId, started_at = "2026-11-01T12:00:00Z", viewer_count = 12 } } });
+            case ("api.twitch.tv", "/helix/clips") when request.Method == HttpMethod.Post:
+                return (int)ClipStatus >= 400 ? Json(ClipStatus, new { message = "Clips unavailable" }) : Json(ClipStatus, new { data = new[] { new { id = "TestClip", edit_url = "https://clips.twitch.tv/TestClip/edit" } } });
+            case ("api.twitch.tv", "/helix/clips"):
+                return ClipPendingPolls-- > 0 ? Json(HttpStatusCode.OK, new { data = Array.Empty<object>() }) : Json(HttpStatusCode.OK, new { data = new[] { new { id = "TestClip", url = "https://clips.twitch.tv/TestClip" } } });
             case ("api.twitch.tv", "/helix/chat/messages"):
                 return Json(HttpStatusCode.OK, new { data = new[] { new { message_id = Guid.NewGuid().ToString(), is_sent = true } } });
             case ("api.twitch.tv", "/helix/eventsub/subscriptions") when request.Method == HttpMethod.Get:

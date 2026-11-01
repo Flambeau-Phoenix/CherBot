@@ -94,6 +94,11 @@ lines.push('This is docs/examples/hello-workflow.json. Import Preview should rep
 
 section('CLI SOURCE: EXACT SUBCOMMANDS AND FLAGS');
 lines.push((await read('src/CherBot.Host/Program.cs')).trim());
+lines.push('', (await read('src/CherBot.Host/OnlineCli.cs')).trim());
+section('FEATURE PACK MODELS: EXACT JSON FIELDS');
+lines.push((await read('src/CherBot.Host/Sharing/FeaturePack.cs')).trim());
+section('SONG REQUEST SETTINGS AND QUEUE CONTRACT');
+lines.push((await read('src/CherBot.Integrations/Songs/SongRequestService.cs')).split('/// <summary>A free request queue;')[0].trim());
 section('API ROUTE INVENTORY (DISCOVERY; SEE BODY SHAPES ABOVE)');
 const apiDir = 'src/CherBot.Host/Api';
 for (const file of (await readdir(resolve(root, apiDir))).filter(f => f.endsWith('.cs')).sort()) {

@@ -145,6 +145,7 @@ internal static class HelperEndpoints
             return Json(new
             {
                 title = ch?.GetProperty("title").GetString(),
+                login = auth.Get(TwitchRole.Broadcaster)?.Login,
                 gameId = ch?.GetProperty("game_id").GetString(),
                 gameName = ch?.GetProperty("game_name").GetString(),
                 tags = ch is { } c && c.TryGetProperty("tags", out var t) && t.ValueKind == JsonValueKind.Array ? t.EnumerateArray().Select(x => x.GetString()).ToList() : [],
@@ -168,7 +169,9 @@ internal static class HelperEndpoints
             {
                 categories = res.GetProperty("data").EnumerateArray().Select(c => new
                 {
-                    id = c.GetProperty("id").GetString(), name = c.GetProperty("name").GetString(), boxArt = c.GetProperty("box_art_url").GetString(),
+                    id = c.GetProperty("id").GetString(),
+                    name = c.GetProperty("name").GetString(),
+                    boxArt = c.GetProperty("box_art_url").GetString(),
                 }),
             });
         }));
@@ -177,12 +180,11 @@ internal static class HelperEndpoints
             var m = HelixClient.First(await helix.SendAsync(HttpMethod.Post, "streams/markers", body: new { user_id = id, description = body.Description ?? "" }, ct: ct));
             return Json(new { position = m?.GetProperty("position_seconds").GetInt32() });
         }));
-        v1.MapPost("/twitch/clip", (TwitchAuth auth, HelixClient helix, CancellationToken ct) => Helix(auth, async id =>
+        v1.MapPost("/twitch/clip", async (ClipService clips, CancellationToken ct) =>
         {
-            var clip = HelixClient.First(await helix.SendAsync(HttpMethod.Post, "clips", Q(("broadcaster_id", id)), ct: ct));
-            var clipId = clip?.GetProperty("id").GetString();
-            return Json(new { id = clipId, url = clipId is null ? null : $"https://clips.twitch.tv/{clipId}", editUrl = clip?.GetProperty("edit_url").GetString() });
-        }));
+            try { return Json(await clips.CreateAsync(ct)); }
+            catch (Exception ex) when (ex is InvalidOperationException or HelixException) { return Results.BadRequest(new { error = ex.Message }); }
+        });
         v1.MapPost("/twitch/commercial", (CommercialIn body, TwitchAuth auth, HelixClient helix, CancellationToken ct) => Helix(auth, async id =>
         {
             await helix.SendAsync(HttpMethod.Post, "channels/commercial", body: new { broadcaster_id = id, length = Math.Clamp(body.Length, 30, 180) }, ct: ct);

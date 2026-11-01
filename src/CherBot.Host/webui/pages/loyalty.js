@@ -1,6 +1,6 @@
 // Loyalty & Games: point settings, the leaderboard with inline edits, and one card per chat game.
 
-import { el, fill, guard, toast, card, pageHead, toggle, debounce, go } from '../lib/dom.js';
+import { el, fill, guard, toast, card, pageHead, toggle, debounce, go, select } from '../lib/dom.js';
 import { get, post, put, api, simulate, invalidate, actionForCommand } from '../lib/api.js';
 import { formGrid } from '../lib/forms.js';
 
@@ -28,6 +28,8 @@ export async function render(root) {
   const boardNode = el('tbody');
   const gamesNode = el('div', { class: 'grid-3' });
   const search = el('input', { type: 'search', placeholder: 'Search viewers…', 'aria-label': 'Search viewers' });
+  const boardPeriod = select([['balance','Current balances'],['stream','Earned this stream'],['7d','Earned in 7 days'],['30d','Earned in 30 days']], 'balance', { 'aria-label': 'Leaderboard period' });
+  const coverage = el('p', { class: 'muted small' });
   let loyalty, games, commands, currency = 'points';
 
   const loadSettings = guard(async () => {
@@ -75,9 +77,12 @@ export async function render(root) {
   });
 
   const loadBoard = guard(async () => {
-    const r = await get(`/v1/points?limit=50${search.value ? `&search=${encodeURIComponent(search.value)}` : ''}`);
+    const r = boardPeriod.value === 'balance'
+      ? await get(`/v1/points?limit=50${search.value ? `&search=${encodeURIComponent(search.value)}` : ''}`)
+      : await get(`/v1/loyalty/earned?period=${boardPeriod.value}`);
+    coverage.textContent = r.coverageStartedAt ? `Recorded activity only · coverage began ${new Date(r.coverageStartedAt).toLocaleString()}. Transfers, admin changes and games are excluded.` : '';
     fill(boardNode, r.points.length ? r.points.map((p, i) => {
-      const amount = el('input', { type: 'number', value: p.points, style: 'width:110px', 'aria-label': `Points for ${p.userName}` });
+      const amount = el('input', { type: 'number', value: p.points, disabled: boardPeriod.value !== 'balance', style: 'width:110px', 'aria-label': `Points for ${p.userName}` });
       const setPoints = guard(async () => {
         const value = Number(amount.value);
         await put(`/v1/points/${p.platform}/${encodeURIComponent(p.userId)}`, { points: value, userName: p.userName, add: false });
@@ -86,13 +91,14 @@ export async function render(root) {
       });
       return el('tr', {},
         el('td', {}, search.value ? '' : String(i + 1)), el('td', {}, p.userName || p.userId), el('td', {}, amount),
-        el('td', { class: 'actions' },
+        el('td', { class: 'actions' }, boardPeriod.value === 'balance' ? [
           el('button', { class: 'small', onclick: setPoints }, 'Set'), ' ',
           el('button', { class: 'small ghost', onclick: () => { amount.value = Number(amount.value) + 100; } }, '+100'), ' ',
-          el('button', { class: 'small ghost', onclick: () => { amount.value = Math.max(0, Number(amount.value) - 100); } }, '−100')));
+          el('button', { class: 'small ghost', onclick: () => { amount.value = Math.max(0, Number(amount.value) - 100); } }, '−100')] : []));
     }) : el('tr', {}, el('td', { colspan: 4, class: 'muted' }, search.value ? 'Nobody matches.' : `Nobody has any ${currency} yet.`)));
   });
   search.addEventListener('input', debounce(loadBoard, 300));
+  boardPeriod.addEventListener('change', () => { search.disabled = boardPeriod.value !== 'balance'; loadBoard(); });
 
   const giveAmount = el('input', { type: 'number', value: 100, style: 'width:100px', 'aria-label': 'Amount to give' });
 
@@ -156,7 +162,7 @@ export async function render(root) {
     pageHead('Loyalty & Games', 'Points viewers earn for chatting, watching and supporting, and the chat games they spend them on.'),
     el('div', { class: 'grid-2' },
       card('Loyalty settings', null, settingsNode),
-      card('Leaderboard', [search, el('button', { class: 'small ghost', onclick: loadBoard }, 'Refresh')],
+      card('Leaderboard', [boardPeriod, search, el('button', { class: 'small ghost', onclick: loadBoard }, 'Refresh')], coverage,
         el('div', { class: 'scroll' }, el('table', {}, el('thead', {}, el('tr', {}, ['#', 'Viewer', 'Points', ''].map(h => el('th', {}, h)))), boardNode)),
         el('div', { class: 'row wrap center', style: 'margin-top:10px' },
           el('span', { class: 'small' }, 'Give everyone in chat'), giveAmount,

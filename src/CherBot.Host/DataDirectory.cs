@@ -6,16 +6,19 @@ namespace CherBot.Host;
 /// </summary>
 public static class DataDirectory
 {
-    public static string Resolve(string[] args)
+    public static string Resolve(string[] args) => Ensure(ResolvePath(args));
+
+    public static string ResolvePath(string[] args)
     {
+        static string Full(string path) => Path.GetFullPath(Environment.ExpandEnvironmentVariables(path));
         for (var i = 0; i < args.Length; i++)
         {
-            if (args[i] is "--data-dir" or "--datadir" && i + 1 < args.Length) return Ensure(args[i + 1]);
-            if (args[i].StartsWith("--data-dir=", StringComparison.Ordinal)) return Ensure(args[i]["--data-dir=".Length..]);
+            if (args[i] is "--data-dir" or "--datadir" && i + 1 < args.Length) return Full(args[i + 1]);
+            if (args[i].StartsWith("--data-dir=", StringComparison.Ordinal)) return Full(args[i]["--data-dir=".Length..]);
         }
-        if (Environment.GetEnvironmentVariable("CHERBOT_DATA") is { Length: > 0 } env) return Ensure(env);
-        if (Environment.GetEnvironmentVariable("STATE_DIRECTORY") is { Length: > 0 } state) return Ensure(state.Split(':')[0]);
-        return Ensure(Default());
+        if (Environment.GetEnvironmentVariable("CHERBOT_DATA") is { Length: > 0 } env) return Full(env);
+        if (Environment.GetEnvironmentVariable("STATE_DIRECTORY") is { Length: > 0 } state) return Full(state.Split(':')[0]);
+        return Full(Default());
     }
 
     public static string Default()

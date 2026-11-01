@@ -1,21 +1,26 @@
 // CherBot web UI shell: sidebar navigation, hash routing, login and the header status.
 // Plain ES modules, no build step. Pages live in pages/*.js and export render(root, params).
 
-import { $, el, fill, toast } from './lib/dom.js';
+import { $, el, fill, toast, icon } from './lib/dom.js';
 import { api, token, setToken, setUnauthorizedHandler } from './lib/api.js';
 
 export const PAGES = [
-  { id: 'dashboard', title: 'Dashboard', icon: '⌂' },
-  { id: 'actions', title: 'Actions', icon: '⚡' },
-  { id: 'commands', title: 'Commands', icon: '!' },
-  { id: 'modules', title: 'Modules', icon: '▦' },
-  { id: 'quicksetup', title: 'Quick Setup', icon: '✦' },
-  { id: 'loyalty', title: 'Loyalty & Games', icon: '★' },
-  { id: 'giveaways', title: 'Giveaways', icon: '🎁' },
-  { id: 'variables', title: 'Variables', icon: '{x}' },
-  { id: 'monitor', title: 'Monitor', icon: '◉' },
-  { id: 'config', title: 'Config', icon: '⚙' },
-  { id: 'help', title: 'Help', icon: '?' },
+  { id: 'dashboard', title: 'Live Admin', icon: 'layout-dashboard' },
+  { id: 'users', title: 'Users', icon: 'users' },
+  { id: 'actions', title: 'Actions', icon: 'bolt' },
+  { id: 'commands', title: 'Commands', icon: 'terminal-2' },
+  { id: 'modules', title: 'Modules', icon: 'puzzle' },
+  { id: 'quicksetup', title: 'Quick Setup', icon: 'wand' },
+  { id: 'loyalty', title: 'Loyalty & Games', icon: 'star' },
+  { id: 'giveaways', title: 'Giveaways', icon: 'gift' },
+  { id: 'songs', title: 'Song Requests', icon: 'music' },
+  { id: 'sharing', title: 'Sharing', icon: 'arrows-exchange' },
+  { id: 'aihelp', title: 'Get AI Help', icon: 'sparkles' },
+  { id: 'history', title: 'Data & History', icon: 'history' },
+  { id: 'variables', title: 'Variables', icon: 'variable' },
+  { id: 'monitor', title: 'Monitor', icon: 'activity' },
+  { id: 'config', title: 'Config', icon: 'settings' },
+  { id: 'help', title: 'Help', icon: 'help-circle' },
 ];
 
 let current = null;
@@ -25,7 +30,7 @@ let routeVersion = 0;
 function renderNav(active) {
   fill($('#nav'), PAGES.map(p => el('a', {
     href: `#/${p.id}`, class: `nav-item${p.id === active ? ' active' : ''}`, 'aria-current': p.id === active ? 'page' : null,
-  }, el('span', { class: 'nav-icon', 'aria-hidden': 'true' }, p.icon), el('span', {}, p.title))));
+  }, icon(p.icon, 'nav-icon'), el('span', {}, p.title))));
 }
 
 /** "#/actions/abc?x=1" → { page: 'actions', rest: ['abc'], query: URLSearchParams } */

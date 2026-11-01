@@ -4,8 +4,7 @@ CherBot is a headless remake of the Streamer.bot engine. One self-contained bina
 through its web UI (`http://<host>:8091/`) or the Windows tray app. It speaks Streamer.bot's WebSocket, HTTP and UDP APIs
 and imports Streamer.bot exports, `actions.json` and `commands.json`.
 
-After installing, see `docs/operating-guide.md` for day-to-day operation and `docs/configuration-reference.md` for every
-setting.
+Start with `docs/quick-start.md` or **Help → Quick start** in the app. Fresh installations include CherBot's starter commands and presets, with no linked accounts or personal data; configure them in Quick Setup and Modules. See `CHANGELOG.md` for what's new, `docs/operating-guide.md` for day-to-day operation and `docs/configuration-reference.md` for every setting.
 
 ## Contents of a build
 
@@ -38,8 +37,8 @@ is needed to read the stored Twitch tokens and OBS passwords.
 The versioned Linux release is available as an offline `.run` installer and a `.tar.gz` archive. For example:
 
 ```bash
-bash cherbot-0.3.0-linux-x64.run --user
-# Or: sudo bash cherbot-0.3.0-linux-x64.run
+bash cherbot-0.4.0-linux-x64.run --user
+# Or: sudo bash cherbot-0.4.0-linux-x64.run
 ```
 
 Use the version in your downloaded filename. `--help` lists options; `--extract ./unpacked` unpacks without installing a service and requires a new destination directory. The matching `.sha256` file verifies the downloaded release files. The installer also checks its embedded payload before extraction.
@@ -47,8 +46,8 @@ Use the version in your downloaded filename. `--help` lists options; `--extract 
 With the archive:
 
 ```bash
-tar -xzf cherbot-0.3.0-linux-x64.tar.gz
-cd cherbot-0.3.0-linux-x64
+tar -xzf cherbot-0.4.0-linux-x64.tar.gz
+cd cherbot-0.4.0-linux-x64
 bash ./install.sh --user
 ```
 

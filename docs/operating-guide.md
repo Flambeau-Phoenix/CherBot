@@ -1,5 +1,9 @@
 # Operating CherBot
 
+CherBot 0.4 adds **Live Admin**, **Users**, **Sharing**, **Get AI Help**, **Song Requests**, and **Data & History**. The Dashboard URL remains valid. Quick Setup can configure the stream's single `!first` winner, `!pinned`, confirmed `!clip` creation, loyalty points, and assisted Sery_Bot enrollment. Existing first-chatter commands change only after explicit conversion.
+
+Detailed activity history defaults off, and searchable chat text has a separate opt-in. Existing balances and operational diagnostics still persist in basic mode. Song Requests accepts selected YouTube, Spotify and Apple Music links; YouTube plays in a restricted browser player on the streaming PC, while the other providers open externally. In-app Help contains dedicated guides for these pages.
+
 This guide covers running CherBot day to day: where things live, how to start and stop it, how actions, triggers, queues
 and commands behave, how to connect Twitch, OBS and Speaker.bot, and what to check when something goes wrong.
 Installation is in [`packaging/README-install.md`](../packaging/README-install.md); every setting is listed in the
@@ -215,7 +219,7 @@ Regex commands also get `match[n]` and named groups.
 
 ## 9. Built-in community commands
 
-On first start CherBot creates four commands, each with an action in the group **CherBot Community**. They're ordinary
+On first start CherBot creates four starter commands, each with an action in the group **CherBot Community**. No Discord invite or linked accounts are supplied. They're ordinary
 records: edit, disable or delete them like any other.
 
 | Command | Subcommands |

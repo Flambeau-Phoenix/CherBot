@@ -22,108 +22,125 @@ public sealed class TwitchEventMapper(CherBotDb db)
         switch (subscriptionType)
         {
             case "channel.chat.message":
-            {
-                var data = ChatMessage(e);
-                var first = db.TryAddFirstWord(Platform, (string)data["userId"]!, (string)data["user"]!, (string)data["message"]!);
-                data["firstWordOfStream"] = first;
-                events.Add(BotEvent.FromTypeName("TwitchChatMessage", data));
-                if (first) events.Add(BotEvent.FromTypeName("TwitchFirstWord", new Dictionary<string, object?>(data)));
-                break;
-            }
+                {
+                    var data = ChatMessage(e);
+                    var first = db.TryAddFirstWord(Platform, (string)data["userId"]!, (string)data["user"]!, (string)data["message"]!);
+                    data["firstWordOfStream"] = first;
+                    events.Add(BotEvent.FromTypeName("TwitchChatMessage", data));
+                    if (first) events.Add(BotEvent.FromTypeName("TwitchFirstWord", new Dictionary<string, object?>(data)));
+                    break;
+                }
             case "channel.chat.message_delete":
                 events.Add(BotEvent.FromTypeName("TwitchChatMessageDeleted", new Dictionary<string, object?>
                 {
-                    ["targetMessageId"] = S(e, "message_id"), ["msgId"] = S(e, "message_id"),
-                    ["targetUser"] = S(e, "target_user_name"), ["targetUserName"] = S(e, "target_user_login"), ["targetUserId"] = S(e, "target_user_id"),
+                    ["targetMessageId"] = S(e, "message_id"),
+                    ["msgId"] = S(e, "message_id"),
+                    ["targetUser"] = S(e, "target_user_name"),
+                    ["targetUserName"] = S(e, "target_user_login"),
+                    ["targetUserId"] = S(e, "target_user_id"),
                 }));
                 break;
             case "channel.chat.notification":
                 MapNotification(e, events);
                 break;
             case "channel.follow":
-            {
-                var d = User(e, "user");
-                d["followDate"] = S(e, "followed_at");
-                events.Add(BotEvent.FromTypeName("TwitchFollow", d));
-                break;
-            }
+                {
+                    var d = User(e, "user");
+                    d["followDate"] = S(e, "followed_at");
+                    events.Add(BotEvent.FromTypeName("TwitchFollow", d));
+                    break;
+                }
             case "channel.cheer":
-            {
-                var anonymous = B(e, "is_anonymous");
-                var d = anonymous ? Anonymous() : User(e, "user");
-                d["bits"] = I(e, "bits");
-                d["message"] = S(e, "message");
-                d["messageStripped"] = S(e, "message");
-                d["anonymous"] = anonymous;
-                events.Add(BotEvent.FromTypeName("TwitchCheer", d));
-                break;
-            }
+                {
+                    var anonymous = B(e, "is_anonymous");
+                    var d = anonymous ? Anonymous() : User(e, "user");
+                    d["bits"] = I(e, "bits");
+                    d["message"] = S(e, "message");
+                    d["messageStripped"] = S(e, "message");
+                    d["anonymous"] = anonymous;
+                    events.Add(BotEvent.FromTypeName("TwitchCheer", d));
+                    break;
+                }
             case "channel.raid":
-            {
-                var d = User(e, "from_broadcaster_user");
-                d["viewers"] = I(e, "viewers");
-                events.Add(BotEvent.FromTypeName("TwitchRaid", d));
-                break;
-            }
+                {
+                    var d = User(e, "from_broadcaster_user");
+                    d["viewers"] = I(e, "viewers");
+                    events.Add(BotEvent.FromTypeName("TwitchRaid", d));
+                    break;
+                }
             case "channel.channel_points_custom_reward_redemption.add":
-            {
-                var d = User(e, "user");
-                var reward = e.TryGetProperty("reward", out var r) ? r : default;
-                var rewardId = reward.ValueKind == JsonValueKind.Object ? S(reward, "id") : "";
-                d["rewardId"] = rewardId;
-                d["rewardName"] = reward.ValueKind == JsonValueKind.Object ? S(reward, "title") : "";
-                d["rewardCost"] = reward.ValueKind == JsonValueKind.Object ? I(reward, "cost") : 0;
-                d["rewardPrompt"] = reward.ValueKind == JsonValueKind.Object ? S(reward, "prompt") : "";
-                d["redemptionId"] = S(e, "id");
-                d["rawInput"] = S(e, "user_input");
-                d["rawInputEscaped"] = System.Net.WebUtility.HtmlEncode(S(e, "user_input"));
-                d["rawInputUrlEncoded"] = Uri.EscapeDataString(S(e, "user_input"));
-                d["counter"] = db.IncrementCounter("reward", rewardId);
-                d["userCounter"] = db.IncrementCounter("reward", rewardId, (string)d["userId"]!);
-                if (RewardSkipsQueue(rewardId)) d["skipQueue"] = true;
-                events.Add(BotEvent.FromTypeName("TwitchRewardRedemption", d));
-                break;
-            }
+                {
+                    var d = User(e, "user");
+                    var reward = e.TryGetProperty("reward", out var r) ? r : default;
+                    var rewardId = reward.ValueKind == JsonValueKind.Object ? S(reward, "id") : "";
+                    d["rewardId"] = rewardId;
+                    d["rewardName"] = reward.ValueKind == JsonValueKind.Object ? S(reward, "title") : "";
+                    d["rewardCost"] = reward.ValueKind == JsonValueKind.Object ? I(reward, "cost") : 0;
+                    d["rewardPrompt"] = reward.ValueKind == JsonValueKind.Object ? S(reward, "prompt") : "";
+                    d["redemptionId"] = S(e, "id");
+                    d["rawInput"] = S(e, "user_input");
+                    d["rawInputEscaped"] = System.Net.WebUtility.HtmlEncode(S(e, "user_input"));
+                    d["rawInputUrlEncoded"] = Uri.EscapeDataString(S(e, "user_input"));
+                    d["counter"] = db.IncrementCounter("reward", rewardId);
+                    d["userCounter"] = db.IncrementCounter("reward", rewardId, (string)d["userId"]!);
+                    if (RewardSkipsQueue(rewardId)) d["skipQueue"] = true;
+                    events.Add(BotEvent.FromTypeName("TwitchRewardRedemption", d));
+                    break;
+                }
             case "stream.online":
-                db.ResetFirstWords();
+                // Handle legacy/mock notifications without an ID using the stable stream start timestamp.
+                var streamId = S(e, "id");
+                var startedAt = S(e, "started_at");
+                if (streamId.Length == 0) streamId = "started:" + startedAt;
+                db.StartStream(S(e, "broadcaster_user_id"), streamId, startedAt);
                 events.Add(BotEvent.FromTypeName("TwitchStreamOnline", new Dictionary<string, object?>
                 {
-                    ["broadcastUserId"] = S(e, "broadcaster_user_id"), ["broadcastUserName"] = S(e, "broadcaster_user_login"),
-                    ["broadcastUser"] = S(e, "broadcaster_user_name"), ["startedAt"] = S(e, "started_at"), ["type"] = S(e, "type"),
+                    ["streamId"] = streamId,
+                    ["broadcastUserId"] = S(e, "broadcaster_user_id"),
+                    ["broadcastUserName"] = S(e, "broadcaster_user_login"),
+                    ["broadcastUser"] = S(e, "broadcaster_user_name"),
+                    ["startedAt"] = S(e, "started_at"),
+                    ["type"] = S(e, "type"),
                 }));
                 break;
             case "stream.offline":
                 events.Add(BotEvent.FromTypeName("TwitchStreamOffline", new Dictionary<string, object?>
                 {
-                    ["broadcastUserId"] = S(e, "broadcaster_user_id"), ["broadcastUserName"] = S(e, "broadcaster_user_login"),
+                    ["broadcastUserId"] = S(e, "broadcaster_user_id"),
+                    ["broadcastUserName"] = S(e, "broadcaster_user_login"),
                 }));
                 break;
             case "channel.update":
                 events.Add(BotEvent.FromTypeName("TwitchStreamUpdate", new Dictionary<string, object?>
                 {
-                    ["status"] = S(e, "title"), ["title"] = S(e, "title"), ["gameId"] = S(e, "category_id"), ["gameName"] = S(e, "category_name"),
+                    ["status"] = S(e, "title"),
+                    ["title"] = S(e, "title"),
+                    ["gameId"] = S(e, "category_id"),
+                    ["gameName"] = S(e, "category_name"),
                     ["language"] = S(e, "language"),
                 }));
                 break;
             case "channel.shoutout.create":
-            {
-                var d = User(e, "to_broadcaster_user");
-                d["viewerCount"] = I(e, "viewer_count");
-                events.Add(BotEvent.FromTypeName("TwitchShoutoutCreated", d));
-                break;
-            }
+                {
+                    var d = User(e, "to_broadcaster_user");
+                    d["viewerCount"] = I(e, "viewer_count");
+                    events.Add(BotEvent.FromTypeName("TwitchShoutoutCreated", d));
+                    break;
+                }
             case "channel.shoutout.receive":
-            {
-                var d = User(e, "from_broadcaster_user");
-                d["viewerCount"] = I(e, "viewer_count");
-                d["viewers"] = I(e, "viewer_count");
-                events.Add(BotEvent.FromTypeName("TwitchShoutoutReceived", d));
-                break;
-            }
+                {
+                    var d = User(e, "from_broadcaster_user");
+                    d["viewerCount"] = I(e, "viewer_count");
+                    d["viewers"] = I(e, "viewer_count");
+                    events.Add(BotEvent.FromTypeName("TwitchShoutoutReceived", d));
+                    break;
+                }
             case "channel.ad_break.begin":
                 events.Add(BotEvent.FromTypeName("TwitchAdRun", new Dictionary<string, object?>
                 {
-                    ["adLength"] = I(e, "duration_seconds"), ["isAutomatic"] = B(e, "is_automatic"), ["startedAt"] = S(e, "started_at"),
+                    ["adLength"] = I(e, "duration_seconds"),
+                    ["isAutomatic"] = B(e, "is_automatic"),
+                    ["startedAt"] = S(e, "started_at"),
                 }));
                 break;
         }
@@ -203,59 +220,59 @@ public sealed class TwitchEventMapper(CherBotDb db)
         switch (type)
         {
             case "sub":
-            {
-                var p = P("sub");
-                d["tier"] = TierName(Tier(p), B(p, "is_prime"));
-                d["subTier"] = Tier(p);
-                d["isPrime"] = B(p, "is_prime");
-                d["isMultiMonth"] = I(p, "duration_months") > 1;
-                d["multiMonthDuration"] = I(p, "duration_months");
-                events.Add(BotEvent.FromTypeName("TwitchSub", d));
-                break;
-            }
+                {
+                    var p = P("sub");
+                    d["tier"] = TierName(Tier(p), B(p, "is_prime"));
+                    d["subTier"] = Tier(p);
+                    d["isPrime"] = B(p, "is_prime");
+                    d["isMultiMonth"] = I(p, "duration_months") > 1;
+                    d["multiMonthDuration"] = I(p, "duration_months");
+                    events.Add(BotEvent.FromTypeName("TwitchSub", d));
+                    break;
+                }
             case "resub":
-            {
-                var p = P("resub");
-                d["tier"] = TierName(Tier(p), B(p, "is_prime"));
-                d["subTier"] = Tier(p);
-                d["isPrime"] = B(p, "is_prime");
-                d["cumulativeMonths"] = I(p, "cumulative_months");
-                d["monthStreak"] = I(p, "streak_months");
-                d["streakShared"] = p.ValueKind == JsonValueKind.Object && p.TryGetProperty("streak_months", out var sm) && sm.ValueKind == JsonValueKind.Number;
-                d["rawInput"] = message;
-                events.Add(BotEvent.FromTypeName("TwitchReSub", d));
-                break;
-            }
+                {
+                    var p = P("resub");
+                    d["tier"] = TierName(Tier(p), B(p, "is_prime"));
+                    d["subTier"] = Tier(p);
+                    d["isPrime"] = B(p, "is_prime");
+                    d["cumulativeMonths"] = I(p, "cumulative_months");
+                    d["monthStreak"] = I(p, "streak_months");
+                    d["streakShared"] = p.ValueKind == JsonValueKind.Object && p.TryGetProperty("streak_months", out var sm) && sm.ValueKind == JsonValueKind.Number;
+                    d["rawInput"] = message;
+                    events.Add(BotEvent.FromTypeName("TwitchReSub", d));
+                    break;
+                }
             case "sub_gift":
-            {
-                var p = P("sub_gift");
-                d["tier"] = TierName(Tier(p), false);
-                d["subTier"] = Tier(p);
-                d["recipientUser"] = S(p, "recipient_user_name");
-                d["recipientUserName"] = S(p, "recipient_user_login");
-                d["recipientId"] = S(p, "recipient_user_id");
-                d["monthsGifted"] = I(p, "duration_months");
-                d["totalSubsGifted"] = I(p, "cumulative_total");
-                d["fromGiftBomb"] = p.ValueKind == JsonValueKind.Object && p.TryGetProperty("community_gift_id", out var cg) && cg.ValueKind == JsonValueKind.String;
-                events.Add(BotEvent.FromTypeName("TwitchGiftSub", d));
-                break;
-            }
+                {
+                    var p = P("sub_gift");
+                    d["tier"] = TierName(Tier(p), false);
+                    d["subTier"] = Tier(p);
+                    d["recipientUser"] = S(p, "recipient_user_name");
+                    d["recipientUserName"] = S(p, "recipient_user_login");
+                    d["recipientId"] = S(p, "recipient_user_id");
+                    d["monthsGifted"] = I(p, "duration_months");
+                    d["totalSubsGifted"] = I(p, "cumulative_total");
+                    d["fromGiftBomb"] = p.ValueKind == JsonValueKind.Object && p.TryGetProperty("community_gift_id", out var cg) && cg.ValueKind == JsonValueKind.String;
+                    events.Add(BotEvent.FromTypeName("TwitchGiftSub", d));
+                    break;
+                }
             case "community_sub_gift":
-            {
-                var p = P("community_sub_gift");
-                d["tier"] = TierName(Tier(p), false);
-                d["subTier"] = Tier(p);
-                d["gifts"] = I(p, "total");
-                d["totalGifts"] = I(p, "cumulative_total");
-                events.Add(BotEvent.FromTypeName("TwitchGiftBomb", d));
-                break;
-            }
+                {
+                    var p = P("community_sub_gift");
+                    d["tier"] = TierName(Tier(p), false);
+                    d["subTier"] = Tier(p);
+                    d["gifts"] = I(p, "total");
+                    d["totalGifts"] = I(p, "cumulative_total");
+                    events.Add(BotEvent.FromTypeName("TwitchGiftBomb", d));
+                    break;
+                }
             case "announcement":
-            {
-                d["announcementColor"] = S(P("announcement"), "color");
-                events.Add(BotEvent.FromTypeName("TwitchAnnouncement", d));
-                break;
-            }
+                {
+                    d["announcementColor"] = S(P("announcement"), "color");
+                    events.Add(BotEvent.FromTypeName("TwitchAnnouncement", d));
+                    break;
+                }
         }
     }
 
@@ -279,7 +296,11 @@ public sealed class TwitchEventMapper(CherBotDb db)
 
     private static Dictionary<string, object?> Anonymous() => new(StringComparer.OrdinalIgnoreCase)
     {
-        ["user"] = "AnAnonymousGifter", ["userName"] = "ananonymousgifter", ["userId"] = "", ["userType"] = Platform, ["platform"] = Platform,
+        ["user"] = "AnAnonymousGifter",
+        ["userName"] = "ananonymousgifter",
+        ["userId"] = "",
+        ["userType"] = Platform,
+        ["platform"] = Platform,
     };
 
     private static string S(JsonElement e, string name) =>

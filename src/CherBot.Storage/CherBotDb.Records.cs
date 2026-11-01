@@ -206,25 +206,11 @@ public sealed partial class CherBotDb
 
     // ── points / leaderboard ───────────────────────────────────────────────
 
-    public long AddPoints(string platform, string userId, string userName, long delta)
-    {
-        Execute("""
-            INSERT INTO points(platform, user_id, user_name, points, updated) VALUES($p, $u, $n, $d, $t)
-            ON CONFLICT(platform, user_id) DO UPDATE SET points = points + $d,
-              user_name = CASE WHEN $n = '' THEN points.user_name ELSE $n END, updated = $t
-            """, ("$p", platform), ("$u", userId), ("$n", userName), ("$d", delta), ("$t", Now()));
-        return GetPoints(platform, userId);
-    }
+    public long AddPoints(string platform, string userId, string userName, long delta, string reason = "script") =>
+        ChangePoints(platform, userId, userName, delta, false, reason);
 
-    public long SetPoints(string platform, string userId, string userName, long value)
-    {
-        Execute("""
-            INSERT INTO points(platform, user_id, user_name, points, updated) VALUES($p, $u, $n, $v, $t)
-            ON CONFLICT(platform, user_id) DO UPDATE SET points = $v,
-              user_name = CASE WHEN $n = '' THEN points.user_name ELSE $n END, updated = $t
-            """, ("$p", platform), ("$u", userId), ("$n", userName), ("$v", value), ("$t", Now()));
-        return value;
-    }
+    public long SetPoints(string platform, string userId, string userName, long value, string reason = "admin") =>
+        ChangePoints(platform, userId, userName, value, true, reason);
 
     public long GetPoints(string platform, string userId) =>
         Scalar<long?>("SELECT points FROM points WHERE platform = $p AND user_id = $u", ("$p", platform), ("$u", userId)) ?? 0;
@@ -239,7 +225,7 @@ public sealed partial class CherBotDb
         Query("SELECT platform, user_id, user_name, points, updated FROM points WHERE platform = $p ORDER BY points DESC, user_name LIMIT $l",
             r => new PointsRow(r.GetString(0), r.GetString(1), r.GetString(2), r.GetInt64(3), r.GetString(4)), ("$p", platform), ("$l", limit));
 
-    public int ResetPoints(string platform) => Execute("DELETE FROM points WHERE platform = $p", ("$p", platform));
+    public int ResetPoints(string platform) => ResetPointBalances(platform);
 
     public List<PointsRow> SearchPoints(string platform, string? search, int limit) =>
         Query("""

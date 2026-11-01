@@ -10,7 +10,7 @@ import { parseFields, labelFor } from '../meta/fields.js';
 
 export const GUIDES = [
   ['Start here', [
-    ['getting-started', 'Getting started'],
+    ['getting-started', 'Quick start'],
     ['first-command', 'Build your first command'],
     ['builder', 'The action builder'],
     ['variables', 'Variables and templates'],
@@ -21,6 +21,9 @@ export const GUIDES = [
     ['alerts', 'Alerts and sounds'],
     ['custom-commands', 'Custom commands'],
     ['quick-setup', 'Quick Setup wizards'],
+    ['live-admin', 'Live Admin, users and first spotlight'],
+    ['sharing-ai', 'Feature packs and AI help'],
+    ['song-history', 'Song Requests and optional history'],
     ['loyalty-games', 'Loyalty points and games'],
     ['giveaways', 'Running a raffle or giveaway'],
     ['modules', 'Modules: alerts, pyramids, spam filter'],

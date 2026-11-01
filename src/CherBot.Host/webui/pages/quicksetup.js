@@ -4,6 +4,7 @@
 import { el, fill, guard, toast, card, pageHead, go, toggle, uuid, select } from '../lib/dom.js';
 import { get, post, put, del, lists, invalidate, loadCatalog, catalog, actionForCommand } from '../lib/api.js';
 import { defaultsFor } from '../meta/fields.js';
+import { workflowCatalog } from '../lib/workflows.js';
 
 const GROUP = 'Quick Setup';
 const ROLES = [['', 'Everyone'], ['subscriber', 'Subscribers'], ['vip', 'VIPs'], ['moderator', 'Moderators'], ['broadcaster', 'Only you']];
@@ -14,16 +15,43 @@ function step(type, fields = {}) {
 }
 const say = (text) => step(10, { text, useBot: true, fallback: true });
 const trigger = (type, fields = {}) => ({ id: uuid(), type, enabled: true, ...fields });
+const approvedReplacements = new Map();
+
+async function protectAction(action) {
+  if (!action) return;
+  const state = await get(`/v1/quicksetup/actions/${action.id}/managed`);
+  if (state.managed || approvedReplacements.get(action.id) === state.fingerprint) return;
+  if (!confirm(`Replace the existing or builder-customized action "${action.name}" with this setup? Its current steps will be replaced.`)) throw new Error('Existing action kept.');
+  approvedReplacements.set(action.id, state.fingerprint);
+}
 
 async function createCommand(name, text, { minRole = '', globalCooldown = 0, userCooldown = 5, group = GROUP } = {}) {
-  const c = await post('/v1/commands', { name, command: text || name, enabled: true, mode: 0, location: 0, sources: 1, globalCooldown, userCooldown, group, grantType: 0, permittedGroups: [], minRole });
+  const words=(text || name).split('\n').map(w=>w.trim().toLowerCase());
+  const commands=(await get('/v1/commands')).commands;
+  const matches=commands.filter(c=>String(c.command).split('\n').some(w=>words.includes(w.trim().toLowerCase())));
+  if(matches.length>1)throw new Error('Several existing commands use this text. Resolve the duplicates on Commands first.');
+  const existing=matches[0];
+  if(existing){
+    const actions=(await get('/v1/actions')).actions;
+    await protectAction(actions.find(a=>(a.triggers||[]).some(t=>t.type===401&&t.commandId===existing.id)));
+    if(existing.group!==group && !confirm(`Replace command "${existing.name}" from group "${existing.group}" with this setup?`))throw new Error('Existing command kept.');
+  }
+  const body={ ...existing, name, command: text || name, enabled: true, mode: 0, location: 0, sources: 1, globalCooldown, userCooldown, group, grantType: 0, permittedGroups: [], minRole };
+  const c = existing ? await put(`/v1/commands/${existing.id}`,body) : await post('/v1/commands', body);
   invalidate('commands');
   return c;
 }
 
 async function createAction(name, triggers, steps, extra = {}) {
   steps.forEach((s, i) => { s.index = i; });
-  const a = await post('/v1/actions', { name, group: extra.group || GROUP, enabled: true, triggers, subActions: steps, ...extra });
+  const actions=(await get('/v1/actions')).actions;
+  const linked = actions.find(a=>(a.triggers||[]).some(t=>triggers.some(n=>(n.commandId&&n.commandId===t.commandId)||(n.timerId&&n.timerId===t.timerId))));
+  const existing=linked || actions.find(a=>a.name===name&&a.group===(extra.group||GROUP));
+  await protectAction(existing);
+  const body={ ...existing, name, group: extra.group || GROUP, enabled: true, triggers, subActions: steps, ...extra };
+  const a = existing ? await put(`/v1/actions/${existing.id}`,body) : await post('/v1/actions', body);
+  await post(`/v1/quicksetup/actions/${a.id}/remember`);
+  approvedReplacements.delete(a.id);
   invalidate('actions');
   return a;
 }
@@ -100,7 +128,14 @@ export async function render(root) {
         done(a, 'Reward action');
       }),
     wizard('Timer message', 'Posts a message on a timer, only when chat is active.', [field('Name', c4.name), field('Every (seconds)', c4.every), field('Only after N chat lines', c4.lines), field('Message', c4.msg)], async () => {
-      const t = await post('/v1/timers', { name: req(c4.name.value, 'Name'), enabled: true, repeat: true, interval: Number(c4.every.value) || 900, randomInterval: false, upperInterval: 0, lines: Number(c4.lines.value) || 0 });
+      const name=req(c4.name.value,'Name');
+      const timers=(await get('/v1/timers')).timers.map(t=>t.timer);
+      const matches=timers.filter(t=>t.name===name);
+      if(matches.length>1)throw new Error('Several timers have this name. Choose a unique name.');
+      const existing=matches[0];
+      if(existing){const actions=(await get('/v1/actions')).actions;await protectAction(actions.find(a=>(a.triggers||[]).some(t=>t.timerId===existing.id)));}
+      const body={...existing,name,enabled:true,repeat:true,interval:Number(c4.every.value)||900,randomInterval:false,upperInterval:0,lines:Number(c4.lines.value)||0};
+      const t=existing ? await put(`/v1/timers/${existing.id}`,body) : await post('/v1/timers',body);
       invalidate('timers');
       const a = await createAction(`Timer: ${c4.name.value}`, [trigger(701, { timerId: t.id })], [say(req(c4.msg.value, 'Message'))]);
       done(a, 'Timer');
@@ -202,6 +237,7 @@ export async function render(root) {
 
   fill(root,
     pageHead('Quick Setup', 'Wizards that build ordinary commands and actions for you. Everything they create opens in the builder, ready to tweak.'),
+    await workflowCatalog(),
     el('div', { class: 'grid-2' },
       card('Scene shortcuts', [el('button', { class: 'small', onclick: () => { rows.push({ cmd: '!', scene: scenes[0] || '', role: 'moderator', cd: 3 }); drawRows(); } }, '+ Row')],
         el('p', { class: 'muted small' }, 'Commands such as !brb or !game that switch OBS to one scene. Create several at once.'),

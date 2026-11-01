@@ -37,7 +37,9 @@ public sealed class TwitchHandlers : SubActionHandlerGroup
             if (await ResolveUser(c, s.Str("userLogin")) is not { } target) return;
             await Helix(c).SendAsync(HttpMethod.Post, "chat/shoutouts", new Dictionary<string, string?>
             {
-                ["from_broadcaster_id"] = BroadcasterId(c), ["to_broadcaster_id"] = Id(target), ["moderator_id"] = BroadcasterId(c),
+                ["from_broadcaster_id"] = BroadcasterId(c),
+                ["to_broadcaster_id"] = Id(target),
+                ["moderator_id"] = BroadcasterId(c),
             }, ct: c.Cancellation);
         });
 
@@ -77,16 +79,13 @@ public sealed class TwitchHandlers : SubActionHandlerGroup
         });
         On(18, async (s, c) =>
         {
-            var res = await Helix(c).SendAsync(HttpMethod.Post, "clips", new Dictionary<string, string?> { ["broadcaster_id"] = BroadcasterId(c) }, ct: c.Cancellation);
-            var clip = HelixClient.First(res);
-            c.SetArg("createClipSuccess", clip is not null);
-            if (clip is { } cl)
-            {
-                var id = cl.GetProperty("id").GetString();
-                c.SetArg("createClipId", id);
-                c.SetArg("createClipCreatedUrl", $"https://clips.twitch.tv/{id}");
-                c.SetArg("createClipEditUrl", cl.GetProperty("edit_url").GetString());
-            }
+            c.SetArg("createClipSuccess", false);
+            c.SetArg("createClipCreatedUrl", "");
+            var clip = await c.Service<ClipService>().CreateAsync(c.Cancellation);
+            c.SetArg("createClipSuccess", true);
+            c.SetArg("createClipId", clip.Id);
+            c.SetArg("createClipCreatedUrl", clip.Url);
+            c.SetArg("createClipEditUrl", clip.EditUrl);
         });
         On(19, async (s, c) => await Helix(c).SendAsync(HttpMethod.Post, "channels/commercial",
             body: new { broadcaster_id = BroadcasterId(c), length = Math.Max(30, s.Int("duration", 30)) }, ct: c.Cancellation));
@@ -120,7 +119,8 @@ public sealed class TwitchHandlers : SubActionHandlerGroup
             if (await ResolveUser(c, s.Str("userLogin")) is not { } target) return;
             await Helix(c).SendAsync(HttpMethod.Post, "raids", new Dictionary<string, string?>
             {
-                ["from_broadcaster_id"] = BroadcasterId(c), ["to_broadcaster_id"] = Id(target),
+                ["from_broadcaster_id"] = BroadcasterId(c),
+                ["to_broadcaster_id"] = Id(target),
             }, ct: c.Cancellation);
         });
         On(501, async (_, c) => await Helix(c).SendAsync(HttpMethod.Delete, "raids", new Dictionary<string, string?> { ["broadcaster_id"] = BroadcasterId(c) }, ct: c.Cancellation));
@@ -223,7 +223,9 @@ public sealed class TwitchHandlers : SubActionHandlerGroup
             }
             await Helix(c).SendAsync(new HttpMethod("PATCH"), "channel_points/custom_rewards/redemptions", new Dictionary<string, string?>
             {
-                ["id"] = redemptionId, ["broadcaster_id"] = BroadcasterId(c), ["reward_id"] = rewardId,
+                ["id"] = redemptionId,
+                ["broadcaster_id"] = BroadcasterId(c),
+                ["reward_id"] = rewardId,
             }, new { status = s.Int("status") == 0 ? "FULFILLED" : "CANCELED" }, ct: c.Cancellation);
         });
         On(200, (s, c) => RewardBool(c, s, "is_enabled", r => r.TryGetProperty("is_enabled", out var v) && v.GetBoolean()));

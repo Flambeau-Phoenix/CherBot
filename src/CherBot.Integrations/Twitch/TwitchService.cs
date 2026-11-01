@@ -188,42 +188,42 @@ public sealed class TwitchService : BackgroundService, IIntegrationStatus, IChat
             switch (type)
             {
                 case "session_welcome":
-                {
-                    var session = payload.GetProperty("session");
-                    _sessionId = session.GetProperty("id").GetString();
-                    if (session.TryGetProperty("keepalive_timeout_seconds", out var k) && k.ValueKind == JsonValueKind.Number)
-                        keepalive = TimeSpan.FromSeconds(k.GetInt32());
-                    _state = "connected";
-                    _connectedAt = DateTimeOffset.UtcNow;
-                    _lastError = null;
-                    _log.LogInformation("Twitch EventSub connected (session {Session})", _sessionId);
-                    if (!reconnectingTo) await CreateSubscriptionsAsync(_sessionId!, ct);
-                    _bus.Publish(BotEvent.FromTypeName("TwitchBroadcasterChatConnected", new Dictionary<string, object?>()));
-                    break;
-                }
+                    {
+                        var session = payload.GetProperty("session");
+                        _sessionId = session.GetProperty("id").GetString();
+                        if (session.TryGetProperty("keepalive_timeout_seconds", out var k) && k.ValueKind == JsonValueKind.Number)
+                            keepalive = TimeSpan.FromSeconds(k.GetInt32());
+                        _state = "connected";
+                        _connectedAt = DateTimeOffset.UtcNow;
+                        _lastError = null;
+                        _log.LogInformation("Twitch EventSub connected (session {Session})", _sessionId);
+                        if (!reconnectingTo) await CreateSubscriptionsAsync(_sessionId!, ct);
+                        Publish(BotEvent.FromTypeName("TwitchBroadcasterChatConnected", new Dictionary<string, object?>()));
+                        break;
+                    }
                 case "session_keepalive":
                     break;
                 case "session_reconnect":
-                {
-                    var next = payload.GetProperty("session").GetProperty("reconnect_url").GetString();
-                    _log.LogInformation("Twitch asked to reconnect to {Url}", next);
-                    return next;
-                }
+                    {
+                        var next = payload.GetProperty("session").GetProperty("reconnect_url").GetString();
+                        _log.LogInformation("Twitch asked to reconnect to {Url}", next);
+                        return next;
+                    }
                 case "revocation":
-                {
-                    var sub = payload.GetProperty("subscription");
-                    _log.LogWarning("Twitch revoked subscription {Type}: {Status}", sub.GetProperty("type").GetString(), sub.GetProperty("status").GetString());
-                    break;
-                }
+                    {
+                        var sub = payload.GetProperty("subscription");
+                        _log.LogWarning("Twitch revoked subscription {Type}: {Status}", sub.GetProperty("type").GetString(), sub.GetProperty("status").GetString());
+                        break;
+                    }
                 case "notification":
-                {
-                    var messageId = metadata.TryGetProperty("message_id", out var mid) ? mid.GetString() : null;
-                    if (messageId is not null && !_seenMessages.TryAdd(messageId, DateTimeOffset.UtcNow)) break; // duplicate delivery
-                    PruneSeen();
-                    var subType = payload.GetProperty("subscription").GetProperty("type").GetString()!;
-                    HandleNotification(subType, payload.GetProperty("event"));
-                    break;
-                }
+                    {
+                        var messageId = metadata.TryGetProperty("message_id", out var mid) ? mid.GetString() : null;
+                        if (messageId is not null && !_seenMessages.TryAdd(messageId, DateTimeOffset.UtcNow)) break; // duplicate delivery
+                        PruneSeen();
+                        var subType = payload.GetProperty("subscription").GetProperty("type").GetString()!;
+                        HandleNotification(subType, payload.GetProperty("event"));
+                        break;
+                    }
             }
         }
         return null;
@@ -256,6 +256,8 @@ public sealed class TwitchService : BackgroundService, IIntegrationStatus, IChat
     {
         if (e.Type == "ChatMessage")
         {
+            var userId = CherBotJson.Format(e.Data.GetValueOrDefault("userId"));
+            if (userId.Length > 0 && _auth.Get(TwitchRole.Bot)?.UserId == userId) e.Data["isBot"] = true;
             TrackViewer(e);
             if (e.Data.GetValueOrDefault("isBroadcaster") is not true && e.Data.GetValueOrDefault("filtered") is not true) _moderation.Apply(e);
         }
@@ -287,7 +289,11 @@ public sealed class TwitchService : BackgroundService, IIntegrationStatus, IChat
                 {
                     ["users"] = viewers.Select(v => new Dictionary<string, object?>
                     {
-                        ["id"] = v.Id, ["login"] = v.Login, ["display"] = v.Display, ["role"] = v.Role, ["subscribed"] = v.Subscribed,
+                        ["id"] = v.Id,
+                        ["login"] = v.Login,
+                        ["display"] = v.Display,
+                        ["role"] = v.Role,
+                        ["subscribed"] = v.Subscribed,
                     }).ToList(),
                     ["count"] = viewers.Count,
                 }));

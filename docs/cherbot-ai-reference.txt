@@ -1,5 +1,5 @@
-CHERBOT AI REFERENCE — VERSION 0.3.0
-Generated from this checkout and its engine catalogs: 160 supported steps; 50 emitted events.
+CHERBOT AI REFERENCE — VERSION 0.4.0
+Generated from this checkout and its engine catalogs: 164 supported steps; 50 emitted events.
 Regenerate with tools/export-ai-reference.mjs; do not edit the generated sections by hand.
 Companion files: cherbot-ai-prompt.txt and ai-guide.md. No private engine data is included.
 
@@ -17,7 +17,16 @@ Windows desktop actions require Windows and suitable desktop services; Windows
 assemblies, COM, registry, key presses, and GDI APIs are not portable to Linux.
 Enum names such as YouTube/Kick/Trovo do not mean those services are supported.
 
+Fresh installations retain CherBot's starter commands and loyalty presets,
+with no linked accounts, personal Discord invite, balances or viewer records.
+Game, scene, giveaway, spam-filter and song commands start disabled. Existing
+installations retain their settings. Configure the stream-first contest and
+!pinned through Quick Setup; inspect existing commands before replacing them.
+History recording and chat archiving are separate opt-ins, both off by default.
+
 HOW TO ANSWER A USER
+- For Get AI Help, prefer complete CherBot online CLI commands and required
+  JSON files, including preview, application, verification and removal.
 - Prefer the simplest usable output: UI instructions, C#, readable import
   JSON, or shell + HTTP. Give complete code, installation steps, and a test.
 - Ask for missing essential details: trigger, allowed role, cooldown, exact
@@ -164,7 +173,15 @@ cherbot import <file|-> [--dry-run] [--no-overwrite] [--rewrite-paths]
 cherbot export [--name <name>]                   print an encoded export
 cherbot twitch-login <broadcaster|bot>           device-code account linking
 cherbot migrate-python <old.db>                 migrate prototype data
-All commands accept --data-dir and --CherBot:Section:Key value overrides.
+cherbot api <METHOD> </v1/path> [--body-file request.json]
+cherbot pack export pack.json --selection-file selection.json
+cherbot pack preview pack.json [--mappings-file mappings.json] [--replace]
+cherbot pack apply pack.json [--mappings-file mappings.json] [--replace]
+Online api/pack commands accept --url (default http://127.0.0.1:8091),
+--token-file, and --data-dir for local token-file discovery. They operate
+against the running engine. Preview exits 3 when a pack needs attention;
+HTTP failures exit 1 and invocation/connection errors exit 2.
+Other commands accept --data-dir and --CherBot:Section:Key value overrides.
 On Windows use cherbot.exe / .\cherbot.exe. In a Linux build directory use
 ./cherbot when it is not on PATH. No CLI "create-action" or "run-action"
 subcommands exist; use the management API for live engine changes.
@@ -204,6 +221,29 @@ POST /v1/import?dryRun=true&overwrite=false with raw text/plain JSON/export;
   report has actions/commands/timers/queues, unsupported[], paths[], warnings[].
 POST /v1/export {"actions":["UUID"],"commands":["UUID"],"timers":[],
   "name":"My workflow"} -> {export:"..."}; actions must be explicitly listed.
+GET /v1/packs/settings -> {settings:[shareable setting keys]}.
+POST /v1/packs/export {"actions":["UUID"],"settings":[],"globals":[],
+  "name":"Feature name","description":"","author":"","version":"1.0.0"}
+  returns readable feature pack JSON. Dependencies are included automatically.
+POST /v1/packs/preview or /v1/packs/apply with
+  {"pack":<feature pack object>,"replace":false,"mappings":{}}
+  returns canApply/alreadyInstalled/changes/conflicts/missing/review/errors.
+Mappings use "field:originalValue":"targetValue" (for example
+"sceneName:Old Scene":"Main Scene"). Preview after changing mappings.
+Actions, commands, timers and enabled module settings import disabled.
+After review, enable BOTH the action and its command through existing APIs.
+Pack metadata requires formatVersion:1, an explicit UUID id, numeric version,
+name, description, author, minimumCherBotVersion, actions/commands/timers/queues,
+customCommands, settings (allow-listed settings object) and globals (selected
+name:value object). Do not embed credentials or viewer data in packs.
+GET /v1/live and /v1/users -> recent observed chat data, not every video viewer.
+GET /v1/quicksetup/status; GET /v1/quicksetup/first/preview or /clip/preview.
+POST /v1/quicksetup/first or /clip {"enabled":true,"bonus":100,"replace":false}.
+Legacy !first conversion needs explicit replacement; !firstwords keeps ranking.
+GET /v1/songs -> settings, requests, playerConnected.
+PUT /v1/songs/settings takes the full SongSettings model (source below).
+GET /v1/tracking/settings; PUT with enabled/chatArchive/detailDays/chatDays.
+Extended statistics default off; chat archive is a separate opt-in.
 GET /v1/catalog/subactions -> {subActions:[...]} (supported flag).
 GET /v1/catalog/events -> {events:[...]} (emitted flag).
 GET /v1/events/recent?limit=25 -> {events:[...]}.
@@ -547,6 +587,7 @@ Arguments (in addition to applicable run metadata):
   broadcastUser: Your display name | example "Streamer"
   broadcastUserName: Your login | example "streamer"
   broadcastUserId: Your id
+  streamId: Stable Twitch broadcast ID
   startedAt: Went live at
   type: live | example "live"
 
@@ -1859,6 +1900,30 @@ Gives (or takes) loyalty points.
   Builder defaults: {"amount":"10","target":0,"platform":"twitch"}
   Output arguments: amount, points
 
+[50006] CherBotFirstClaim — Claim first this stream (CherBot / Community)
+Atomically claims the single first-viewer spotlight and optional points bonus for the live stream.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: reply
+
+[50007] CherBotPinned — Current stream spotlight (CherBot / Community)
+Reports the viewer pinned for the current live stream.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: reply
+
+[50008] CherBotSongRequest — Request a song (CherBot / Songs)
+Adds a supported track URL from rawInput to the configured song request queue.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: reply
+
+[50009] CherBotSongQueue — Song queue status (CherBot / Songs)
+Reports song queue size and the current request.
+  Fields: none beyond the common record fields.
+  Builder defaults: {}
+  Output arguments: reply
+
 [50010] CherBotGamble — Game: Gamble (CherBot / Games)
 Gamble game: reads the bet from input0, sets %reply%.
   Fields: none beyond the common record fields.
@@ -2292,75 +2357,78 @@ using CherBot.Integrations.Twitch;
 //   cherbot migrate-python <cherbot.db>     (imports the Python prototype's data)
 switch (args.FirstOrDefault())
 {
+    case "api":
+    case "pack":
+        return await OnlineCli.RunAsync(args);
     case "import":
-    {
-        var rest = args.Skip(1).ToArray();
-        var file = rest.FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal));
-        if (file is null)
         {
-            Console.Error.WriteLine("usage: cherbot import <file|-> [--dry-run] [--no-overwrite] [--rewrite-paths] [--data-dir <dir>]");
-            return 2;
+            var rest = args.Skip(1).ToArray();
+            var file = rest.FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal));
+            if (file is null)
+            {
+                Console.Error.WriteLine("usage: cherbot import <file|-> [--dry-run] [--no-overwrite] [--rewrite-paths] [--data-dir <dir>]");
+                return 2;
+            }
+            var app = CherBotHost.Build(HostArgs(rest));
+            var text = file == "-" ? await Console.In.ReadToEndAsync() : await File.ReadAllTextAsync(file);
+            var report = app.Services.GetRequiredService<StreamerBotImporter>().Import(text, new ImportOptions
+            {
+                DryRun = rest.Contains("--dry-run"),
+                OverwriteByName = !rest.Contains("--no-overwrite"),
+                RewritePaths = rest.Contains("--rewrite-paths"),
+            });
+            Console.WriteLine(JsonSerializer.Serialize(report, CherBotJson.Indented));
+            return 0;
         }
-        var app = CherBotHost.Build(HostArgs(rest));
-        var text = file == "-" ? await Console.In.ReadToEndAsync() : await File.ReadAllTextAsync(file);
-        var report = app.Services.GetRequiredService<StreamerBotImporter>().Import(text, new ImportOptions
-        {
-            DryRun = rest.Contains("--dry-run"),
-            OverwriteByName = !rest.Contains("--no-overwrite"),
-            RewritePaths = rest.Contains("--rewrite-paths"),
-        });
-        Console.WriteLine(JsonSerializer.Serialize(report, CherBotJson.Indented));
-        return 0;
-    }
     case "export":
-    {
-        var rest = args.Skip(1).ToArray();
-        var app = CherBotHost.Build(HostArgs(rest));
-        var cfg = app.Services.GetRequiredService<ConfigService>();
-        var nameIdx = Array.IndexOf(rest, "--name");
-        var name = nameIdx >= 0 && nameIdx + 1 < rest.Length ? rest[nameIdx + 1] : "CherBot export";
-        Console.WriteLine(app.Services.GetRequiredService<StreamerBotImporter>()
-            .Export(cfg.Actions.Select(a => a.Id), cfg.Commands.Select(c => c.Id), cfg.Timers.Select(t => t.Id), name));
-        return 0;
-    }
+        {
+            var rest = args.Skip(1).ToArray();
+            var app = CherBotHost.Build(HostArgs(rest));
+            var cfg = app.Services.GetRequiredService<ConfigService>();
+            var nameIdx = Array.IndexOf(rest, "--name");
+            var name = nameIdx >= 0 && nameIdx + 1 < rest.Length ? rest[nameIdx + 1] : "CherBot export";
+            Console.WriteLine(app.Services.GetRequiredService<StreamerBotImporter>()
+                .Export(cfg.Actions.Select(a => a.Id), cfg.Commands.Select(c => c.Id), cfg.Timers.Select(t => t.Id), name));
+            return 0;
+        }
     case "token":
-    {
-        var app = CherBotHost.Build(HostArgs(args.Skip(1).ToArray()));
-        Console.WriteLine(app.Services.GetRequiredService<ApiToken>().Value);
-        return 0;
-    }
+        {
+            var app = CherBotHost.Build(HostArgs(args.Skip(1).ToArray()));
+            Console.WriteLine(app.Services.GetRequiredService<ApiToken>().Value);
+            return 0;
+        }
     case "twitch-login":
-    {
-        var rest = args.Skip(1).ToArray();
-        if (rest.Length == 0 || !Enum.TryParse<TwitchRole>(rest[0], true, out var role))
         {
-            Console.Error.WriteLine("usage: cherbot twitch-login <broadcaster|bot> [--data-dir <dir>] [--CherBot:Twitch:ClientId <id>]");
-            return 2;
+            var rest = args.Skip(1).ToArray();
+            if (rest.Length == 0 || !Enum.TryParse<TwitchRole>(rest[0], true, out var role))
+            {
+                Console.Error.WriteLine("usage: cherbot twitch-login <broadcaster|bot> [--data-dir <dir>] [--CherBot:Twitch:ClientId <id>]");
+                return 2;
+            }
+            var app = CherBotHost.Build(HostArgs(rest));
+            var auth = app.Services.GetRequiredService<TwitchAuth>();
+            var flow = await auth.StartDeviceFlowAsync(role, CancellationToken.None);
+            Console.WriteLine($"Open {flow.VerificationUri} and enter the code: {flow.UserCode}");
+            Console.WriteLine($"(sign in as the {role.ToString().ToLowerInvariant()} account; the code expires at {flow.ExpiresAt:t})");
+            while (auth.Flow(role) is { Status: "pending" }) await Task.Delay(1000);
+            var final = auth.Flow(role)!;
+            Console.WriteLine(final.Status == "complete" ? $"Linked {role.ToString().ToLowerInvariant()} account: {final.Login}" : $"Login {final.Status}: {final.Error}");
+            return final.Status == "complete" ? 0 : 1;
         }
-        var app = CherBotHost.Build(HostArgs(rest));
-        var auth = app.Services.GetRequiredService<TwitchAuth>();
-        var flow = await auth.StartDeviceFlowAsync(role, CancellationToken.None);
-        Console.WriteLine($"Open {flow.VerificationUri} and enter the code: {flow.UserCode}");
-        Console.WriteLine($"(sign in as the {role.ToString().ToLowerInvariant()} account; the code expires at {flow.ExpiresAt:t})");
-        while (auth.Flow(role) is { Status: "pending" }) await Task.Delay(1000);
-        var final = auth.Flow(role)!;
-        Console.WriteLine(final.Status == "complete" ? $"Linked {role.ToString().ToLowerInvariant()} account: {final.Login}" : $"Login {final.Status}: {final.Error}");
-        return final.Status == "complete" ? 0 : 1;
-    }
     case "migrate-python":
-    {
-        var rest = args.Skip(1).ToArray();
-        var path = rest.FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal));
-        if (path is null)
         {
-            Console.Error.WriteLine("usage: cherbot migrate-python <path/to/python/cherbot.db> [--data-dir <dir>]");
-            return 2;
+            var rest = args.Skip(1).ToArray();
+            var path = rest.FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal));
+            if (path is null)
+            {
+                Console.Error.WriteLine("usage: cherbot migrate-python <path/to/python/cherbot.db> [--data-dir <dir>]");
+                return 2;
+            }
+            var app = CherBotHost.Build(HostArgs(rest));
+            var report = app.Services.GetRequiredService<PythonMigration>().Run(path);
+            Console.WriteLine(JsonSerializer.Serialize(report, CherBotJson.Indented));
+            return 0;
         }
-        var app = CherBotHost.Build(HostArgs(rest));
-        var report = app.Services.GetRequiredService<PythonMigration>().Run(path);
-        Console.WriteLine(JsonSerializer.Serialize(report, CherBotJson.Indented));
-        return 0;
-    }
     default:
         await CherBotHost.Build(args).RunAsync();
         return 0;
@@ -2381,6 +2449,143 @@ static string[] HostArgs(string[] rest)
     }
     return [.. keep];
 }
+
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+
+namespace CherBot.Host;
+
+/// <summary>Talks to the running engine; never opens its SQLite database or prints authentication material.</summary>
+internal static class OnlineCli
+{
+    public static async Task<int> RunAsync(string[] args)
+    {
+        try
+        {
+            string? Option(string name)
+            {
+                var i = Array.IndexOf(args, name);
+                if (i < 0) return null;
+                if (i + 1 >= args.Length || args[i + 1].StartsWith("--")) throw new ArgumentException($"{name} needs a value.");
+                return args[i + 1];
+            }
+            var url = Option("--url") ?? "http://127.0.0.1:8091";
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var baseUri) || baseUri.Scheme is not ("http" or "https") || !string.IsNullOrEmpty(baseUri.UserInfo)) throw new ArgumentException("--url must be an HTTP(S) engine address.");
+            var tokenFile = Option("--token-file") ?? Path.Combine(DataDirectory.ResolvePath(args), "api-token");
+            if (!File.Exists(tokenFile)) throw new ArgumentException("Token file not found. Use --token-file for the target engine.");
+            var token = (await File.ReadAllTextAsync(tokenFile)).Trim();
+            if (token.Length == 0) throw new ArgumentException("Token file is empty.");
+            string method, path; string? body = null;
+            if (args[0] == "api")
+            {
+                if (args.Length < 3) throw new ArgumentException("Usage: cherbot api <METHOD> </v1/path> [--body-file file] [--url URL] [--token-file file]");
+                method = args[1].ToUpperInvariant(); path = args[2];
+                if (method is not ("GET" or "POST" or "PUT" or "PATCH" or "DELETE")) throw new ArgumentException("Unsupported HTTP method.");
+                if (Option("--body-file") is { } file) body = await File.ReadAllTextAsync(file);
+            }
+            else
+            {
+                if (args.Length < 3 || args[1] is not ("export" or "preview" or "apply")) throw new ArgumentException("Usage: cherbot pack export|preview|apply <file> [--selection-file file] [--replace] [--mappings-file file] [--url URL] [--token-file file]");
+                method = "POST"; path = "/v1/packs/" + args[1];
+                if (args[1] == "export")
+                {
+                    if (Option("--selection-file") is { } selection) body = await File.ReadAllTextAsync(selection);
+                    else throw new ArgumentException("Export needs --selection-file with actions/settings/globals to include.");
+                }
+                else
+                {
+                    var pack = JsonNode.Parse(await File.ReadAllTextAsync(args[2])) ?? throw new ArgumentException("Pack is empty.");
+                    var mappings = Option("--mappings-file") is { } mappingsFile ? JsonNode.Parse(await File.ReadAllTextAsync(mappingsFile)) : null;
+                    body = new JsonObject { ["pack"] = pack, ["replace"] = args.Contains("--replace"), ["mappings"] = mappings }.ToJsonString();
+                }
+            }
+            if (!path.StartsWith("/v1/", StringComparison.Ordinal) || path.Contains('\\') || path.Contains('#') || path.Contains("..", StringComparison.Ordinal)) throw new ArgumentException("Path must be an engine /v1/ route.");
+            var target = new Uri(baseUri, path);
+            if (target.Host != baseUri.Host || target.Port != baseUri.Port) throw new ArgumentException("API requests must stay on the selected engine.");
+            using var client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(90) };
+            using var request = new HttpRequestMessage(new HttpMethod(method), target);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (body is not null) request.Content = new StringContent(body, Encoding.UTF8, "application/json");
+            using var response = await client.SendAsync(request);
+            var text = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode) { Console.Error.WriteLine($"HTTP {(int)response.StatusCode}: {text}"); return 1; }
+            if (args[0] == "pack" && args[1] == "export") { await File.WriteAllTextAsync(args[2], text); Console.WriteLine($"Exported {args[2]}"); }
+            else Console.WriteLine(text);
+            if (args[0] == "pack" && args[1] == "preview" && JsonNode.Parse(text)?["canApply"]?.GetValue<bool>() == false) return 3;
+            return 0;
+        }
+        catch (Exception ex) when (ex is ArgumentException or IOException or HttpRequestException or JsonException or TaskCanceledException)
+        { Console.Error.WriteLine(ex.Message); return 2; }
+    }
+}
+
+FEATURE PACK MODELS: EXACT JSON FIELDS
+======================================
+
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using CherBot.Core.Model;
+using CherBot.Integrations.CustomCommands;
+
+namespace CherBot.Host.Sharing;
+
+public sealed class FeaturePack
+{
+    public int FormatVersion { get; set; } = 1;
+    [JsonRequired] public Guid Id { get; set; } = Guid.NewGuid();
+    public string Version { get; set; } = "1.0.0";
+    public string Name { get; set; } = "My stream features";
+    public string Description { get; set; } = "";
+    public string Author { get; set; } = "";
+    public string MinimumCherBotVersion { get; set; } = CherBotHost.Version;
+    public List<ActionDef> Actions { get; set; } = [];
+    public List<CommandDef> Commands { get; set; } = [];
+    public List<TimerDef> Timers { get; set; } = [];
+    public List<QueueDef> Queues { get; set; } = [];
+    public List<CustomCommandDef> CustomCommands { get; set; } = [];
+    public Dictionary<string, JsonElement> Settings { get; set; } = [];
+    public Dictionary<string, JsonElement> Globals { get; set; } = [];
+}
+
+public sealed record PackExport(List<Guid>? Actions, List<string>? Settings, List<string>? Globals, string? Name, string? Description, string? Author, Guid? Id, string? Version);
+public sealed record PackRequest(FeaturePack Pack, bool Replace = false, Dictionary<string, string>? Mappings = null);
+public sealed record PackPreview(bool CanApply, bool AlreadyInstalled, List<string> Changes, List<string> Conflicts, List<string> Missing, List<string> Review, List<string> Errors);
+
+SONG REQUEST SETTINGS AND QUEUE CONTRACT
+========================================
+
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using CherBot.Core;
+using CherBot.Core.Config;
+using CherBot.Core.Events;
+using CherBot.Integrations.Community;
+using CherBot.Storage;
+using Microsoft.Extensions.Hosting;
+
+namespace CherBot.Integrations.Songs;
+
+public sealed class SongSettings
+{
+    public bool Enabled { get; set; }
+    public bool YouTube { get; set; } = true;
+    public bool AppleMusic { get; set; }
+    public bool Spotify { get; set; }
+    public bool ApprovalRequired { get; set; } = true;
+    public bool IntakePaused { get; set; }
+    public bool OnlyWhileLive { get; set; } = true;
+    public int CooldownSeconds { get; set; } = 30;
+    public int PerUserLimit { get; set; } = 3;
+    public int QueueLimit { get; set; } = 100;
+}
+
+public sealed record SongLink(string Provider, string TrackId, string Url);
+public sealed record SongRequest(Guid Id, string Provider, string TrackId, string Url, string UserId, string UserName, string Status, long Position, string CreatedAt, string SourceId, string? Error = null);
+public sealed record PlayerLease(string LeaseId, DateTimeOffset ExpiresAt);
 
 API ROUTE INVENTORY (DISCOVERY; SEE BODY SHAPES ABOVE)
 ======================================================
@@ -2452,6 +2657,23 @@ IntegrationEndpoints.cs:
   GET /v1/speakerbot/status
   POST /v1/speakerbot/speak
 
+LiveEndpoints.cs:
+  GET /v1/live
+  GET /v1/users
+  GET /v1/users/{userId}
+  GET /v1/tracking/settings
+  PUT /v1/tracking/settings
+  GET /v1/tracking/history
+  DELETE /v1/tracking/history
+  GET /v1/tracking/export/{userId}
+  GET /v1/loyalty/earned
+  GET /v1/quicksetup/{workflow}/preview
+  GET /v1/quicksetup/actions/{id:guid}/managed
+  POST /v1/quicksetup/actions/{id:guid}/remember
+  POST /v1/quicksetup/{workflow}
+  GET /v1/quicksetup/status
+  PUT /v1/quicksetup/sery
+
 LoyaltyEndpoints.cs:
   GET /v1/loyalty/settings
   PUT /v1/loyalty/settings
@@ -2520,6 +2742,23 @@ ModuleEndpoints.cs:
   POST /v1/modules/spam-filter/test
   GET /v1/modules/spam-filter/log
   POST /v1/modules/spam-filter/permit
+
+PackEndpoints.cs:
+  GET /v1/packs/settings
+  POST /v1/packs/export
+  POST /v1/packs/preview
+  POST /v1/packs/apply
+
+SongEndpoints.cs:
+  GET /v1/songs
+  PUT /v1/songs/settings
+  POST /v1/songs/request
+  POST /v1/songs/reorder
+  POST /v1/songs/advance
+  POST /v1/songs/{id:guid}/{operation}
+  DELETE /v1/songs/{id:guid}
+  DELETE /v1/songs
+  POST /v1/songs/player-token
 
 SystemEndpoints.cs:
   GET /health

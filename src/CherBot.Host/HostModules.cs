@@ -31,6 +31,7 @@ internal static class HostModules
             });
 
         var config = builder.Configuration;
+        builder.Services.AddSingleton<CherBot.Host.Sharing.FeaturePackService>();
         builder.Services.AddTwitch(
             config.GetSection(TwitchOptions.Section).Get<TwitchOptions>() ?? new TwitchOptions(),
             config.GetSection(CommunityOptions.Section).Get<CommunityOptions>() ?? new CommunityOptions());
@@ -72,5 +73,8 @@ internal static class HostModules
         GiveawayEndpoints.Map(app);
         ModuleEndpoints.Map(app);
         CustomCommandEndpoints.Map(app);
+        LiveEndpoints.Map(app);
+        PackEndpoints.Map(app);
+        SongEndpoints.Map(app);
     }
 }

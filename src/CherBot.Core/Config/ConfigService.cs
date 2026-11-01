@@ -39,6 +39,15 @@ public sealed class ConfigService
         }
     }
 
+    /// <summary>Refreshes committed batch imports before notifying integration caches.</summary>
+    public void Reload(IEnumerable<(string Kind, Guid Id)> changed)
+    {
+        _actions.Clear(); _queues.Clear(); _commands.Clear(); _timers.Clear();
+        Load(_actions, "action"); Load(_queues, "queue"); Load(_commands, "command"); Load(_timers, "timer");
+        foreach (var action in _actions.Values) action.Normalize();
+        foreach (var (kind, id) in changed) Changed?.Invoke(kind, id);
+    }
+
     // ── actions ────────────────────────────────────────────────────────────
 
     public IReadOnlyList<ActionDef> Actions => _actions.Values.OrderBy(a => a.Group).ThenBy(a => a.Name).ToList();

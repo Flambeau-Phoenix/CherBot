@@ -65,6 +65,11 @@ public sealed class GameService : IHostedService
         _db.SetKv(Key, JsonSerializer.Serialize(settings, CherBotJson.Options));
     }
 
+    public void ReloadSettings()
+    {
+        if (_db.GetKv(Key) is { } json) _settings = JsonSerializer.Deserialize<GameSettings>(json, CherBotJson.Options) ?? new();
+    }
+
     public Task StartAsync(CancellationToken cancellationToken)
     {
         if (_db.GetKv(SeedKey) is null) Seed();
@@ -110,7 +115,7 @@ public sealed class GameService : IHostedService
 
     private long Balance(GamePlayer p) => _db.GetPoints(Platform, p.UserId);
 
-    private long Pay(GamePlayer p, long delta) => _db.AddPoints(Platform, p.UserId, p.Name, delta);
+    private long Pay(GamePlayer p, long delta) => _db.AddPoints(Platform, p.UserId, p.Name, delta, "game");
 
     /// <summary>Checks cooldown, bet syntax, limits and balance. Returns an error reply, or null with the bet.</summary>
     private string? Validate(string game, BetRules rules, GamePlayer p, string? betText, string usage, out long bet, bool checkCooldown = true)
@@ -135,8 +140,16 @@ public sealed class GameService : IHostedService
     private void Result(string game, GamePlayer p, long bet, long net, string detail) =>
         _bus.Publish(new BotEvent("CherBot", "GameResult", new Dictionary<string, object?>
         {
-            ["game"] = game, ["user"] = p.Name, ["userId"] = p.UserId, ["userName"] = p.Login, ["bet"] = bet,
-            ["won"] = net > 0, ["net"] = net, ["balance"] = Balance(p), ["detail"] = detail, ["currency"] = Cur,
+            ["game"] = game,
+            ["user"] = p.Name,
+            ["userId"] = p.UserId,
+            ["userName"] = p.Login,
+            ["bet"] = bet,
+            ["won"] = net > 0,
+            ["net"] = net,
+            ["balance"] = Balance(p),
+            ["detail"] = detail,
+            ["currency"] = Cur,
         }));
 
     private static long Winnings(long bet, double multiplier) => (long)Math.Floor(bet * multiplier) - bet;

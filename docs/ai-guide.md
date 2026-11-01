@@ -1,5 +1,7 @@
 # Build a CherBot workflow with an AI chat
 
+The **Get AI Help** page downloads the same version-matched reference and builds a prompt for your feature, operating system and shell. It directs you to an external chat; it does not connect the chat to your engine. Prefer complete `cherbot api` / `cherbot pack` commands with JSON files, preview, verification and removal steps. Keep authentication in local token files with `--token-file`.
+
 Upload **[cherbot-ai-reference.txt](cherbot-ai-reference.txt)** to ChatGPT, Arena, DeepSeek Chat, or another chat interface that accepts text attachments. Copy **[cherbot-ai-prompt.txt](cherbot-ai-prompt.txt)** into your message, replace the bracketed details, and describe what you want.
 
 If an interface does not accept attachments, paste the reference in a chat with enough context capacity. If it rejects the size, give it the introduction and the sections for your trigger and required steps/functions. Keep the compatibility limits and variable rules with those excerpts.

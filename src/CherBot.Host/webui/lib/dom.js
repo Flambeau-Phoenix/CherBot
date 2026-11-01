@@ -33,6 +33,12 @@ export function fill(node, ...children) {
   return node;
 }
 
+/** Decorative, locally bundled Tabler SVG; the surrounding control supplies its accessible name. */
+export function icon(name, className = '') {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name)) throw new Error('Invalid icon name');
+  return el('span', { class: `svg-icon ${className}`.trim(), 'aria-hidden': 'true', style: `--icon-url: url("icons/${name}.svg")` });
+}
+
 export function toast(message, bad = false) {
   const t = $('#toast');
   t.textContent = message;
