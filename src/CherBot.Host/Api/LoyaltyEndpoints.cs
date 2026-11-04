@@ -13,7 +13,8 @@ internal static class LoyaltyEndpoints
         v1.MapGet("/loyalty/settings", (LoyaltyService loyalty) => Json(new { settings = loyalty.Settings, live = loyalty.IsLive }));
         v1.MapPut("/loyalty/settings", (LoyaltySettings settings, LoyaltyService loyalty) =>
         {
-            loyalty.Save(settings);
+            try { loyalty.Save(settings); }
+            catch (ArgumentException ex) { return Results.BadRequest(new { error = ex.Message }); }
             return Json(loyalty.Settings);
         });
 

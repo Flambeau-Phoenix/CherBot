@@ -76,8 +76,38 @@ public sealed class LoyaltyService : BackgroundService
     public string Currency => string.IsNullOrWhiteSpace(_settings.CurrencyName) ? "points" : _settings.CurrencyName;
     public bool? IsLive => _live;
 
+    /// <summary>Rejects values that would take points away from chatters or overflow a balance.</summary>
+    internal static void Validate(LoyaltySettings s)
+    {
+        void Range(string name, long value, long min, long max)
+        {
+            if (value < min || value > max) throw new ArgumentException($"{name} must be between {min} and {max}.");
+        }
+        void Multiplier(string name, double value)
+        {
+            if (double.IsNaN(value) || value < 0 || value > 1000) throw new ArgumentException($"{name} must be between 0 and 1000.");
+        }
+        Range("ChatPoints", s.ChatPoints, 0, 1_000_000);
+        Range("FirstWordPoints", s.FirstWordPoints, 0, 1_000_000);
+        Range("WatchPoints", s.WatchPoints, 0, 1_000_000);
+        Range("FollowBonus", s.FollowBonus, 0, 1_000_000);
+        Range("SubBonus", s.SubBonus, 0, 1_000_000);
+        Range("ResubBonus", s.ResubBonus, 0, 1_000_000);
+        Range("GiftSubBonusPerSub", s.GiftSubBonusPerSub, 0, 1_000_000);
+        Range("CheerBonusPer100Bits", s.CheerBonusPer100Bits, 0, 1_000_000);
+        Range("RaidBonus", s.RaidBonus, 0, 1_000_000);
+        Range("ChatCooldownSeconds", s.ChatCooldownSeconds, 0, 86_400);
+        Range("WatchIntervalMinutes", s.WatchIntervalMinutes, 1, 1_440);
+        Range("WatchActiveMinutes", s.WatchActiveMinutes, 0, 1_440);
+        Multiplier("SubscriberMultiplier", s.SubscriberMultiplier);
+        Multiplier("VipMultiplier", s.VipMultiplier);
+        Multiplier("ModeratorMultiplier", s.ModeratorMultiplier);
+        if ((s.CurrencyName ?? "").Length > 40) throw new ArgumentException("CurrencyName must be 40 characters or fewer.");
+    }
+
     public void Save(LoyaltySettings settings)
     {
+        Validate(settings);
         _settings = settings;
         _db.SetKv(Key, JsonSerializer.Serialize(settings, CherBotJson.Options));
     }
@@ -114,6 +144,9 @@ public sealed class LoyaltyService : BackgroundService
         if (!first && _settings.ChatCooldownSeconds > 0 &&
             _lastChatAward.TryGetValue(userId, out var last) && (now - last).TotalSeconds < _settings.ChatCooldownSeconds)
             return;
+        if (_lastChatAward.Count > 5000)
+            foreach (var (k, v) in _lastChatAward)
+                if (now - v > TimeSpan.FromHours(1)) _lastChatAward.TryRemove(k, out _);
         _lastChatAward[userId] = now;
 
         var basePoints = first ? _settings.FirstWordPoints : _settings.ChatPoints;
@@ -143,6 +176,13 @@ public sealed class LoyaltyService : BackgroundService
             "Raid" => _settings.RaidBonus,
             _ => 0,
         };
+        // A follow pays once per viewer; otherwise unfollowing and following again would farm the bonus.
+        if (ev.Type == "Follow" && bonus > 0 && userId.Length > 0)
+        {
+            var marker = $"loyalty.follow-paid.{userId}";
+            if (_db.GetKv(marker) is not null) return Task.CompletedTask;
+            _db.SetKv(marker, "1");
+        }
         if (bonus > 0 && userId.Length > 0) Award(userId, user, bonus, ev.Type switch
         { "Follow" => "follow", "Sub" => "sub", "ReSub" => "resub", "GiftSub" or "GiftBomb" => "gift", "Cheer" => "cheer", "Raid" => "raid", _ => "adjustment" });
         return Task.CompletedTask;
@@ -211,6 +251,13 @@ public sealed class LoyaltyService : BackgroundService
 
     /// <summary>Viewers to pay: recent chatters when <paramref name="activeMinutes"/> is set, otherwise Helix chatters (falling back to recent chatters).</summary>
     private async Task<List<CherBot.Core.Platform.ActiveViewer>> AudienceAsync(int activeMinutes, CancellationToken ct)
+    {
+        var list = await AudienceCoreAsync(activeMinutes, ct);
+        // The bot account sits in chat too; it should not earn points.
+        return _auth.Get(TwitchRole.Bot)?.UserId is { } botId ? list.Where(v => v.Id != botId).ToList() : list;
+    }
+
+    private async Task<List<CherBot.Core.Platform.ActiveViewer>> AudienceCoreAsync(int activeMinutes, CancellationToken ct)
     {
         var recent = _twitch.GetActiveViewers();
         if (activeMinutes > 0)

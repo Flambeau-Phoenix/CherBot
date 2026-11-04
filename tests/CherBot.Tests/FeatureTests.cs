@@ -147,6 +147,32 @@ public class FeatureTests
         Assert.Equal("cherries", (await h.Api.GetFromJsonAsync<JsonElement>("/v1/loyalty/settings")).GetProperty("settings").GetProperty("currencyName").GetString());
     }
 
+    [Fact]
+    public async Task Follow_bonus_is_paid_once_per_viewer_and_settings_are_validated()
+    {
+        var fake = new FakeTwitchHandler();
+        await using var h = Host(fake);
+        var loyalty = h.Get<LoyaltyService>();
+        loyalty.Save(new LoyaltySettings { FollowBonus = 50 });
+        var db = h.Get<CherBotDb>();
+        var follow = JsonSerializer.SerializeToElement(new { user_id = "3100", user_login = "flip", user_name = "Flip", followed_at = "2026-01-01T00:00:00Z" });
+        var other = JsonSerializer.SerializeToElement(new { user_id = "3101", user_login = "next", user_name = "Next", followed_at = "2026-01-01T00:00:00Z" });
+        var tw = h.Get<TwitchService>();
+
+        // Following, unfollowing and following again must not pay twice. The second viewer proves the first events were processed.
+        tw.HandleNotification("channel.follow", follow);
+        tw.HandleNotification("channel.follow", follow);
+        tw.HandleNotification("channel.follow", follow);
+        tw.HandleNotification("channel.follow", other);
+        await WaitUntil(() => db.GetPoints("twitch", "3101") == 50);
+        await Task.Delay(200);
+        Assert.Equal(50, db.GetPoints("twitch", "3100"));
+
+        Assert.Throws<ArgumentException>(() => loyalty.Save(new LoyaltySettings { ChatPoints = -5 }));
+        Assert.Throws<ArgumentException>(() => loyalty.Save(new LoyaltySettings { SubscriberMultiplier = double.NaN }));
+        Assert.Equal(HttpStatusCode.BadRequest, (await h.Api.PutAsJsonAsync("/v1/loyalty/settings", new { chatPoints = -5 })).StatusCode);
+    }
+
     // ── games ──────────────────────────────────────────────────────────────
 
     [Fact]
