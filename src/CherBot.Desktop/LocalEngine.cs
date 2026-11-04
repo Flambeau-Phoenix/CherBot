@@ -34,7 +34,16 @@ public sealed class LocalEngine : IAsyncDisposable
 
         // Desktop-only sub-actions (toast, input, key press) get real implementations here.
         var app = CherBotHost.Build(args.ToArray(), b => b.Services.AddSingleton(desktop));
-        await app.StartAsync();
+        try
+        {
+            await app.StartAsync();
+        }
+        catch
+        {
+            // A failed start (port already in use, for example) must not leave a half-started host holding resources.
+            await app.DisposeAsync();
+            throw;
+        }
         _app = app;
         Url = $"http://127.0.0.1:{settings.LocalApiPort}";
         Token = app.Services.GetRequiredService<ApiToken>().Value;

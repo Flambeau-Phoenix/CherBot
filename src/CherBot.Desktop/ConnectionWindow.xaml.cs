@@ -67,9 +67,10 @@ public partial class ConnectionWindow : Window
     private RemoteProfile? SaveCurrentProfile()
     {
         var name = ProfileName.Text.Trim();
-        if (name.Length == 0 || !Uri.TryCreate(ProfileUrl.Text.Trim(), UriKind.Absolute, out var uri))
+        if (name.Length == 0 || !Uri.TryCreate(ProfileUrl.Text.Trim(), UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
         {
-            Error.Text = "A remote profile needs a name and a full URL such as http://192.168.1.50:8091.";
+            Error.Text = "A remote profile needs a name and a full http:// or https:// URL such as http://192.168.1.50:8091.";
             return null;
         }
         var profile = _settings.Profiles.FirstOrDefault(p => p.Name == name);

@@ -46,12 +46,27 @@ public sealed class StatusMonitor : IDisposable
         }
     }
 
+    private readonly SemaphoreSlim _pollGate = new(1, 1);
+
+    /// <summary>One poll at a time: the timer loop and a profile switch can otherwise update the state together.</summary>
     public async Task PollAsync()
+    {
+        try { await _pollGate.WaitAsync(_cts.Token); }
+        catch (OperationCanceledException) { return; }
+        try { await PollCoreAsync(); }
+        finally { _pollGate.Release(); }
+    }
+
+    private async Task PollCoreAsync()
     {
         EngineHealth health;
         try
         {
-            using var doc = JsonDocument.Parse(await _http.GetStringAsync($"{Url}/health", _cts.Token));
+            using var req = new HttpRequestMessage(HttpMethod.Get, $"{Url}/health");
+            if (Token.Length > 0) req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token); // for the integration detail text
+            using var resp = await _http.SendAsync(req, _cts.Token);
+            resp.EnsureSuccessStatusCode();
+            using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync(_cts.Token));
             var list = doc.RootElement.GetProperty("integrations").EnumerateArray().Select(i => new IntegrationState(
                 i.GetProperty("name").GetString() ?? "",
                 i.GetProperty("state").GetString() ?? "",

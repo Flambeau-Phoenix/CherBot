@@ -42,7 +42,7 @@ public partial class MainWindow : Window
             {
                 // Links such as twitch.tv/activate open in the normal browser.
                 e.Handled = true;
-                Process.Start(new ProcessStartInfo(e.Uri) { UseShellExecute = true });
+                OpenExternal(e.Uri);
             };
             _webReady = true;
             Fallback.Visibility = Visibility.Collapsed;
@@ -72,7 +72,14 @@ public partial class MainWindow : Window
         Process.Start(new ProcessStartInfo("https://developer.microsoft.com/microsoft-edge/webview2/") { UseShellExecute = true });
 
     public static void OpenInBrowser(string url, string token) =>
-        Process.Start(new ProcessStartInfo($"{url.TrimEnd('/')}/#token={Uri.EscapeDataString(token)}") { UseShellExecute = true });
+        OpenExternal($"{url.TrimEnd('/')}/#token={Uri.EscapeDataString(token)}");
+
+    /// <summary>Hands a web link to the default browser. Only http(s) is allowed: page content must not be able to launch files or other protocol handlers.</summary>
+    internal static void OpenExternal(string uri)
+    {
+        if (Uri.TryCreate(uri, UriKind.Absolute, out var u) && (u.Scheme == Uri.UriSchemeHttp || u.Scheme == Uri.UriSchemeHttps))
+            Process.Start(new ProcessStartInfo(u.AbsoluteUri) { UseShellExecute = true });
+    }
 
     protected override void OnClosing(CancelEventArgs e)
     {

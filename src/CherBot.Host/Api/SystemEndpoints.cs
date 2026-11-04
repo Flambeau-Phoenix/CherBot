@@ -29,7 +29,10 @@ internal static class SystemEndpoints
                 ["schemaVersion"] = db.SchemaVersion,
                 ["sound"] = sound.Name,
                 ["queues"] = queues.Status().Count,
-                ["integrations"] = integrations.Select(i => i.GetStatus()).ToList(),
+                // Without the token only name, state and connected are shown: the rest holds account ids, scopes,
+                // error text and pending device-login codes.
+                ["integrations"] = integrations.Select(i => i.GetStatus())
+                    .Select(s => detailed ? (object)s : new { s.Name, s.State, s.Connected }).ToList(),
             }.Where(kv => kv.Value is not null).ToDictionary());
         });
 

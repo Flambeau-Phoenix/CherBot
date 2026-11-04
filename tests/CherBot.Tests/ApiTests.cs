@@ -42,7 +42,13 @@ public class ApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, (await anon.GetAsync($"/v1/actions?token={h.Token}")).StatusCode);
         var publicHealth = await anon.GetStringAsync("/health");
         Assert.DoesNotContain("dataDir", publicHealth);
-        Assert.Contains("dataDir", await h.Api.GetStringAsync("/health"));
+        // Integration internals (scopes, user ids, pending device-flow codes, error text) need the token too.
+        Assert.DoesNotContain("deviceFlows", publicHealth);
+        Assert.DoesNotContain("scopes", publicHealth);
+        Assert.Contains("\"integrations\"", publicHealth);
+        var fullHealth = await h.Api.GetStringAsync("/health");
+        Assert.Contains("dataDir", fullHealth);
+        Assert.Contains("deviceFlows", fullHealth);
         Assert.Equal(HttpStatusCode.Unauthorized, (await anon.GetAsync("/v1/media?path=x&token=wrong")).StatusCode);
         Assert.NotEqual(HttpStatusCode.Unauthorized, (await anon.GetAsync($"/v1/media?path=x&token={h.Token}")).StatusCode);
     }

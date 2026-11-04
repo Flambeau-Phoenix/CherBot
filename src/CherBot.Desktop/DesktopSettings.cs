@@ -64,14 +64,17 @@ public sealed class DesktopSettings
         {
             if (File.Exists(FilePath)) return JsonSerializer.Deserialize<DesktopSettings>(File.ReadAllText(FilePath), Json) ?? new DesktopSettings();
         }
-        catch (JsonException) { /* start fresh */ }
+        catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { /* start fresh */ }
         return new DesktopSettings();
     }
 
     public void Save()
     {
         Directory.CreateDirectory(Folder);
-        File.WriteAllText(FilePath, JsonSerializer.Serialize(this, Json));
+        // Write then swap, so a crash mid-write cannot wipe the saved profiles.
+        var temp = FilePath + ".tmp";
+        File.WriteAllText(temp, JsonSerializer.Serialize(this, Json));
+        File.Move(temp, FilePath, overwrite: true);
     }
 
     public RemoteProfile? Active => Profiles.Find(p => p.Name == ActiveProfile) ?? (Profiles.Count > 0 ? Profiles[0] : null);
