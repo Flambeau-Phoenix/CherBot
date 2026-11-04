@@ -214,8 +214,17 @@ public sealed class StreamerBotImporter(ConfigService config, IPathMapper paths,
         if (bytes.Length > offset + 1 && bytes[offset] == 0x1f && bytes[offset + 1] == 0x8b)
         {
             using var gz = new GZipStream(new MemoryStream(bytes, offset, bytes.Length - offset), CompressionMode.Decompress);
-            using var reader = new StreamReader(gz, Encoding.UTF8);
-            return Parse(reader.ReadToEnd(), report);
+            // Cap the inflated size so a small "gzip bomb" cannot exhaust memory.
+            const int MaxInflatedBytes = 64 * 1024 * 1024;
+            using var inflated = new MemoryStream();
+            var chunk = new byte[81920];
+            int read;
+            while ((read = gz.Read(chunk, 0, chunk.Length)) > 0)
+            {
+                inflated.Write(chunk, 0, read);
+                if (inflated.Length > MaxInflatedBytes) throw new InvalidDataException("Export is too large after decompression");
+            }
+            return Parse(Encoding.UTF8.GetString(inflated.GetBuffer(), 0, (int)inflated.Length), report);
         }
         return Parse(Encoding.UTF8.GetString(bytes, offset, bytes.Length - offset), report);
     }

@@ -161,6 +161,27 @@ public class FeatureTests
         Assert.Null(GameService.ParseBet("0", 100));
     }
 
+    private sealed class FixedRandom(int value) : IGameRandom
+    {
+        public int Next(int min, int maxExclusive) => Math.Clamp(value, min, maxExclusive - 1);
+    }
+
+    [Fact]
+    public async Task Simultaneous_bets_from_one_viewer_cannot_spend_the_same_points_twice()
+    {
+        await using var h = Host(new FakeTwitchHandler());
+        var games = h.Get<GameService>();
+        var db = h.Get<CherBotDb>();
+        var alice = new GamePlayer("u1", "alice", "Alice");
+        db.SetPoints("twitch", "u1", "Alice", 100);
+        games.Save(new GameSettings { Gamble = new() { CooldownSeconds = 0, MaxBet = 0 } });
+        games.Random = new FixedRandom(100); // always loses
+
+        await Task.WhenAll(Enumerable.Range(0, 20).Select(_ => Task.Run(() => games.Gamble(alice, "100"))));
+
+        Assert.Equal(0, db.GetPoints("twitch", "u1"));
+    }
+
     [Fact]
     public async Task Games_pay_out_from_the_injected_random()
     {

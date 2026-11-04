@@ -35,7 +35,12 @@ public sealed class GameService : IHostedService
     private readonly ILogger<GameService> _log;
     private readonly ConcurrentDictionary<(string Game, string User), DateTimeOffset> _lastPlay = new();
     private readonly ConcurrentDictionary<string, Duel> _duels = new(StringComparer.OrdinalIgnoreCase);
-    private readonly object _heistLock = new();
+    /// <summary>
+    /// Serialises every game that reads a balance and then pays out. Without it two simultaneous commands from one
+    /// viewer both pass the balance check and can bet the same points twice (or drive the balance negative).
+    /// Monitors are re-entrant, so the heist code may take it again.
+    /// </summary>
+    private readonly object _gameLock = new();
     private Heist? _heist;
     private DateTimeOffset _heistCooldownUntil;
     private GameSettings _settings;
@@ -158,6 +163,11 @@ public sealed class GameService : IHostedService
 
     public string Gamble(GamePlayer p, string? betText)
     {
+        lock (_gameLock) return GambleCore(p, betText);
+    }
+
+    private string GambleCore(GamePlayer p, string? betText)
+    {
         var s = _settings.Gamble;
         if (Validate("gamble", s, p, betText, $"!gamble <amount|all|half|25%>", out var bet) is { } error) return error;
         Played("gamble", p);
@@ -174,6 +184,11 @@ public sealed class GameService : IHostedService
     // ── slots ────────────────────────────────────────────────────────────────
 
     public string Slots(GamePlayer p, string? betText)
+    {
+        lock (_gameLock) return SlotsCore(p, betText);
+    }
+
+    private string SlotsCore(GamePlayer p, string? betText)
     {
         var s = _settings.Slots;
         if (s.Symbols.Count < 2) return "Slots are not configured.";
@@ -203,6 +218,11 @@ public sealed class GameService : IHostedService
 
     public string Coinflip(GamePlayer p, string? first, string? second)
     {
+        lock (_gameLock) return CoinflipCore(p, first, second);
+    }
+
+    private string CoinflipCore(GamePlayer p, string? first, string? second)
+    {
         var s = _settings.Coinflip;
         // Accept both "!coinflip heads 100" and "!coinflip 100 heads".
         static string? Side(string? x) => x?.ToLowerInvariant() switch { "heads" or "head" or "h" => "heads", "tails" or "tail" or "t" => "tails", _ => null };
@@ -224,6 +244,11 @@ public sealed class GameService : IHostedService
     // ── roulette ─────────────────────────────────────────────────────────────
 
     public string Roulette(GamePlayer p, string? first, string? second)
+    {
+        lock (_gameLock) return RouletteCore(p, first, second);
+    }
+
+    private string RouletteCore(GamePlayer p, string? first, string? second)
     {
         var s = _settings.Roulette;
         static string? Choice(string? x)
@@ -269,6 +294,11 @@ public sealed class GameService : IHostedService
 
     public string DuelChallenge(GamePlayer p, string? target, string? betText)
     {
+        lock (_gameLock) return DuelChallengeCore(p, target, betText);
+    }
+
+    private string DuelChallengeCore(GamePlayer p, string? target, string? betText)
+    {
         var s = _settings.Duel;
         var login = target?.Trim().TrimStart('@').ToLowerInvariant();
         if (string.IsNullOrEmpty(login)) return $"{p.Name}, usage: !duel @user <amount>";
@@ -291,6 +321,11 @@ public sealed class GameService : IHostedService
     }
 
     public string DuelAccept(GamePlayer p)
+    {
+        lock (_gameLock) return DuelAcceptCore(p);
+    }
+
+    private string DuelAcceptCore(GamePlayer p)
     {
         if (!_duels.TryRemove(p.Login.ToLowerInvariant(), out var duel) || duel.Expires < DateTimeOffset.UtcNow)
             return $"{p.Name}, nobody has challenged you to a duel.";
@@ -320,7 +355,7 @@ public sealed class GameService : IHostedService
 
     public object? HeistState()
     {
-        lock (_heistLock)
+        lock (_gameLock)
             return _heist is null
                 ? new { active = false, cooldownUntil = _heistCooldownUntil }
                 : new { active = true, closes = _heist.Closes, crew = _heist.Crew.Select(c => new { user = c.Player.Name, bet = c.Bet }).ToList() };
@@ -330,7 +365,7 @@ public sealed class GameService : IHostedService
     {
         var s = _settings.Heist;
         bool starting;
-        lock (_heistLock)
+        lock (_gameLock)
         {
             if (_heist is null && DateTimeOffset.UtcNow < _heistCooldownUntil)
                 return $"{p.Name}, the crew is lying low. Next heist in {Math.Ceiling((_heistCooldownUntil - DateTimeOffset.UtcNow).TotalSeconds)}s.";
@@ -352,7 +387,7 @@ public sealed class GameService : IHostedService
         await Delay(heist.Closes - DateTimeOffset.UtcNow is var left && left > TimeSpan.Zero ? left : TimeSpan.Zero, CancellationToken.None);
         var s = _settings.Heist;
         List<(GamePlayer Player, long Bet)> crew;
-        lock (_heistLock)
+        lock (_gameLock)
         {
             crew = [.. heist.Crew];
             _heist = null;

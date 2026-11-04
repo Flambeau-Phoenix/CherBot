@@ -116,7 +116,7 @@ public sealed class ObsClient : IAsyncDisposable
             }
             reason = _ws.CloseStatusDescription;
         }
-        catch (Exception ex) when (ex is WebSocketException or OperationCanceledException or JsonException or InvalidOperationException)
+        catch (Exception ex) // includes KeyNotFoundException from malformed frames and exceptions thrown by event subscribers
         {
             reason = ex.Message;
         }
