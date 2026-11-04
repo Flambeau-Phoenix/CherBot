@@ -8,6 +8,7 @@ namespace CherBot.Host.Security;
 public sealed class ApiToken
 {
     public const string FileName = "api-token";
+    public const int MinLength = 16;
 
     public ApiToken(string value) => Value = value;
 
@@ -15,12 +16,17 @@ public sealed class ApiToken
 
     public static ApiToken Load(string dataDir, string? configured)
     {
-        if (!string.IsNullOrWhiteSpace(configured)) return new ApiToken(configured.Trim());
+        if (!string.IsNullOrWhiteSpace(configured))
+        {
+            if (configured.Trim().Length < MinLength)
+                throw new InvalidOperationException($"CherBot:Api:Token must be at least {MinLength} characters (or leave it empty to use a generated token).");
+            return new ApiToken(configured.Trim());
+        }
         var path = Path.Combine(dataDir, FileName);
         if (File.Exists(path))
         {
             var existing = File.ReadAllText(path).Trim();
-            if (existing.Length >= 16) return new ApiToken(existing);
+            if (existing.Length >= MinLength) return new ApiToken(existing);
         }
         var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)).TrimEnd('=').Replace('+', '-').Replace('/', '_');
         DataDirectory.WritePrivate(path, token);
@@ -35,12 +41,23 @@ public sealed class ApiToken
         return CryptographicOperations.FixedTimeEquals(a, b);
     }
 
-    /// <summary>Accepts "Authorization: Bearer", the X-CherBot-Token header, or ?token= (for EventSource and WebSocket clients).</summary>
+    /// <summary>
+    /// Accepts "Authorization: Bearer" or the X-CherBot-Token header on every route. ?token= is accepted only for GET
+    /// requests to the live event stream and media files, which EventSource and Audio elements cannot send headers for;
+    /// URLs end up in logs, history and Referer headers, so it is not honoured anywhere else.
+    /// </summary>
     public bool IsAuthorized(HttpContext ctx)
     {
         var auth = ctx.Request.Headers.Authorization.ToString();
         if (auth.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) && Matches(auth[7..].Trim())) return true;
         if (Matches(ctx.Request.Headers["X-CherBot-Token"].ToString())) return true;
-        return Matches(ctx.Request.Query["token"].ToString());
+        return AllowsQueryToken(ctx.Request) && Matches(ctx.Request.Query["token"].ToString());
+    }
+
+    private static bool AllowsQueryToken(HttpRequest request)
+    {
+        if (!HttpMethods.IsGet(request.Method)) return false;
+        var path = request.Path.Value?.TrimEnd('/') ?? "";
+        return path.Equals("/v1/events", StringComparison.OrdinalIgnoreCase) || path.Equals("/v1/media", StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -73,6 +73,8 @@ starts a stand-in OBS WebSocket server on port 14455 for trying the OBS controls
 | `Password` | *(empty)* | Enables Streamer.bot's salt/challenge authentication |
 | `EnforceAuth` | `false` | With a password: require authentication for every request (otherwise only `SendMessage`) |
 
+Browsers: WebSocket and HTTP-server requests carrying an `Origin` header are rejected (403) unless the origin is a loopback page or listed in the top-level `CherBot:AllowedOrigins` array (`"*"` turns the check off; `"null"` allows `file://` pages). Clients that send no `Origin` header, such as Node or desktop libraries, are unaffected.
+
 ### `CherBot:HttpServer`
 
 | Key | Default | Description |
@@ -305,7 +307,7 @@ Anything else imports and round-trips but is skipped when the action runs.
 
 ## Reference: management API
 
-All `/v1` routes need `Authorization: Bearer <token>`. `?token=<token>` also works, which `EventSource` and media URLs need.
+All `/v1` routes need `Authorization: Bearer <token>`. `?token=<token>` is accepted only on `GET /v1/events` and `GET /v1/media` (which `EventSource` and `<audio>` need); every other route requires the header.
 
 | Area | Routes |
 | --- | --- |

@@ -16,6 +16,9 @@ public sealed class CherBotHostOptions
     public ListenerOptions UdpServer { get; set; } = new() { Enabled = false, Port = 4242 };
     public EngineOptions Engine { get; set; } = new();
 
+    /// <summary>Browser origins allowed to call the WebSocket/HTTP compatibility servers, in addition to loopback pages. "*" disables the check.</summary>
+    public List<string> AllowedOrigins { get; set; } = [];
+
     /// <summary>Instance name reported in the Streamer.bot Hello message.</summary>
     public string InstanceName { get; set; } = Environment.MachineName;
 }

@@ -21,6 +21,8 @@ public sealed class SbServerSettings
     public string Endpoint { get; set; } = "/";
     public string? Password { get; set; }
     public bool EnforceAuth { get; set; }
+    /// <summary>Extra browser origins (for example "https://overlay.example.com", or "null" for file:// pages) allowed to use the WebSocket and HTTP servers. Loopback origins are always allowed.</summary>
+    public IReadOnlyList<string> AllowedOrigins { get; set; } = [];
 }
 
 public sealed record SbResult(bool Ok, object? Body = null, string? Error = null)

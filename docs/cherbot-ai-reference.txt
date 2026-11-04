@@ -197,7 +197,7 @@ MANAGEMENT API
 Web UI / API base: http://127.0.0.1:8091 . Bind to a trusted LAN/VPN address
 for remote clients; do not propose opening all interfaces as a default.
 /health and /version are public. /v1 requests require Authorization: Bearer
-<local API token>, or X-CherBot-Token. ?token= is accepted for EventSource.
+<local API token>, or X-CherBot-Token. ?token= is accepted only for GET /v1/events and /v1/media.
 Do not confuse this management API with the Streamer.bot-compatible WebSocket
 port 8080, optional unauthenticated HTTP port 7474, or UDP port 4242.
 

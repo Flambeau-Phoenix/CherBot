@@ -22,6 +22,7 @@ internal static class HostModules
                 Endpoint = options.WebSocketServer.Endpoint,
                 Password = options.WebSocketServer.Password,
                 EnforceAuth = options.WebSocketServer.EnforceAuth,
+                AllowedOrigins = options.AllowedOrigins,
             },
             new UdpServerSettings
             {

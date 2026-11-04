@@ -45,6 +45,14 @@ public sealed class StreamerBotWebSocketServer(StreamerBotApi api, EventBus bus,
             return;
         }
 
+        if (!OriginPolicy.IsAllowed(ctx.Request, api.Settings.AllowedOrigins))
+        {
+            log.LogWarning("Rejected WebSocket connection from origin {Origin} ({Remote}); add it to CherBot:AllowedOrigins to permit it",
+                ctx.Request.Headers.Origin.ToString(), ctx.Connection.RemoteIpAddress);
+            ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return;
+        }
+
         using var socket = await ctx.WebSockets.AcceptWebSocketAsync();
         var session = new Session(socket, string.IsNullOrEmpty(api.Settings.Password));
         _sessions[session.Id] = session;

@@ -7,7 +7,7 @@ namespace CherBot.Compat.Protocol;
 /// <summary>
 /// Streamer.bot-compatible HTTP server (default port 7474): POST /DoAction, GET /GetActions, GET /GetCredits,
 /// GET /TestCredits, GET /ClearCredits and GET /ClearFirstWordsCache. Like Streamer.bot it has no authentication,
-/// so keep it bound to localhost or a trusted link.
+/// so keep it bound to localhost or a trusted link. Browser requests are limited to loopback and CherBot:AllowedOrigins.
 /// </summary>
 public sealed class StreamerBotHttpServer(StreamerBotApi api)
 {
@@ -17,7 +17,18 @@ public sealed class StreamerBotHttpServer(StreamerBotApi api)
     {
         var path = (ctx.Request.Path.Value ?? "/").TrimEnd('/');
         var method = ctx.Request.Method;
-        ctx.Response.Headers.AccessControlAllowOrigin = "*";
+        var origin = ctx.Request.Headers.Origin.ToString();
+        if (!OriginPolicy.IsAllowed(origin, api.Settings.AllowedOrigins))
+        {
+            // Rejecting here (not just omitting CORS headers) also stops "simple" cross-site POSTs, which browsers send regardless of CORS.
+            ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return;
+        }
+        if (origin.Length > 0)
+        {
+            ctx.Response.Headers.AccessControlAllowOrigin = origin;
+            ctx.Response.Headers.Vary = "Origin";
+        }
         if (HttpMethods.IsOptions(method))
         {
             ctx.Response.Headers.AccessControlAllowHeaders = "Content-Type";

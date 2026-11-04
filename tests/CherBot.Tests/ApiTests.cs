@@ -39,7 +39,38 @@ public class ApiTests
         Assert.Equal(HttpStatusCode.OK, (await anon.GetAsync("/health")).StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, (await anon.GetAsync("/v1/actions")).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await h.Api.GetAsync("/v1/actions")).StatusCode);
-        Assert.Equal(HttpStatusCode.OK, (await anon.GetAsync($"/v1/actions?token={h.Token}")).StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await anon.GetAsync($"/v1/actions?token={h.Token}")).StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await anon.GetAsync("/v1/media?path=x&token=wrong")).StatusCode);
+        Assert.NotEqual(HttpStatusCode.Unauthorized, (await anon.GetAsync($"/v1/media?path=x&token={h.Token}")).StatusCode);
+    }
+
+    [Fact]
+    public async Task Compat_servers_reject_cross_site_browser_origins()
+    {
+        await using var h = new TestHost();
+        foreach (var origin in new[] { "https://evil.example", "null" })
+        {
+            using var ws = new ClientWebSocket();
+            ws.Options.SetRequestHeader("Origin", origin);
+            await Assert.ThrowsAnyAsync<Exception>(() => ws.ConnectAsync(new Uri($"ws://127.0.0.1:{h.WsPort}/"), CancellationToken.None));
+
+            using var http = new HttpClient();
+            var req = new HttpRequestMessage(HttpMethod.Post, $"http://127.0.0.1:{h.HttpPort}/DoAction") { Content = new StringContent("{}") };
+            req.Headers.Add("Origin", origin);
+            Assert.Equal(HttpStatusCode.Forbidden, (await http.SendAsync(req)).StatusCode);
+        }
+
+        using var local = new ClientWebSocket();
+        local.Options.SetRequestHeader("Origin", "http://localhost:3000");
+        await local.ConnectAsync(new Uri($"ws://127.0.0.1:{h.WsPort}/"), CancellationToken.None);
+        using var none = new ClientWebSocket();
+        await none.ConnectAsync(new Uri($"ws://127.0.0.1:{h.WsPort}/"), CancellationToken.None);
+    }
+
+    [Fact]
+    public void Short_configured_api_token_is_rejected()
+    {
+        Assert.Throws<InvalidOperationException>(() => CherBot.Host.Security.ApiToken.Load(Path.GetTempPath(), "short"));
     }
 
     [Fact]
