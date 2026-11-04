@@ -327,4 +327,4 @@ All `/v1` routes need `Authorization: Bearer <token>`. `?token=<token>` is accep
 | OBS, Speaker.bot | `GET/POST /v1/obs/connections`, `DELETE /v1/obs/connections/{id}`, `POST /v1/obs/reconnect`, `POST /v1/obs/request` `{requestType, requestData, connectionId}`, `GET /v1/obs/scenes?connectionId`, `GET /v1/obs/scene-items?scene=`, `GET /v1/obs/filters?source=`, `GET /v1/obs/inputs`, `POST /v1/obs/scene` `{sceneName}`, `POST /v1/obs/scene-item` `{sceneName, sceneItemId, enabled}`, `GET /v1/speakerbot/status`, `POST /v1/speakerbot/speak` `{voice, message}` |
 | Other | `GET /v1/integrations`, `GET /v1/catalog/events`, `GET /v1/catalog/subactions`, `GET /v1/media?path=`, `POST /v1/migrate/python` `{path}` |
 
-Without a token: `GET /health`, `GET /version`, the web UI files, and the Twitch OAuth callback.
+Without a token: `GET /health` (host details such as the machine name, OS and data folder are only included when a token is sent), `GET /version`, the web UI files, and the Twitch OAuth callback.

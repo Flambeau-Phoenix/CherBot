@@ -2,7 +2,7 @@
 // moved to their own pages (Commands, Variables, Loyalty & Games).
 
 import { el, fill, guard, toast, fmtTime, openDialog, jsonEditor, parseJson, card, pageHead, input, num, toggle } from '../lib/dom.js';
-import { api, get, post, put, del, forgetToken, invalidate } from '../lib/api.js';
+import { api, get, post, put, del, health, forgetToken, invalidate } from '../lib/api.js';
 
 export async function render(root) {
   const twitch = el('div');
@@ -102,7 +102,7 @@ export async function render(root) {
     const r = await get('/v1/integrations');
     fill(integrations, el('table', {}, el('tbody', {}, r.integrations.map(i => el('tr', {},
       el('td', {}, i.name), el('td', { class: i.connected ? 'status-ok' : 'status-break' }, i.state), el('td', { class: 'muted small' }, i.detail || ''))))));
-    const h = window.cherbotHealth || await (await fetch('/health')).json();
+    const h = window.cherbotHealth || await health();
     engine.textContent = `${h.os} · data ${h.dataDir} · sound ${h.sound}`;
   });
 

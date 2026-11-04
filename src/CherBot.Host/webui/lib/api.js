@@ -35,6 +35,9 @@ export async function api(method, path, body, { raw = false, allowError = false 
   return allowError ? { ok: res.ok, status: res.status, data } : data;
 }
 
+/** /health is public, but only returns host details (machine name, OS, data folder) to callers that send the token. */
+export const health = async () => (await fetch('/health', { headers: { Authorization: `Bearer ${token()}` } })).json();
+
 export const get = (p) => api('GET', p);
 export const post = (p, b) => api('POST', p, b);
 export const put = (p, b) => api('PUT', p, b);

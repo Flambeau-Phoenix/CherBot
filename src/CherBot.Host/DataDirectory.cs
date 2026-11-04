@@ -79,5 +79,26 @@ public static class DataDirectory
             return;
         }
         File.WriteAllText(path, contents);
+        RestrictToCurrentUser(path);
+    }
+
+    /// <summary>Windows: drop inherited permissions so only the current account (and its owner rights) can read the file.</summary>
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    private static void RestrictToCurrentUser(string path)
+    {
+        try
+        {
+            var info = new FileInfo(path);
+            var security = info.GetAccessControl();
+            security.SetAccessRuleProtection(isProtected: true, preserveInheritance: false);
+            foreach (System.Security.AccessControl.FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(System.Security.Principal.SecurityIdentifier)))
+                security.RemoveAccessRule(rule);
+            var user = System.Security.Principal.WindowsIdentity.GetCurrent().User;
+            if (user is null) return;
+            security.AddAccessRule(new System.Security.AccessControl.FileSystemAccessRule(
+                user, System.Security.AccessControl.FileSystemRights.FullControl, System.Security.AccessControl.AccessControlType.Allow));
+            info.SetAccessControl(security);
+        }
+        catch { /* best effort: never block startup over permissions */ }
     }
 }

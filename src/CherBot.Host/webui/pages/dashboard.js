@@ -2,7 +2,7 @@
 // one-click tools, the active giveaway and a mini event feed.
 
 import { el, fill, guard, toast, card, pageHead, fmtDuration, debounce, uuid, go, icon } from '../lib/dom.js';
-import { get, post, api, onEvent, getUiSettings, lists, invalidate } from '../lib/api.js';
+import { get, post, api, health, onEvent, getUiSettings, lists, invalidate } from '../lib/api.js';
 import { eventItem } from './monitor.js';
 import { showRunResult } from '../builder/editor.js';
 import { liveChat } from '../lib/livechat.js';
@@ -23,7 +23,7 @@ export async function render(root) {
   const stat = (k, v, cls = '') => el('div', { class: 'stat' }, el('div', { class: 'k' }, icon(statIcons[k]), k), el('div', { class: `v ${cls}` }, v));
 
   const loadStrip = guard(async () => {
-    const [health, queues] = await Promise.all([fetch('/health').then(r => r.json()), get('/v1/queues')]);
+    const [health, queues] = await Promise.all([health(), get('/v1/queues')]);
     const tw = health.integrations.find(i => i.name === 'twitch');
     const obs = health.integrations.find(i => i.name === 'obs');
     const ready = !!tw?.connected;

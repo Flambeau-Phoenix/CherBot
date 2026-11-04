@@ -2,7 +2,7 @@
 // Plain ES modules, no build step. Pages live in pages/*.js and export render(root, params).
 
 import { $, el, fill, toast, icon } from './lib/dom.js';
-import { api, token, setToken, setUnauthorizedHandler } from './lib/api.js';
+import { api, health, token, setToken, setUnauthorizedHandler } from './lib/api.js';
 
 export const PAGES = [
   { id: 'dashboard', title: 'Live Admin', icon: 'layout-dashboard' },
@@ -97,7 +97,7 @@ $('#login-form').addEventListener('submit', async (ev) => {
 
 async function refreshBadges() {
   try {
-    const h = await (await fetch('/health')).json();
+    const h = await health();
     $('#version').textContent = `v${h.version}`;
     window.cherbotHealth = h;
     $('#engine-status').textContent = `Connected · ${h.instanceName || location.host}`;

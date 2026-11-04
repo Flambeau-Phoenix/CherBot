@@ -188,12 +188,15 @@ internal static class ManagementApi
             var cursor = since ?? (long.TryParse(ctx.Request.Headers["Last-Event-ID"], out var last) ? last : bus.LastSeq);
             var ct = ctx.RequestAborted;
 
+            // The heartbeat and the event loop share one response stream; serialise their writes.
+            using var writeLock = new SemaphoreSlim(1, 1);
             var (reader, sub) = bus.Listen("sse-" + Guid.NewGuid().ToString("N"));
             using (sub)
             {
                 foreach (var row in db.GetEventsSince(cursor, 500))
                 {
-                    await WriteSse(ctx, row.Seq, row.Source, row.Type, row.Timestamp, JsonDocument.Parse(row.Json).RootElement);
+                    using var rowDoc = JsonDocument.Parse(row.Json);
+                    await WriteSse(ctx, writeLock, row.Seq, row.Source, row.Type, row.Timestamp, rowDoc.RootElement);
                     cursor = row.Seq;
                 }
                 await ctx.Response.Body.FlushAsync(ct);
@@ -203,8 +206,13 @@ internal static class ManagementApi
                 {
                     while (await heartbeat.WaitForNextTickAsync(ct))
                     {
-                        await ctx.Response.WriteAsync(": ping\n\n", ct);
-                        await ctx.Response.Body.FlushAsync(ct);
+                        await writeLock.WaitAsync(ct);
+                        try
+                        {
+                            await ctx.Response.WriteAsync(": ping\n\n", ct);
+                            await ctx.Response.Body.FlushAsync(ct);
+                        }
+                        finally { writeLock.Release(); }
                     }
                 }, ct);
 
@@ -213,7 +221,7 @@ internal static class ManagementApi
                     await foreach (var ev in reader.ReadAllAsync(ct))
                     {
                         if (ev.Persist && ev.Seq <= cursor) continue;
-                        await WriteSse(ctx, ev.Persist ? ev.Seq : null, ev.Source, ev.Type, ev.Timestamp.ToString("O"), ev.Data);
+                        await WriteSse(ctx, writeLock, ev.Persist ? ev.Seq : null, ev.Source, ev.Type, ev.Timestamp.ToString("O"), ev.Data);
                         if (ev.Persist) cursor = ev.Seq;
                     }
                 }
@@ -260,13 +268,18 @@ internal static class ManagementApi
         });
     }
 
-    private static async Task WriteSse(HttpContext ctx, long? seq, string source, string type, string ts, object data)
+    private static async Task WriteSse(HttpContext ctx, SemaphoreSlim writeLock, long? seq, string source, string type, string ts, object data)
     {
         // Unnamed SSE messages: source and type travel in the payload, so one onmessage handler sees everything.
         var payload = JsonSerializer.Serialize(new { seq, source, type, ts, data }, CherBotJson.Options);
         var head = seq is { } s ? $"id: {s}\n" : "";
-        await ctx.Response.WriteAsync($"{head}data: {payload}\n\n", ctx.RequestAborted);
-        await ctx.Response.Body.FlushAsync(ctx.RequestAborted);
+        await writeLock.WaitAsync(ctx.RequestAborted);
+        try
+        {
+            await ctx.Response.WriteAsync($"{head}data: {payload}\n\n", ctx.RequestAborted);
+            await ctx.Response.Body.FlushAsync(ctx.RequestAborted);
+        }
+        finally { writeLock.Release(); }
     }
 
     // ── misc: catalog, import/export, integrations, media ──────────────────

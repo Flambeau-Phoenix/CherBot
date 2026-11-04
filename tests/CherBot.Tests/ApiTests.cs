@@ -40,6 +40,9 @@ public class ApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, (await anon.GetAsync("/v1/actions")).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await h.Api.GetAsync("/v1/actions")).StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, (await anon.GetAsync($"/v1/actions?token={h.Token}")).StatusCode);
+        var publicHealth = await anon.GetStringAsync("/health");
+        Assert.DoesNotContain("dataDir", publicHealth);
+        Assert.Contains("dataDir", await h.Api.GetStringAsync("/health"));
         Assert.Equal(HttpStatusCode.Unauthorized, (await anon.GetAsync("/v1/media?path=x&token=wrong")).StatusCode);
         Assert.NotEqual(HttpStatusCode.Unauthorized, (await anon.GetAsync($"/v1/media?path=x&token={h.Token}")).StatusCode);
     }
