@@ -22,6 +22,34 @@ public static partial class Tokens
         });
     }
 
+    /// <summary>
+    /// Like <see cref="Fill"/>, but runs <paramref name="literal"/> (for example the template engine's %args% and ~globals~)
+    /// over the template's own text only. Token values, which can hold viewer input, are inserted untouched.
+    /// </summary>
+    public static string Render(string? template, IReadOnlyDictionary<string, object?> values, Func<string, string> literal)
+    {
+        if (string.IsNullOrEmpty(template)) return "";
+        var sb = new System.Text.StringBuilder();
+        var last = 0;
+        foreach (Match m in TokenPattern().Matches(template))
+        {
+            sb.Append(literal(template[last..m.Index]));
+            last = m.Index + m.Length;
+            var name = m.Groups["name"].Value;
+            var found = false;
+            foreach (var (k, v) in values)
+            {
+                if (!string.Equals(k, name, StringComparison.OrdinalIgnoreCase)) continue;
+                sb.Append(CherBotJson.Format(v));
+                found = true;
+                break;
+            }
+            if (!found) sb.Append(m.Value);
+        }
+        sb.Append(literal(template[last..]));
+        return sb.ToString();
+    }
+
     /// <summary>"90" → "1m 30s"; 0 → "until stopped" when <paramref name="zero"/> is given.</summary>
     public static string Duration(double seconds, string zero = "0s")
     {

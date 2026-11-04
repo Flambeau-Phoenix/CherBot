@@ -159,7 +159,7 @@ public sealed class ChatAlertsModule : BotModule<ChatAlertsSettings>, IHostedSer
         var variants = alert.Messages.Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
         if (variants.Count == 0) return "";
         var template = variants[Pick(variants.Count)];
-        return _templates.Parse(Tokens.Fill(template, TokensFor(data)), data);
+        return Tokens.Render(template, TokensFor(data), text => _templates.Parse(text, data));
     }
 
     /// <summary>Renders an alert with sample data for the Test button; sends it when <paramref name="send"/> is set.</summary>

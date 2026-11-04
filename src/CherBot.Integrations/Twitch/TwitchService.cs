@@ -220,8 +220,16 @@ public sealed class TwitchService : BackgroundService, IIntegrationStatus, IChat
                         var messageId = metadata.TryGetProperty("message_id", out var mid) ? mid.GetString() : null;
                         if (messageId is not null && !_seenMessages.TryAdd(messageId, DateTimeOffset.UtcNow)) break; // duplicate delivery
                         PruneSeen();
-                        var subType = payload.GetProperty("subscription").GetProperty("type").GetString()!;
-                        HandleNotification(subType, payload.GetProperty("event"));
+                        try
+                        {
+                            var subType = payload.GetProperty("subscription").GetProperty("type").GetString()!;
+                            HandleNotification(subType, payload.GetProperty("event"));
+                        }
+                        catch (Exception ex) when (ex is not OperationCanceledException)
+                        {
+                            // One malformed notification or a failing handler must not tear down the whole session.
+                            _log.LogWarning(ex, "Twitch EventSub notification could not be handled");
+                        }
                         break;
                     }
             }
@@ -284,6 +292,9 @@ public sealed class TwitchService : BackgroundService, IIntegrationStatus, IChat
             while (await timer.WaitForNextTickAsync(ct))
             {
                 var viewers = GetActiveViewers();
+                var stale = DateTimeOffset.UtcNow.AddHours(-6);
+                foreach (var (id, v) in _viewers)
+                    if (v.LastActive < stale) _viewers.TryRemove(id, out _);
                 if (!IsConnected || viewers.Count == 0) continue;
                 _bus.Publish(BotEvent.FromTypeName("TwitchPresentViewers", new Dictionary<string, object?>
                 {

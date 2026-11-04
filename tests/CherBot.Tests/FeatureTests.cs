@@ -626,6 +626,33 @@ public class FeatureTests
         Assert.Equal(["Poor has 30 points left."], await svc.RespondAsync(def, args, CancellationToken.None));
     }
 
+    [Fact]
+    public void Zalgo_counts_marks_stacked_on_one_letter_not_every_mark_in_the_message()
+    {
+        // Thai vowels and tone marks: many marks in total, at most two stacked on one letter, well under the default limit of 6.
+        Assert.Equal(2, SpamFilterModule.MaxStackedMarks("สวัสดีครับ ผมมาจากกรุงเทพ วันนี้อากาศดีมาก"));
+        var zalgo = "h" + new string('̀', 10) + "i";
+        Assert.Equal(10, SpamFilterModule.MaxStackedMarks(zalgo));
+    }
+
+    [Fact]
+    public async Task Viewer_text_is_never_expanded_as_a_template()
+    {
+        var fake = new FakeTwitchHandler();
+        await using var h = Host(fake);
+        h.Get<VariableService>().SetGlobal("secret", "hunter2", persisted: true);
+        var svc = h.Get<CustomCommandService>();
+        var def = svc.Save(new CustomCommandDef { Name = "!say", Responses = ["{user}: {args} / %rawInput% / ~secret~"] });
+        var args = new Dictionary<string, object?> { ["user"] = "Bob", ["userId"] = "77", ["rawInput"] = "~secret~ %user%" };
+        // The owner's own ~secret~ still expands; the viewer's does not.
+        Assert.Equal(["Bob: ~secret~ %user% / ~secret~ %user% / hunter2"], await svc.RespondAsync(def, args, CancellationToken.None));
+
+        var alerts = h.Get<ChatAlertsModule>();
+        var text = alerts.Render(new AlertSettings { Messages = ["{user} cheered: {message} ~secret~"] },
+            new Dictionary<string, object?> { ["user"] = "Bob", ["message"] = "~secret~ %user%" });
+        Assert.Equal("Bob cheered: ~secret~ %user% hunter2", text);
+    }
+
     // ── helper endpoints ───────────────────────────────────────────────────
 
     [Fact]

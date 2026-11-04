@@ -13,29 +13,25 @@ public sealed partial class TemplateEngine(VariableService variables)
     [GeneratedRegex(@"%(?<name>[A-Za-z0-9_\.\[\]\-]+)(?::(?<fmt>[^%]+))?%")]
     private static partial Regex ArgPattern();
 
-    [GeneratedRegex(@"~(?<name>[A-Za-z0-9_\.\-]+)~")]
-    private static partial Regex GlobalPattern();
+    [GeneratedRegex(@"%(?<name>[A-Za-z0-9_\.\[\]\-]+)(?::(?<fmt>[^%]+))?%|~(?<global>[A-Za-z0-9_\.\-]+)~")]
+    private static partial Regex PlaceholderPattern();
 
+    /// <summary>
+    /// Expands placeholders in a single pass: substituted values are inserted as-is and never scanned again, so an argument
+    /// holding viewer text such as <c>~someGlobal~</c> cannot pull in a global.
+    /// </summary>
     public string Parse(string? text, IReadOnlyDictionary<string, object?>? args)
     {
         if (string.IsNullOrEmpty(text)) return text ?? "";
-        var result = text;
-        if (args is not null && result.Contains('%'))
+        if (text.IndexOf('%') < 0 && text.IndexOf('~') < 0) return text;
+        return PlaceholderPattern().Replace(text, m =>
         {
-            result = ArgPattern().Replace(result, m =>
-            {
-                var name = m.Groups["name"].Value;
-                if (!TryLookup(args, name, out var value)) return m.Value;
-                var fmt = m.Groups["fmt"].Success ? m.Groups["fmt"].Value : null;
-                return fmt is not null && value is IFormattable f ? f.ToString(fmt, CultureInfo.InvariantCulture) : CherBotJson.Format(value);
-            });
-        }
-        if (result.Contains('~'))
-        {
-            result = GlobalPattern().Replace(result, m =>
-                variables.TryGetGlobal(m.Groups["name"].Value, true, out var value) ? CherBotJson.Format(value) : m.Value);
-        }
-        return result;
+            if (m.Groups["global"].Success)
+                return variables.TryGetGlobal(m.Groups["global"].Value, true, out var g) ? CherBotJson.Format(g) : m.Value;
+            if (args is null || !TryLookup(args, m.Groups["name"].Value, out var value)) return m.Value;
+            var fmt = m.Groups["fmt"].Success ? m.Groups["fmt"].Value : null;
+            return fmt is not null && value is IFormattable f ? f.ToString(fmt, CultureInfo.InvariantCulture) : CherBotJson.Format(value);
+        });
     }
 
     public string Parse(string? text, System.Collections.Concurrent.ConcurrentDictionary<string, object?> args) =>

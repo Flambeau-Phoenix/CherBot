@@ -22,7 +22,7 @@ const FILTERS = [
   ['emotes', 'Emote spam', [{ key: 'maxEmotes', label: 'Max emotes per message', type: 'number', min: 1 }]],
   ['words', 'Banned words', []],
   ['duplicates', 'Duplicate messages', [{ key: 'windowSeconds', label: 'Same message within (s)', type: 'number', min: 1 }]],
-  ['zalgo', 'Zalgo text', [{ key: 'maxCombining', label: 'Max combining marks', type: 'number', min: 1 }]],
+  ['zalgo', 'Zalgo text', [{ key: 'maxCombining', label: 'Max marks stacked on one letter', type: 'number', min: 1 }]],
 ];
 
 export async function render(root, route) {

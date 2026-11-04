@@ -293,10 +293,11 @@ public sealed partial class CustomCommandService : IHostedService
         var last = 0;
         foreach (Match m in TokenPattern().Matches(template))
         {
-            result.Append(template, last, m.Index - last);
+            // Only the owner's own text is template-expanded; values filled in below can hold viewer input.
+            result.Append(_templates.Parse(template[last..m.Index], args));
             last = m.Index + m.Length;
             var name = m.Groups["name"].Value.ToLowerInvariant();
-            var arg = m.Groups["arg"].Success ? m.Groups["arg"].Value : null;
+            var arg = m.Groups["arg"].Success ? _templates.Parse(m.Groups["arg"].Value, args) : null;
             string? value = name switch
             {
                 "user" => user,
@@ -318,8 +319,8 @@ public sealed partial class CustomCommandService : IHostedService
             };
             result.Append(value ?? m.Value);
         }
-        result.Append(template, last, template.Length - last);
-        return _templates.Parse(result.ToString(), args);
+        result.Append(_templates.Parse(template[last..], args));
+        return result.ToString();
     }
 
     private string RandomRange(string? arg)

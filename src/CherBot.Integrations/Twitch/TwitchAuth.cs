@@ -35,7 +35,8 @@ public sealed class TwitchAuth
     private readonly ILogger<TwitchAuth> _log;
     private readonly ConcurrentDictionary<TwitchRole, DeviceFlowState> _flows = new();
     private readonly ConcurrentDictionary<TwitchRole, SemaphoreSlim> _refreshLocks = new();
-    private readonly ConcurrentDictionary<string, TwitchRole> _codeStates = new();
+    private readonly ConcurrentDictionary<string, (TwitchRole Role, DateTimeOffset Expires)> _codeStates = new();
+    private static readonly TimeSpan CodeStateLifetime = TimeSpan.FromMinutes(10);
 
     public TwitchAuth(IHttpClientFactory http, ISecretStore secrets, TwitchOptions options, EventBus bus, ILogger<TwitchAuth> log)
     {
@@ -110,6 +111,13 @@ public sealed class TwitchAuth
             _log.LogInformation("Twitch {Role} token refreshed for {Login}", role, refreshed.Login);
             return refreshed;
         }
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or KeyNotFoundException or InvalidOperationException
+                                       || (ex is OperationCanceledException && !ct.IsCancellationRequested))
+        {
+            // Network trouble or an unexpected response: report "could not refresh" instead of throwing into the caller.
+            _log.LogWarning("Twitch {Role} token refresh failed: {Error}", role, ex.Message);
+            return null;
+        }
         finally
         {
             gate.Release();
@@ -180,7 +188,10 @@ public sealed class TwitchAuth
     {
         if (ClientId is null) throw new InvalidOperationException("Set CherBot:Twitch:ClientId first.");
         var state = Convert.ToHexString(RandomNumberGenerator.GetBytes(16));
-        _codeStates[state] = role;
+        var now = DateTimeOffset.UtcNow;
+        foreach (var (k, v) in _codeStates)
+            if (v.Expires <= now) _codeStates.TryRemove(k, out _);
+        _codeStates[state] = (role, now + CodeStateLifetime);
         var scopes = string.Join(' ', role == TwitchRole.Broadcaster ? _options.BroadcasterScopes : _options.BotScopes);
         return $"{IdBase}/authorize?response_type=code&client_id={Uri.EscapeDataString(ClientId)}&redirect_uri={Uri.EscapeDataString(redirectUri)}" +
                $"&scope={Uri.EscapeDataString(scopes)}&state={state}&force_verify=true";
@@ -188,7 +199,9 @@ public sealed class TwitchAuth
 
     public async Task<TwitchToken> ExchangeCodeAsync(string state, string code, string redirectUri, CancellationToken ct)
     {
-        if (!_codeStates.TryRemove(state, out var role)) throw new InvalidOperationException("Unknown or expired OAuth state.");
+        if (!_codeStates.TryRemove(state, out var pending) || pending.Expires <= DateTimeOffset.UtcNow)
+            throw new InvalidOperationException("Unknown or expired OAuth state.");
+        var role = pending.Role;
         if (string.IsNullOrWhiteSpace(_options.ClientSecret)) throw new InvalidOperationException("The authorization-code flow needs CherBot:Twitch:ClientSecret.");
         using var resp = await _http.CreateClient("twitch").PostAsync($"{IdBase}/token", new FormUrlEncodedContent(new Dictionary<string, string>
         {

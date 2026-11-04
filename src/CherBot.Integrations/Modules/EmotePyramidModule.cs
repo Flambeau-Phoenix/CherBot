@@ -174,7 +174,7 @@ public sealed class EmotePyramidModule : BotModule<EmotePyramidSettings>, IHoste
     private async Task SayAsync(string template, Dictionary<string, object?> tokens, IReadOnlyDictionary<string, object?> args)
     {
         if (string.IsNullOrWhiteSpace(template)) return;
-        var text = _templates.Parse(Tokens.Fill(template, tokens), args);
+        var text = Tokens.Render(template, tokens, literal => _templates.Parse(literal, args));
         Sent.Enqueue(text);
         while (Sent.Count > 50) Sent.TryDequeue(out _);
         try { await _twitch.SendChatAsync(text, useBot: true, fallback: true, null, CancellationToken.None); }

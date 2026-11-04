@@ -239,7 +239,7 @@ public sealed partial class SpamFilterModule : BotModule<SpamFilterSettings>, IC
             {
                 "words" => HasBannedWord(message, s.Words.Words),
                 "links" => HasForbiddenLink(message, ChatRoles.Str(d, "userName"), s.Links),
-                "zalgo" => message.Count(c => CharUnicodeInfo.GetUnicodeCategory(c) is UnicodeCategory.NonSpacingMark or UnicodeCategory.EnclosingMark) > s.Zalgo.MaxCombining,
+                "zalgo" => MaxStackedMarks(message) > s.Zalgo.MaxCombining,
                 "length" => message.Length > s.Length.MaxLength,
                 "caps" => CapsPercent(stripped, s.Caps.MinLength) > s.Caps.MaxPercent,
                 "symbols" => SymbolPercent(stripped, s.Symbols.MinLength) > s.Symbols.MaxPercent,
@@ -262,6 +262,23 @@ public sealed partial class SpamFilterModule : BotModule<SpamFilterSettings>, IC
             return true;
         return s.PermittedGroups.Count > 0 && Db.GetGroupUsers().Any(g =>
             s.PermittedGroups.Contains(g.Group, StringComparer.OrdinalIgnoreCase) && (g.UserId == id || string.Equals(g.Login, login, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    /// <summary>
+    /// The most combining marks stacked on one character. Zalgo piles many marks on a letter; counting every mark in the
+    /// message instead would flag ordinary Thai, Arabic or Hindi text, which carries a mark on many letters.
+    /// </summary>
+    internal static int MaxStackedMarks(string text)
+    {
+        int run = 0, max = 0;
+        foreach (var c in text)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) is UnicodeCategory.NonSpacingMark or UnicodeCategory.EnclosingMark)
+                max = Math.Max(max, ++run);
+            else
+                run = 0;
+        }
+        return max;
     }
 
     internal static double CapsPercent(string text, int minLength)
@@ -335,6 +352,9 @@ public sealed partial class SpamFilterModule : BotModule<SpamFilterSettings>, IC
         if (userId.Length == 0 || windowSeconds <= 0) return false;
         var now = DateTimeOffset.UtcNow;
         var text = string.Join(' ', message.ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries));
+        if (_recent.Count > 5000)
+            foreach (var (k, v) in _recent)
+                lock (v) if (v.Count == 0 || (now - v[^1].At).TotalSeconds > windowSeconds) _recent.TryRemove(k, out _);
         var list = _recent.GetOrAdd(userId, _ => []);
         lock (list)
         {
@@ -353,6 +373,9 @@ public sealed partial class SpamFilterModule : BotModule<SpamFilterSettings>, IC
         var s = Settings;
         if (!s.Escalation || s.Ladder.Count == 0 || userId.Length == 0) return (rule.Action, rule.TimeoutSeconds);
         var now = DateTimeOffset.UtcNow;
+        if (_strikes.Count > 5000)
+            foreach (var (k, v) in _strikes)
+                if ((now - v.Last).TotalMinutes > Math.Max(1, s.StrikeDecayMinutes)) _strikes.TryRemove(k, out _);
         var strikes = _strikes.AddOrUpdate(userId, _ => (1, now),
             (_, old) => (now - old.Last).TotalMinutes > Math.Max(1, s.StrikeDecayMinutes) ? (1, now) : (old.Count + 1, now));
         var step = s.Ladder[Math.Min(strikes.Count, s.Ladder.Count) - 1];

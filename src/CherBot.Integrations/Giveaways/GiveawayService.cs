@@ -213,7 +213,8 @@ public sealed class GiveawayService : BackgroundService
         if (string.IsNullOrWhiteSpace(template)) return;
         var tokens = BaseTokens(d);
         if (extra is not null) foreach (var (k, v) in extra) tokens[k] = v;
-        var text = _templates.Parse(Tokens.Fill(template, tokens), args ?? tokens);
+        var parseArgs = args ?? tokens;
+        var text = Tokens.Render(template, tokens, literal => _templates.Parse(literal, parseArgs));
         if (string.IsNullOrWhiteSpace(text)) return;
         Sent.Enqueue(text);
         while (Sent.Count > 50) Sent.TryDequeue(out _);

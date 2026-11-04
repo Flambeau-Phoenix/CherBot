@@ -31,8 +31,19 @@ public sealed class HelixClient(IHttpClientFactory http, TwitchAuth auth, ILogge
             if (body is not null)
                 req.Content = new StringContent(JsonSerializer.Serialize(body, CherBotJson.Options), Encoding.UTF8, "application/json");
 
-            using var resp = await http.CreateClient("twitch").SendAsync(req, ct);
-            var text = await resp.Content.ReadAsStringAsync(ct);
+            HttpResponseMessage resp;
+            string text;
+            try
+            {
+                resp = await http.CreateClient("twitch").SendAsync(req, ct);
+                text = await resp.Content.ReadAsStringAsync(ct);
+            }
+            catch (Exception ex) when (ex is HttpRequestException || (ex is OperationCanceledException && !ct.IsCancellationRequested))
+            {
+                // Callers only expect HelixException; a dropped connection or timeout is a failed call, not a crash.
+                throw new HelixException(HttpStatusCode.ServiceUnavailable, ex.Message);
+            }
+            using var _ = resp;
             if (resp.StatusCode == HttpStatusCode.Unauthorized && attempt == 0)
             {
                 log.LogInformation("Helix 401 on {Path}; refreshing {Role} token", path, role);
@@ -45,7 +56,8 @@ public sealed class HelixClient(IHttpClientFactory http, TwitchAuth auth, ILogge
                 throw new HelixException(resp.StatusCode, message);
             }
             if (string.IsNullOrWhiteSpace(text)) return default;
-            return JsonDocument.Parse(text).RootElement.Clone();
+            using var doc = JsonDocument.Parse(text);
+            return doc.RootElement.Clone();
         }
         throw new HelixException(HttpStatusCode.Unauthorized, "token refresh failed");
     }
