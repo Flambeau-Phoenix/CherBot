@@ -21,7 +21,10 @@ export function inline(text, linkMap = (h) => h) {
     else if (m[3] || m[4]) out.push(el('em', {}, inline(t.slice(1, -1), linkMap)));
     else {
       const lm = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(t);
-      const href = linkMap(lm[2]);
+      const mapped = linkMap(lm[2]);
+      // Only web, relative and in-page links: a javascript: or data: URL in help text must never become clickable.
+      const safe = /^(https?:|#|\/|\.{1,2}\/|[^:]*$)/i.test(mapped);
+      const href = safe ? mapped : '#';
       const external = /^https?:/i.test(href);
       out.push(el('a', { href, target: external ? '_blank' : null, rel: external ? 'noopener' : null }, inline(lm[1], linkMap)));
     }

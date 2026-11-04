@@ -54,6 +54,19 @@ public class ApiTests
     }
 
     [Fact]
+    public async Task Web_ui_files_refuse_framing_sniffing_and_referrer_leaks()
+    {
+        await using var h = new TestHost();
+        using var anon = new HttpClient { BaseAddress = h.Api.BaseAddress };
+        using var page = await anon.GetAsync("/index.html");
+        Assert.Equal(HttpStatusCode.OK, page.StatusCode);
+        Assert.Equal("DENY", page.Headers.GetValues("X-Frame-Options").Single());
+        Assert.Equal("nosniff", page.Headers.GetValues("X-Content-Type-Options").Single());
+        Assert.Equal("no-referrer", page.Headers.GetValues("Referrer-Policy").Single());
+        Assert.Contains("frame-ancestors 'none'", page.Headers.GetValues("Content-Security-Policy").Single());
+    }
+
+    [Fact]
     public async Task Compat_servers_reject_cross_site_browser_origins()
     {
         await using var h = new TestHost();

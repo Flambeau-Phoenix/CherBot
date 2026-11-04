@@ -136,7 +136,16 @@ public static class CherBotHost
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = files,
-            OnPrepareResponse = ctx => ctx.Context.Response.Headers.CacheControl = "no-cache",
+            OnPrepareResponse = ctx =>
+            {
+                var headers = ctx.Context.Response.Headers;
+                headers.CacheControl = "no-cache";
+                // The UI keeps the API token in the browser: refuse framing (clickjacking), MIME sniffing and referrer leaks.
+                headers["X-Content-Type-Options"] = "nosniff";
+                headers["Referrer-Policy"] = "no-referrer";
+                headers["Content-Security-Policy"] = "frame-ancestors 'none'";
+                headers["X-Frame-Options"] = "DENY";
+            },
         });
     }
 }
