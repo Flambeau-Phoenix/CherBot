@@ -127,16 +127,21 @@ public sealed class CommandLineSoundPlayer : ISoundPlayer
             return;
         }
         var vol = Math.Clamp(volume, 0f, 1f);
-        var args = _player switch
+        // Absolute path so a file name starting with "-" is never read as an option; ArgumentList avoids quoting bugs.
+        var path = Path.GetFullPath(file);
+        var inv = System.Globalization.CultureInfo.InvariantCulture;
+        string[] args = _player switch
         {
-            "pw-play" => $"--volume={vol.ToString(System.Globalization.CultureInfo.InvariantCulture)} \"{file}\"",
-            "paplay" => $"--volume={(int)(vol * 65536)} \"{file}\"",
-            "ffplay" => $"-nodisp -autoexit -loglevel quiet -volume {(int)(vol * 100)} \"{file}\"",
-            "mpv" => $"--no-video --really-quiet --volume={(int)(vol * 100)} \"{file}\"",
-            "afplay" => $"-v {vol.ToString(System.Globalization.CultureInfo.InvariantCulture)} \"{file}\"",
-            _ => $"-q \"{file}\"",
+            "pw-play" => [$"--volume={vol.ToString(inv)}", path],
+            "paplay" => [$"--volume={(int)(vol * 65536)}", path],
+            "ffplay" => ["-nodisp", "-autoexit", "-loglevel", "quiet", "-volume", $"{(int)(vol * 100)}", path],
+            "mpv" => ["--no-video", "--really-quiet", $"--volume={(int)(vol * 100)}", path],
+            "afplay" => ["-v", vol.ToString(inv), path],
+            _ => ["-q", path],
         };
-        var proc = Process.Start(new ProcessStartInfo(_player, args) { UseShellExecute = false, CreateNoWindow = true, RedirectStandardError = true, RedirectStandardOutput = true });
+        var psi = new ProcessStartInfo(_player) { UseShellExecute = false, CreateNoWindow = true, RedirectStandardError = true, RedirectStandardOutput = true };
+        foreach (var arg in args) psi.ArgumentList.Add(arg);
+        var proc = Process.Start(psi);
         if (proc is null) return;
         lock (_running) _running.Add(proc);
         var done = proc.WaitForExitAsync(ct).ContinueWith(_ => { lock (_running) _running.Remove(proc); }, TaskScheduler.Default);

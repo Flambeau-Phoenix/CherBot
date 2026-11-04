@@ -131,6 +131,16 @@ Text fields understand templates:
 Variable Created / Updated / Deleted events, so actions can trigger on them. Manage them in Config → Globals or with the
 Global (Get) / Global (Set) sub-actions.
 
+### Viewer input in risky steps
+
+`%rawInput%`, `%message%`, `%input0%` and similar arguments come from viewers. Do not put them into these fields unless you
+have validated them first (for example with an If step that matches a strict pattern):
+
+- **Run Program** arguments: a viewer can add their own command-line arguments.
+- **Fetch URL**: a viewer can make the bot request addresses on your own network (for example `http://192.168.0.1/`).
+- **Write / Read / Append File** paths: a viewer can point the step at other files.
+- **Execute C# Code**: treat arguments as untrusted text.
+
 ### Logic
 
 - **If/Else** compares `input` with `value`. Operators: 0 Equals, 1 Not Equals, 2 Contains, 3 Regex Match, 4 Less Than,
@@ -377,6 +387,7 @@ Run history is kept 14 days and the event log 3 days by default (`Engine:RunHist
 - Set a WebSocket password before binding the Streamer.bot WebSocket server beyond localhost.
 - Leave the HTTP and UDP servers off unless you need them.
 - Review imported C# scripts.
+- Never feed viewer text (`%rawInput%`, `%message%`) into Run Program arguments, Fetch URL or file paths without validating it first.
 
 ## 20. Troubleshooting
 

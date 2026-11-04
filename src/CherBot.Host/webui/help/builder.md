@@ -30,6 +30,16 @@ Fields are typed: switches, numbers, drop-downs, and **pickers** that list your 
 - **While** repeats its steps while the condition holds (with a safety limit).
 - **Group** just groups steps; switch on **Random** to run one of them, chosen by each step's weight.
 
+## Viewer input in risky steps
+
+`%rawInput%`, `%message%`, `%input0%` and similar arguments come from viewers. Do not put them into these fields unless you
+have validated them first (for example with an If step that matches a strict pattern):
+
+- **Run Program** arguments: a viewer can add their own command-line arguments.
+- **Fetch URL**: a viewer can make the bot request addresses on your own network (for example `http://192.168.0.1/`).
+- **Write / Read / Append File** paths: a viewer can point the step at other files.
+- **Execute C# Code**: treat arguments as untrusted text.
+
 ## Saving, testing, running
 
 - **Save** checks the action first: required pickers set, referenced actions and commands still exist, regexes compile. You can save anyway.
