@@ -7,6 +7,6 @@
     "test": "node compat-test.mjs"
   },
   "dependencies": {
-    "@streamerbot/client": "2.0.1"
+    "@streamerbot/client": "2.0.2"
   }
 }
